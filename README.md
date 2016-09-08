@@ -1,12 +1,12 @@
 Postgraduate-Course
 =======================
-This archieve is the code implement of my postgraduate course, such as Data Mining, Information Retrieval, Compilation Technology, Parallel and  Multi-Core Programming and etc.
+This archieve is the code implement of my postgraduate course, such as Data Mining, Information Retrieval, Compilation Technology, Concurrence and  Multi-Core Programming and etc.
 
 # Content
 * [Data Mining](#data-mining)
 * [Information Retrieval](#information-retrieval)
 * [Compilation Technology](#compilation-technology)
-* [Parallel and  Multi-Core Programming](#parallel-and--multi-core-programming)
+* [Concurrence and  Multi-Core Programming](#concurrence-and--multi-core-programming)
 
 ## Data Mining
 - 关联规则-Apriori算法
@@ -18,7 +18,7 @@ This archieve is the code implement of my postgraduate course, such as Data Mini
 ##Compilation Technology
 
 
-##Parallel and  Multi-Core Programming
+##Concurrence and  Multi-Core Programming
 
 
 # Postscript
