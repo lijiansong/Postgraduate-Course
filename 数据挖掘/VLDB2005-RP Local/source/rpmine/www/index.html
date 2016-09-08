@@ -1,0 +1,80 @@
+<script>
+function generatecmds() {
+  cmd = "cp ../data/" + form1.dataset.value + " data";
+  form2.cmd01.value = cmd;
+  cmd = "../bin/rpmine data " + form1.minsup.value + " " + form1.delta.value + " out.txt";
+  form2.cmd02.value = cmd;
+}
+
+</script>
+
+
+<table border="0" cellpadding="5">
+    <tr>
+        <td colspan="2"><b>Parameters</b></td>
+    </tr>
+    <form name="form1">
+    <tr>
+        <td>Data set:</td>
+        <td><select name="dataset" size="1" onchange="generatecmds();">
+            <option value="accidents.dat">accidents.dat</option>
+            <option value="chess.dat" selected>chess.dat</option>
+            <option value="connect.dat">connect.dat</option>
+            <option value="pumsb_star.dat">pumsb_star.dat</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Relative Minimum support:</td>
+        <td><input name="minsup" type="text" value="0.5" onchange="generatecmds();"></td>
+    </tr>
+    <tr>
+        <td>Delta:</td>
+        <td><input name="delta" type="text" value="0.1" onchange="generatecmds();"></td>
+    </tr>
+    </form>
+
+
+    <tr>
+        <td colspan="2"><br>
+        <b>Generated Command Lines</b></td>
+    </tr>
+    <form name="form2" target="visualizer" action="run">
+    <tr>
+        <td>Line 1:</td>
+        <td><input readonly type="text" name="cmd01" size="50"></td>
+    </tr>
+    <tr>
+        <td>Line 2:</td>
+        <td><input readonly type="text" name="cmd02" size="50"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Start Execution"></td>
+    </tr>
+    </form>
+</table>
+
+
+
+
+<script>
+var action = "run";
+
+var search = self.location.search;
+if (search.length > 0) search = search.substring(1);
+
+items = search.split("&");
+for(i=0; i<items.length; i++) if (items[i].indexOf('=')>=0) {
+  var left = unescape(items[i].substr(0, items[i].indexOf('=')));
+  var right = unescape(items[i].substr(items[i].indexOf('=')+1));
+  if (left == "action") {
+    action = "http://" + self.location.hostname + right;
+  }
+}
+
+generatecmds();
+
+form2.action = action;
+
+</script>
