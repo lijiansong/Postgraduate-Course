@@ -12,7 +12,7 @@ Apriori算法是经典的频繁模式挖掘算法.
 To learn more details, see [wikipedia...](https://en.wikipedia.org/wiki/Apriori_algorithm)
 
 ##Dataset
-Dataset can download from [here...](http://fimi.ua.ac.be/data/)
+To download dataset, see [here...](http://fimi.ua.ac.be/data/)
 
 ##Usage
 To compile the source code, you can use the following cmds:
