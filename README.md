@@ -50,5 +50,8 @@ This archive will be updated regularly.
 - `Others`：《Unix环境高级编程》《Linux多线程服务端编程》《神经网络与机器学习》
 
 
-> 任务很重。但是，**欲戴皇冠，必承其重**。
+> 任务很重。
+
+> 但是，**欲戴皇冠，必承其重**。
+
 > 男人，加油！
