@@ -47,7 +47,7 @@ This archive will be updated regularly.
 - `编译程序高级教程`：《Flex & Bison》《LLVM Cookbook》《自制编程语言》《两周自制脚本语言》《C++ Primer》《Effective C++》《深入理解C++11》《深度探索C++对象模型》《C++设计模式》《链接器与加载器》《yacc源码研读》
 - `并发数据结构与多核编程`：《多处理器编程的艺术》《七周七并发》《pthreads tutorial》《Java编程思想》
 - `自学分布式`：《深入理解大数据》《Spark大数据处理：技术、应用与性能优化》《Storm分布式实时计算模式》《大规模分布式系统架构与设计实战》《云计算与分布式系统：从并行计算到物联网》
-- `Others`：《Unix环境高级编程》《Linux多线程服务端编程》
+- `Others`：《Unix环境高级编程》《Linux多线程服务端编程》《神经网络与机器学习》
 
 
 > 任务很重。但是，**欲戴皇冠，必承其重**。
