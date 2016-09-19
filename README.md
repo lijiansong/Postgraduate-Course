@@ -7,6 +7,7 @@ This archieve is the code implement of my postgraduate course, such as Data Mini
 * [Information Retrieval](#information-retrieval)
 * [Compilation Technology](#compilation-technology)
 * [Concurrence and  Multi-Core Programming](#concurrence-and--multi-core-programming)
+* [Postscript](#postscript)
 
 ## Data Mining
 - 关联规则-Apriori算法<br>
