@@ -7,6 +7,7 @@ This archieve is the code implement of my postgraduate course, such as Data Mini
 * [Information Retrieval](#information-retrieval)
 * [Compilation Technology](#compilation-technology)
 * [Concurrence and  Multi-Core Programming](#concurrence-and--multi-core-programming)
+* [Algorithm](#algorithm)
 * [Postscript](#postscript)
 
 ## Data Mining
@@ -19,11 +20,13 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 ## Information Retrieval
 - 倒排索引
 
-##Compilation Technology
+## Compilation Technology
 
 
-##Concurrence and  Multi-Core Programming
+## Concurrence and  Multi-Core Programming
 
+## Algorithm
+Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~dbu/), [more details...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm)
 
 # Postscript
 This archive will be updated regularly.
