@@ -53,6 +53,6 @@ This archive will be updated regularly.
 
 > 任务很重。
 
-> 但是，**欲戴皇冠，必承其重**。
+> 但是，**欲戴王冠，必承其重**。
 
 > 男人，加油！
