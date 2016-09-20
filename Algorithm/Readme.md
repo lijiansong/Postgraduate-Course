@@ -6,3 +6,4 @@ Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~db
 * 
 
 ## Divide and Conquer
+- [solution]()
