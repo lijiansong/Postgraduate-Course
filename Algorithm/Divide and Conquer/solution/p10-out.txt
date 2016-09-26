@@ -1,6 +1,6 @@
 matrix size: 16
 grade school method time consumption: 0 s
-strassen method time consumption: 0.001 s
+strassen method time consumption: 0 s
 matrix size: 32
 grade school method time consumption: 0 s
 strassen method time consumption: 0 s
@@ -8,15 +8,17 @@ matrix size: 64
 grade school method time consumption: 0.002 s
 strassen method time consumption: 0.003 s
 matrix size: 128
-grade school method time consumption: 0.024 s
-strassen method time consumption: 0.022 s
+grade school method time consumption: 0.019 s
+strassen method time consumption: 0.013 s
 matrix size: 256
-grade school method time consumption: 0.211 s
-strassen method time consumption: 0.146 s
+grade school method time consumption: 0.166 s
+strassen method time consumption: 0.098 s
 matrix size: 512
-grade school method time consumption: 2.139 s
-strassen method time consumption: 0.788 s
+grade school method time consumption: 1.82 s
+strassen method time consumption: 0.704 s
 matrix size: 1024
-grade school method time consumption: 26.441 s
-strassen method time consumption: 6.622 s
+grade school method time consumption: 26.801 s
+strassen method time consumption: 6.224 s
 matrix size: 2048
+grade school method time consumption: 235.117 s
+strassen method time consumption: 40.02 s
