@@ -2,8 +2,9 @@
 #include <cstring>
 #include <algorithm>
 #include <cmath>
-#define esp 1e-6
+#define esp 1e-6//precision of two points 
 using namespace std;
+//define the  
 struct point
 {
     double x,y;
@@ -17,11 +18,11 @@ int cmpy(const int &a,const int &b)
 {
     return p[a].x<p[b].x;
 }
-inline double min(double a,double b)
+double min(double a,double b)
 {
     return a<b?a:b;
 }
-inline double dist2(point &a,point &b)
+double square_dist(point &a,point &b)
 {
     return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
 }
@@ -31,9 +32,9 @@ double mindist(int* X,int *Y,int size)
     if(size<=3)
     {
         if(size==2)
-        return dist2(p[X[0]],p[X[1]]);
+        return square_dist(p[X[0]],p[X[1]]);
         for(int i=0; i<size; i++)
-        min_dis = min(min_dis,dist2(p[X[i]],p[X[(i+1)%size]]));
+        min_dis = min(min_dis,square_dist(p[X[i]],p[X[(i+1)%size]]));
         return min_dis;
     }
     int pl = (size+1)/2;
@@ -53,7 +54,7 @@ double mindist(int* X,int *Y,int size)
     for(int i=0; i<l1; i++)
     for(int j=1; j<6&&i+j<l1; j++)
     if((ty[i]-X[pl])*(ty[i+j]-X[pl])<=0)
-    min_dis = min(min_dis,dist2(p[ty[i]],p[ty[i+j]]));
+    min_dis = min(min_dis,square_dist(p[ty[i]],p[ty[i+j]]));
     return min_dis;
 }
 
@@ -73,7 +74,7 @@ int main()
         sort(p,p+n,cmpx);
         sort(py,py+n,cmpy);
         min_dis = 1e100;
-        printf("%.2lf\n",sqrt(mindist(px,py,n))/2);
+        printf("%.2lf\n",sqrt(mindist(px,py,n)));
     }
     return 0;
 }
