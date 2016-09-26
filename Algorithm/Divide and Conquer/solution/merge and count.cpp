@@ -16,6 +16,7 @@ typedef long long ll;
 const ll INF = 0x7ffffffff;//+¡Þ£¬suppose INF is large enough 
 ll ans;//the answer 
 ll a[100001];//the array which contains 100001 elements
+
 //calculate the inversions of the left part and right part 
 ll merge_and_count(ll array[], ll low, ll mid, ll high)
 {
@@ -53,6 +54,7 @@ ll merge_and_count(ll array[], ll low, ll mid, ll high)
 	delete left, right;
 	return count;
 }
+
 //return the inversion of array
 ll sort_and_count(ll array[], ll low, ll high)
 {
@@ -66,6 +68,7 @@ ll sort_and_count(ll array[], ll low, ll high)
 	}
 	return c;
 }
+
 int main()
 {
 	freopen("Q8.txt","r",stdin);
