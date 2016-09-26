@@ -1,5 +1,5 @@
 /*
-Name:
+Name: merge and count
 Copyright:
 Author: Json Lee
 Date: 25/09/16 22:30
@@ -13,7 +13,7 @@ the nums of inversions can be cpmputed by this, inversions of left part and righ
 #include<time.h>
 using namespace std;
 typedef long long ll;
-const ll INF = 0x7ffffffff;
+const ll INF = 0x7ffffffff;//+¡Þ£¬suppose INF is large enough 
 ll ans;//the answer 
 ll a[100001];//the array which contains 100001 elements
 //calculate the inversions of the left part and right part 
@@ -24,7 +24,7 @@ ll merge_and_count(ll array[], ll low, ll mid, ll high)
 	ll right_len = high - mid;
 	ll *left = new ll[left_len + 1];
 	ll *right = new ll[right_len + 1];
-	ll i, j, k;
+	ll i;
 	//get the copy of left part
 	//memcpy(left,array+low,left_len);
 	for (i = 0; i < left_len; ++i)	left[i] = array[low + i];
@@ -33,9 +33,11 @@ ll merge_and_count(ll array[], ll low, ll mid, ll high)
 	//memcpy(right,array+mid+1,right_len);
 	for (i = 0; i < right_len; ++i)	right[i] = array[mid + i + 1];
 	right[i] = INF;
-	
+	ll j,k;
 	for (i=0,j=0,k = low; k<high + 1; ++k)
 	{
+		
+		//if left[i]>right[j], then the elements behind left[i] are larger than right[j]
 		if (left[i]>right[j])
 		{
 			array[k] = right[j];
@@ -66,14 +68,15 @@ ll sort_and_count(ll array[], ll low, ll high)
 }
 int main()
 {
-	ll a[] = { 2, 8, 3, 6, 1 };
+	freopen("Q8.txt","r",stdin);
+	for(ll i=0;i<100000;++i)	cin>>a[i];
 	clock_t t1, t2;
 	t1 = clock();
-	ans=sort_and_count(a, 0, 4);
+	ans=sort_and_count(a, 0, 99999);
 	t2 = clock();
 	double duration = (double)(t2 - t1) / CLOCKS_PER_SEC;
-	cout <<ans<<endl;
+	cout <<"inversions: "<< ans << endl;
 	cout << "time consumption: " << duration << " s" << endl;
-	//system("pause");
+	fclose(stdin);
 	return 0;
 }
