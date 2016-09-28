@@ -4,7 +4,7 @@
 #include <cmath>
 #define esp 1e-6//precision of two points 
 using namespace std;
-//define the  
+//define the  point struct 
 struct point
 {
     double x,y;

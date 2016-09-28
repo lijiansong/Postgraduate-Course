@@ -276,7 +276,5 @@ int main()
 		duration = (double)(t2 - t1) / CLOCKS_PER_SEC;
 		cout << "strassen method time consumption: " << duration << " s" << endl;
 	}
-	
-	
 	return 0;
 } 
