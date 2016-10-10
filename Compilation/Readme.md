@@ -10,3 +10,5 @@ LLVM tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course/
 
 ### Self-making Tools Based on LLVM & Clang
 
+## Reference
+[llvm tech report](http://llvm.org/pubs/2004-01-30-CGO-LLVM.html)
