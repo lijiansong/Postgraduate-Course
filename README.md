@@ -21,6 +21,8 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 - 倒排索引
 
 ## Compilation Technology
+- LLVM
+- Clang
 
 
 ## Concurrence and  Multi-Core Programming
