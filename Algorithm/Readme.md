@@ -15,5 +15,5 @@ Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~db
 - [Solution](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm/Dynamic%20Programming/solution)
 
 ## Greedy
-- [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Divide%20and%20Conquer/Assignment1_DandC.pdf)
-- [Solution](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm/Divide%20and%20Conquer/solution)
+- [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Greedy/Assignment3_Greedy.pdf)
+- [Solution]()
