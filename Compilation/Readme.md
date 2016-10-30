@@ -16,3 +16,7 @@ LLVM tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course/
 [LLVM Core Libraries Infrastruction](http://llvm.org/releases/3.0/docs/UsingLibraries.html)<br>
 [LLVM Programmers' Manual...](http://llvm.org/docs/ProgrammersManual.html)<br>
 [Clang Libraries...](http://clang.llvm.org/doxygen/group__CINDEX.html)<br>
+[TableGen Language Reference...](http://llvm.org/docs/TableGen/LangRef.html)<br>
+[Translation unit manipulation](http://clang.llvm.org/doxygen/group__CINDEX__TRANSLATION__UNIT.html)<br>
+[Stmt Class Reference](http://clang.llvm.org/doxygen/classclang_1_1Stmt.html)<br>
+[Clang Plugins...](http://clang.llvm.org/docs/ClangPlugins.html)<br>
