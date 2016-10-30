@@ -20,3 +20,4 @@ LLVM tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course/
 [Translation unit manipulation](http://clang.llvm.org/doxygen/group__CINDEX__TRANSLATION__UNIT.html)<br>
 [Stmt Class Reference](http://clang.llvm.org/doxygen/classclang_1_1Stmt.html)<br>
 [Clang Plugins...](http://clang.llvm.org/docs/ClangPlugins.html)<br>
+[Kaleidoscope: Implementing a Language with LLVM](http://llvm.org/docs/tutorial/)<br>
