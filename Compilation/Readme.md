@@ -9,6 +9,12 @@ Clang tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course
 LLVM tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Compilation/LLVM)
 
 ### Self-making Tools Based on LLVM & Clang
+cmd to get the ast
+`$clang -Xclang -ast-dump -fsyntax-only file.c &> filename`
+cmd to get the dot file
+`$clang -fsyntax-only -Xclang -ast-view file.c 
+$xdot file.dot`
+
 
 ## Reference
 [CGO-2004, LLVM tech report...](http://llvm.org/pubs/2004-01-30-CGO-LLVM.html)<br>
