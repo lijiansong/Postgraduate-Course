@@ -22,3 +22,5 @@ LLVM tutorials, see [here...](https://github.com/lijiansong/Postgraduate-Course/
 [Clang Plugins...](http://clang.llvm.org/docs/ClangPlugins.html)<br>
 [Kaleidoscope: Implementing a Language with LLVM](http://llvm.org/docs/tutorial/)<br>
 [Clang design...](http://clang.llvm.org/docs/InternalsManual.html)<br>
+[How to parse C programs with clang](http://amnoid.de/tmp/clangtut/tut.html)<br>
+[other refs... course](http://swtv.kaist.ac.kr/courses/cs453-fall13)<br>
