@@ -4,10 +4,12 @@ extern void FREE(int);
 extern void PRINT(int);
 
 int main() {
-   int a;
-   a = GET();
-   PRINT(a);
-if (a > 0) {
-      PRINT(a);
-   }
+   int a[2];
+   int i;
+
+   i = 0;
+   a[0] = GET();
+   a[1] = GET();
+   PRINT(a[1]);
+   PRINT(a[0]);
 }

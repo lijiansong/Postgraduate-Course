@@ -6,8 +6,13 @@ extern void PRINT(int);
 int main() {
    int a;
    a = GET();
-   PRINT(a);
-if (a > 0) {
-      PRINT(a);
+   while (a != 0) {
+     if (a < 0) {
+        PRINT(-a);
+     }
+     else {
+       PRINT(a);
+     }
+     a = GET();
    }
 }

@@ -5,9 +5,7 @@ extern void PRINT(int);
 
 int main() {
    int a;
+   int *p = &a;
    a = GET();
-   PRINT(a);
-if (a > 0) {
-      PRINT(a);
-   }
+   PRINT(*p);
 }
