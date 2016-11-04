@@ -8,8 +8,10 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Tooling/Tooling.h"
+#include<iostream>
 
 using namespace clang;
+using namespace std;
 
 class StackFrame {
    /// StackFrame maps Variable Declaration to Value
@@ -24,7 +26,7 @@ public:
 
    void bindDecl(Decl* decl, int val) {
       mVars[decl] = val;
-   }    
+   }
    int getDeclVal(Decl * decl) {
       assert (mVars.find(decl) != mVars.end());
       return mVars.find(decl)->second;
@@ -120,19 +122,146 @@ public:
 	   return mEntry;
    }
 
-   /// !TODO Support comparison operation
+   //Support comparison operation
    void binop(BinaryOperator *bop) {
 	   Expr * left = bop->getLHS();
 	   Expr * right = bop->getRHS();
 
+	//assignment operation
 	   if (bop->isAssignmentOp()) {
 		   int val = mStack.front().getStmtVal(right);
 		   mStack.front().bindStmt(left, val);
+		   //cout<<"-----assignment left val: "<<left->getStmtClassName()<<endl;
 		   if (DeclRefExpr * declexpr = dyn_cast<DeclRefExpr>(left)) {
 			   Decl * decl = declexpr->getFoundDecl();
 			   mStack.front().bindDecl(decl, val);
 		   }
 	   }
+	   int valRight=mStack.front().getStmtVal(right);
+	   int valLeft=mStack.front().getStmtVal(left);
+	   if(bop->isComparisonOp())
+	   {
+	   	switch(bop->getOpcode())
+	   	{
+	   		case BO_LT:
+	   		if( valLeft < valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+
+	   		case BO_GT:
+	   		if( valLeft > valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+
+	   		case BO_GE:
+	   		if( valLeft >= valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+
+	   		case BO_LE:
+	   		if( valLeft <= valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+
+	   		case BO_EQ:
+	   		if( valLeft == valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+
+	   		case BO_NE:
+	   		if( valLeft != valRight )
+	   			mStack.front().bindStmt(bop,true);
+	   		else
+	   			mStack.front().bindStmt(bop,false);
+	   		break;
+	   		default:
+	   		cout<<" invalid input comparisons! "<<endl;
+	   		break;
+	   	}
+	   }
+
+	   if(bop->isAdditiveOp())
+	   {
+	   	switch(bop->getOpcode())
+	   	{
+	   		case BO_Add:
+	   		mStack.front().bindStmt(bop,valLeft+valRight);
+	   		break;
+
+	   		case BO_Sub:
+	   		mStack.front().bindStmt(bop,valLeft-valRight);
+	   		break;
+	   	}
+	   }
+
+	   if(bop->isMultiplicativeOp())
+	   {
+	   	switch(bop->getOpcode())
+	   	{
+	   		case BO_Mul:
+	   		mStack.front().bindStmt(bop,valLeft * valRight);
+	   		break;
+	   	}
+	   }
+   }
+
+   //UnaryOperator
+   void unaryop(UnaryOperator* uop)
+   {
+   	Expr *expr=uop->getSubExpr();
+   	int val=mStack.front().getStmtVal(expr);
+   	//if( uop->isPrefix() )
+   	//{
+   		switch(uop->getOpcode())
+   		{
+	   		case UO_Plus:
+	   		mStack.front().bindStmt(uop,val);
+	   		break;
+
+	   		
+	   		case UO_Minus:
+	   		mStack.front().bindStmt(uop,-val);
+	   		break;
+   		}
+   	//}
+   }
+
+   void integerliteral(IntegerLiteral* integer)
+   {
+   	int val=(int)(integer->getValue().bitsToDouble());
+   	mStack.front().bindStmt(integer,val);
+   }
+
+   bool getcond(/*BinaryOperator *bop*/Expr *expr)
+   {
+   	return mStack.front().getStmtVal(expr);
+   }
+
+   void funcdecl(FunctionDecl *func)
+   {
+   	
+   }
+
+   void parmdecl(ParmVarDecl *parm)
+   {
+
+   }
+
+   void ret(ReturnStmt *retstmt)
+   {
+   	Expr *expr=retstmt->getRetValue();
+   	int val=mStack.front().getStmtVal(expr);
+   	mStack.front().bindStmt(retstmt,val);
    }
 
    void decl(DeclStmt * declstmt) {
@@ -144,6 +273,7 @@ public:
 		   }
 	   }
    }
+
    void declref(DeclRefExpr * declref) {
 	   mStack.front().setPC(declref);
 	   if (declref->getType()->isIntegerType()) {
@@ -159,11 +289,12 @@ public:
 	   if (castexpr->getType()->isIntegerType()) {
 		   Expr * expr = castexpr->getSubExpr();
 		   int val = mStack.front().getStmtVal(expr);
+		   //cout<<"------CastExpr expr val: "<<val<<" getSubExpr expr:"<<expr->getStmtClassName()<<endl;
 		   mStack.front().bindStmt(castexpr, val );
 	   }
    }
 
-   /// !TODO Support Function Call
+   /// Support Function Call
    void call(CallExpr * callexpr) {
 	   mStack.front().setPC(callexpr);
 	   int val = 0;
@@ -179,6 +310,7 @@ public:
 		   llvm::errs() << val;
 	   } else {
 		   /// You could add your code here for Function call Return
+		   
 	   }
    }
 };

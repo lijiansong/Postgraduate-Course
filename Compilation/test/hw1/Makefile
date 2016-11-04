@@ -28,7 +28,7 @@ CLANGLIBS=\
 LLVMLIBS=$(shell $(LLVM_CONFIG) --libs)
 SYSTEMLIBS=$(shell $(LLVM_CONFIG) --system-libs)
 
-PROJECT=ASTInterpreter
+PROJECT=ast-interpreter
 PROJECT_OBJECTS=ASTInterpreter.o
 
 default: $(PROJECT)

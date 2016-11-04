@@ -23,21 +23,86 @@ public:
 	   VisitStmt(bop);
 	   mEnv->binop(bop);
    }
+
    virtual void VisitDeclRefExpr(DeclRefExpr * expr) {
 	   VisitStmt(expr);
 	   mEnv->declref(expr);
    }
+
    virtual void VisitCastExpr(CastExpr * expr) {
 	   VisitStmt(expr);
 	   mEnv->cast(expr);
    }
+
    virtual void VisitCallExpr(CallExpr * call) {
 	   VisitStmt(call);
 	   mEnv->call(call);
    }
-   virtual void VisitDeclStmt(DeclStmt * declstmt) {
+
+  virtual void VisitDeclStmt(DeclStmt * declstmt) {
 	   mEnv->decl(declstmt);
    }
+   
+   //Add other modules
+   virtual void VisitIfStmt(IfStmt *ifstmt) {
+          Expr *expr=ifstmt->getCond();
+          Visit(expr);
+          //cout<<expr->getStmtClassName()<<endl;
+          //BinaryOperator * bop = dyn_cast<BinaryOperator>(expr);
+          bool cond=mEnv->getcond(expr);
+          if(cond)
+          {
+            VisitStmt(ifstmt->getThen());
+          }
+          else
+          {
+            VisitStmt(ifstmt->getElse());
+          }
+   }
+
+   virtual void VisitWhileStmt(WhileStmt *whilestmt) {
+          Expr *expr = whilestmt->getCond();
+          Visit(expr);
+          //BinaryOperator *bop = dyn_cast<BinaryOperator>(expr);
+          bool cond=mEnv->getcond(expr);
+          Stmt *body=whilestmt->getBody();
+          while(cond)
+          {
+            if( body && isa<CompoundStmt>(body) )
+            {
+              VisitStmt(whilestmt->getBody());
+            }
+            Visit(expr);
+            cond=mEnv->getcond(expr);
+          }
+   }
+   virtual void VisitUnaryOperator(UnaryOperator *uop)
+   {
+            VisitStmt(uop);
+            mEnv->unaryop(uop);
+   }
+   virtual void VisitReturnStmt(ReturnStmt *retstmt) {
+           VisitStmt(retstmt);
+           mEnv->ret(retstmt);
+   }
+
+   virtual void VisitParmVarDecl(ParmVarDecl *parm)
+   {
+           VisitIfStmt(parm);
+           mEnv->parmdecl(parm);
+   }
+
+   virtual void VisitFunctionDecl(FunctionDecl *func) {
+           VisitStmt(func);
+           mEnv->funcdecl(func);
+   }
+
+   virtual void VisitIntegerLiteral(IntegerLiteral *integer)
+   {
+      //Visit(integer);
+      mEnv->integerliteral(integer);
+   }
+   
 private:
    Environment * mEnv;
 };
@@ -70,7 +135,7 @@ public:
   }
 };
 //static cl::opt<std::string> FileName(cl::Positional ,cl::desc("Input file"),cl::Required);
-         
+
 int main (int argc, char ** argv) {
    if (argc > 1) {
        clang::tooling::runToolOnCode(new InterpreterClassAction, argv[1]);
