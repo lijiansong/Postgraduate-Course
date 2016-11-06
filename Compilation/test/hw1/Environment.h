@@ -124,65 +124,76 @@ public:
 
    //Support comparison operation
    void binop(BinaryOperator *bop) {
-	   Expr * left = bop->getLHS();
-	   Expr * right = bop->getRHS();
+	   auto * left = bop->getLHS();
+	   auto * right = bop->getRHS();
+	   // if (isa<IntegerLiteral>(left))
+	   //  {
+	   //  	IntegerLiteral * integer = dyn_cast<IntegerLiteral>(left);
+	   //  	//valLeft=integer->getValue().bitsToDouble();
+	   //  }
+	   //  if (isa<IntegerLiteral>(right))
+	   //  {
+	   //  	IntegerLiteral * integer = dyn_cast<IntegerLiteral>(right);
+	   //  	//cout<<integer->getValue().bitsToDouble()<<endl;
+	   //  }
 
 	//assignment operation
 	   if (bop->isAssignmentOp()) {
-		   int val = mStack.front().getStmtVal(right);
-		   mStack.front().bindStmt(left, val);
+		   int val = mStack.back().getStmtVal(right);
+		   mStack.back().bindStmt(left, val);
 		   //cout<<"-----assignment left val: "<<left->getStmtClassName()<<endl;
 		   if (DeclRefExpr * declexpr = dyn_cast<DeclRefExpr>(left)) {
 			   Decl * decl = declexpr->getFoundDecl();
-			   mStack.front().bindDecl(decl, val);
+			   mStack.back().bindDecl(decl, val);
 		   }
 	   }
-	   int valRight=mStack.front().getStmtVal(right);
-	   int valLeft=mStack.front().getStmtVal(left);
+	   int valLeft=mStack.back().getStmtVal(left);
+	   int valRight=mStack.back().getStmtVal(right);
+	    
 	   if(bop->isComparisonOp())
 	   {
 	   	switch(bop->getOpcode())
 	   	{
 	   		case BO_LT:
 	   		if( valLeft < valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 
 	   		case BO_GT:
 	   		if( valLeft > valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 
 	   		case BO_GE:
 	   		if( valLeft >= valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 
 	   		case BO_LE:
 	   		if( valLeft <= valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 
 	   		case BO_EQ:
 	   		if( valLeft == valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 
 	   		case BO_NE:
 	   		if( valLeft != valRight )
-	   			mStack.front().bindStmt(bop,true);
+	   			mStack.back().bindStmt(bop,true);
 	   		else
-	   			mStack.front().bindStmt(bop,false);
+	   			mStack.back().bindStmt(bop,false);
 	   		break;
 	   		default:
 	   		cout<<" invalid input comparisons! "<<endl;
@@ -195,11 +206,11 @@ public:
 	   	switch(bop->getOpcode())
 	   	{
 	   		case BO_Add:
-	   		mStack.front().bindStmt(bop,valLeft+valRight);
+	   		mStack.back().bindStmt(bop,valLeft+valRight);
 	   		break;
 
 	   		case BO_Sub:
-	   		mStack.front().bindStmt(bop,valLeft-valRight);
+	   		mStack.back().bindStmt(bop,valLeft-valRight);
 	   		break;
 	   	}
 	   }
@@ -209,7 +220,7 @@ public:
 	   	switch(bop->getOpcode())
 	   	{
 	   		case BO_Mul:
-	   		mStack.front().bindStmt(bop,valLeft * valRight);
+	   		mStack.back().bindStmt(bop,valLeft * valRight);
 	   		break;
 	   	}
 	   }
@@ -219,100 +230,189 @@ public:
    void unaryop(UnaryOperator* uop)
    {
    	Expr *expr=uop->getSubExpr();
-   	int val=mStack.front().getStmtVal(expr);
+   	int val=mStack.back().getStmtVal(expr);
    	//if( uop->isPrefix() )
    	//{
    		switch(uop->getOpcode())
    		{
 	   		case UO_Plus:
-	   		mStack.front().bindStmt(uop,val);
+	   		mStack.back().bindStmt(uop,val);
 	   		break;
 
 	   		
 	   		case UO_Minus:
-	   		mStack.front().bindStmt(uop,-val);
+	   		mStack.back().bindStmt(uop,-val);
 	   		break;
    		}
    	//}
    }
 
+   // bool isinteger(BinaryOperator *bop)
+   // {
+   // 	const auto * lhs = bop->getLHS();
+  	// const auto * rhs = bop->getRHS();
+  	// return isa<IntegerLiteral>(lhs) or isa<IntegerLiteral>(rhs);
+   // }
+
    void integerliteral(IntegerLiteral* integer)
    {
-   	int val=(int)(integer->getValue().bitsToDouble());
-   	mStack.front().bindStmt(integer,val);
+   	//int val=integer->getValue().bitsToDouble();
+   	int val=integer->getValue().getSExtValue();
+   	mStack.back().bindStmt(integer,val);
    }
 
    bool getcond(/*BinaryOperator *bop*/Expr *expr)
    {
-   	return mStack.front().getStmtVal(expr);
+   	return mStack.back().getStmtVal(expr);
    }
 
-   void funcdecl(FunctionDecl *func)
+   // vector<Expr*> getargs(CallExpr * callexpr)
+   // {
+   // 	vector<Expr*> args;
+   // 	for(CallExpr::arg_iterator it=callexpr->arg_begin(), ie=callexpr->arg_end();it!=ie;++it)
+   // 	{
+   // 		args.push_back(*it);
+   // 	}
+   // 	return args;
+   // }
+
+   // void funcdecl(FunctionDecl *func)
+   // {
+   // 	// int argc=func->getNumParams();
+   // 	// for(int i=0;i<argc;++i)
+   // 	// {
+   // 	// 	mStack.front().bindDecl(func->parameters()[i], val);
+   // 	// }
+   // }
+
+   // void parmdecl(ParmVarDecl *parm)
+   // {
+
+   // }
+   // int getret(ReturnStmt *retstmt)
+   // {
+   // 	return mStack.front().getStmtVal(retstmt);
+   // }
+
+   
+
+   void decl(DeclStmt * declstmt) 
    {
-   	
+	   for (DeclStmt::decl_iterator it = declstmt->decl_begin(), ie = declstmt->decl_end();
+			   it != ie; ++ it) 
+	   {
+		Decl * decl = *it;
+		if (VarDecl * vardecl = dyn_cast<VarDecl>(decl)) 
+		{
+			if( !( vardecl->hasInit() ) )
+			{
+				mStack.back().bindDecl(vardecl, 0);
+			}
+			else
+			{
+				int val=mStack.back().getStmtVal(vardecl->getInit());
+		   		mStack.back().bindDecl(vardecl, val);
+			}
+	   	}
+	   }
+		
    }
 
-   void parmdecl(ParmVarDecl *parm)
+   void declref(DeclRefExpr * declref) 
    {
+	   mStack.back().setPC(declref);
+	   if (declref->getType()->isIntegerType()) 
+	   {
+		   Decl* decl = declref->getFoundDecl();
 
+		   int val = mStack.back().getDeclVal(decl);
+		   mStack.back().bindStmt(declref, val);
+	   }
    }
+
+   void cast(CastExpr * castexpr) 
+   {
+	   mStack.back().setPC(castexpr);
+	   if (castexpr->getType()->isIntegerType()) 
+	   {
+		   Expr * expr = castexpr->getSubExpr();
+		   int val = mStack.back().getStmtVal(expr);
+		   //cout<<"------CastExpr expr val: "<<val<<" getSubExpr expr:"<<expr->getStmtClassName()<<endl;
+		   mStack.back().bindStmt(castexpr, val );
+	   }
+   }
+ //   CallExpr* getcallexpr(CallExpr * callexpr)
+ //   {
+	// FunctionDecl * callee = callexpr->getDirectCallee();
+	// if((callee !=mInput)&&(callee!=mOutput))
+	// {
+	// 	return callexpr;
+	// }
+ //   }
 
    void ret(ReturnStmt *retstmt)
    {
    	Expr *expr=retstmt->getRetValue();
-   	int val=mStack.front().getStmtVal(expr);
-   	mStack.front().bindStmt(retstmt,val);
-   }
-
-   void decl(DeclStmt * declstmt) {
-	   for (DeclStmt::decl_iterator it = declstmt->decl_begin(), ie = declstmt->decl_end();
-			   it != ie; ++ it) {
-		   Decl * decl = *it;
-		   if (VarDecl * vardecl = dyn_cast<VarDecl>(decl)) {
-			   mStack.front().bindDecl(vardecl, 0);
-		   }
-	   }
-   }
-
-   void declref(DeclRefExpr * declref) {
-	   mStack.front().setPC(declref);
-	   if (declref->getType()->isIntegerType()) {
-		   Decl* decl = declref->getFoundDecl();
-
-		   int val = mStack.front().getDeclVal(decl);
-		   mStack.front().bindStmt(declref, val);
-	   }
-   }
-
-   void cast(CastExpr * castexpr) {
-	   mStack.front().setPC(castexpr);
-	   if (castexpr->getType()->isIntegerType()) {
-		   Expr * expr = castexpr->getSubExpr();
-		   int val = mStack.front().getStmtVal(expr);
-		   //cout<<"------CastExpr expr val: "<<val<<" getSubExpr expr:"<<expr->getStmtClassName()<<endl;
-		   mStack.front().bindStmt(castexpr, val );
-	   }
+   	//cout<<expr->getStmtClassName()<<endl;
+   	int val=0;
+   	val=mStack.back().getStmtVal(expr);
+   	mStack.back().bindStmt(retstmt,val);
+   	mStack.pop_back();
+   	Stmt *stmt=mStack.back().getPC();
+   	//cout<<stmt->getStmtClassName()<<endl;
+   	//CallExpr * callexpr = dyn_cast<CallExpr>(stmt);
+   	mStack.back().bindStmt(stmt,val);
    }
 
    /// Support Function Call
-   void call(CallExpr * callexpr) {
-	   mStack.front().setPC(callexpr);
+   void call(CallExpr * callexpr) 
+   {
+	   mStack.back().setPC(callexpr);
 	   int val = 0;
 	   FunctionDecl * callee = callexpr->getDirectCallee();
-	   if (callee == mInput) {
+	   if (callee == mInput) 
+	   {
 		  llvm::errs() << "Please Input an Integer Value : ";
 		  scanf("%d", &val);
 
-		  mStack.front().bindStmt(callexpr, val);
-	   } else if (callee == mOutput) {
+		  mStack.back().bindStmt(callexpr, val);
+	   } 
+	   else if (callee == mOutput) 
+	   {
 		   Expr * decl = callexpr->getArg(0);
-		   val = mStack.front().getStmtVal(decl);
+		   val = mStack.back().getStmtVal(decl);
 		   llvm::errs() << val;
-	   } else {
+	   } 
+	   else 
+	   {
 		   /// You could add your code here for Function call Return
-		   
+		   //llvm::errs() << callee->getName();
+	   	//Expr **args=callexpr.getArgs();
+	   	//bind the args
+	   	// vector<Expr*> args;
+	   	// for(CallExpr::arg_iterator it=callexpr->arg_begin(), ie=callexpr->arg_end();it!=ie;++it)
+	   	// {
+	   	// 	args.push_back(*it);
+	   	// }
+	   	// int argc=callee->getNumParams();
+	   	// for(int i=0;i<argc;++i)
+	   	// {
+	   	// 	int val=mStack.front().getStmtVal(args[i]);
+	   	// 	mStack.front().bindDecl(callee->parameters()[i], val);
+	   	// }
+	   	// mStack.front().setPC(callee->getBody());
+
+	   	//mStack.front().bindDecl(callee,getret())
+	   	//mStack.front().bindStmt(callexpr,10+val);
+	   	StackFrame stack;
+	   	auto pit=callee->param_begin();
+	   	for(auto it=callexpr->arg_begin(), ie=callexpr->arg_end();it!=ie;++it,++pit)
+	   	{
+	   		int val=mStack.back().getStmtVal(*it);
+	   		stack.bindDecl(*pit,val);
+	   	}
+	   	mStack.push_back(stack);
 	   }
    }
+
 };
-
-

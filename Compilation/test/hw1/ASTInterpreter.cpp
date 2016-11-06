@@ -37,9 +37,16 @@ public:
    virtual void VisitCallExpr(CallExpr * call) {
 	   VisitStmt(call);
 	   mEnv->call(call);
+         FunctionDecl * callee = call->getDirectCallee();
+         Stmt *body=callee->getBody();
+         if(body && isa<CompoundStmt>(body) )
+         {
+              VisitStmt(body);
+         }
    }
 
   virtual void VisitDeclStmt(DeclStmt * declstmt) {
+          VisitStmt(declstmt);
 	   mEnv->decl(declstmt);
    }
    
@@ -56,7 +63,9 @@ public:
           }
           else
           {
-            VisitStmt(ifstmt->getElse());
+            Stmt *else_block=ifstmt->getElse();
+            if(else_block)
+              VisitStmt(else_block);
           }
    }
 
@@ -83,23 +92,24 @@ public:
    }
    virtual void VisitReturnStmt(ReturnStmt *retstmt) {
            VisitStmt(retstmt);
+           //Visit(retstmt);
            mEnv->ret(retstmt);
    }
 
-   virtual void VisitParmVarDecl(ParmVarDecl *parm)
-   {
-           VisitIfStmt(parm);
-           mEnv->parmdecl(parm);
-   }
+   // virtual void VisitParmVarDecl(ParmVarDecl *parm)
+   // {
+   //         VisitDecl(parm);
+   //         mEnv->parmdecl(parm);
+   // }
 
-   virtual void VisitFunctionDecl(FunctionDecl *func) {
-           VisitStmt(func);
-           mEnv->funcdecl(func);
-   }
+   // virtual void VisitFunctionDecl(FunctionDecl *func) {
+   //         // VisitDecl(func);
+   //         // mEnv->funcdecl(func);
+   // }
 
    virtual void VisitIntegerLiteral(IntegerLiteral *integer)
    {
-      //Visit(integer);
+      //VisitStmt(integer);
       mEnv->integerliteral(integer);
    }
    
