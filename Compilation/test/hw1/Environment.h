@@ -13,54 +13,6 @@
 using namespace clang;
 using namespace std;
 
-class StackFrame {
-   /// StackFrame maps Variable Declaration to Value
-   /// Which are either integer or addresses (also represented using an Integer value)
-   std::map<Decl*, long> mVars;
-   std::map<Stmt*, long> mExprs;
-   Heap * mHeap;
-   /// The current stmt
-   Stmt * mPC;
-public:
-   StackFrame() : mVars(), mExprs(), mHeap(), mPC() {
-   }
-
-   void bindHeapStmt(Stmt * stmt,int size)
-   {
-   	  long addr=mHeap->Malloc(size);
-   	  mExprs[stmt]=addr;
-   }
-   // void setHeap()
-   // {
-
-   // }
-   // long getHeapStmt(Stmt *stmt)
-   // {
-   // 	  assert (mExprs.find(stmt) != mExprs.end());
-	  // return mExprs[stmt];
-   // }
-   void bindDecl(Decl* decl, int val) {
-      mVars[decl] = val;
-   }
-   long getDeclVal(Decl * decl) {
-      assert (mVars.find(decl) != mVars.end());
-      return mVars.find(decl)->second;
-   }
-   void bindStmt(Stmt * stmt, int val) {
-	   mExprs[stmt] = val;
-   }
-   long getStmtVal(Stmt * stmt) {
-	   assert (mExprs.find(stmt) != mExprs.end());
-	   return mExprs[stmt];
-   }
-   void setPC(Stmt * stmt) {
-	   mPC = stmt;
-   }
-   Stmt * getPC() {
-	   return mPC;
-   }
-};
-
 /// Heap maps address to a value
 class Heap {
    /// The allocated bufs, key is the address, val is its size
@@ -110,6 +62,57 @@ public:
     }
 };
 
+class StackFrame {
+   /// StackFrame maps Variable Declaration to Value
+   /// Which are either integer or addresses (also represented using an Integer value)
+   std::map<Decl*, long> mVars;
+   std::map<Stmt*, long> mExprs;
+   Heap * mHeap;
+   /// The current stmt
+   Stmt * mPC;
+public:
+   StackFrame() : mVars(), mExprs(), mHeap(), mPC() {
+   }
+
+   void bindHeapStmt(Stmt * stmt,int size)
+   {
+   	  long addr=mHeap->Malloc(size);
+   	  mExprs[stmt]=addr;
+   }
+   void freeHeap(long addr)
+   {
+   	mHeap->Free(addr);
+   }
+   // void setHeap()
+   // {
+
+   // }
+   // long getHeapStmt(Stmt *stmt)
+   // {
+   // 	  assert (mExprs.find(stmt) != mExprs.end());
+	  // return mExprs[stmt];
+   // }
+   void bindDecl(Decl* decl, int val) {
+      mVars[decl] = val;
+   }
+   long getDeclVal(Decl * decl) {
+      assert (mVars.find(decl) != mVars.end());
+      return mVars.find(decl)->second;
+   }
+   void bindStmt(Stmt * stmt, int val) {
+	   mExprs[stmt] = val;
+   }
+   long getStmtVal(Stmt * stmt) {
+	   assert (mExprs.find(stmt) != mExprs.end());
+	   return mExprs[stmt];
+   }
+   void setPC(Stmt * stmt) {
+	   mPC = stmt;
+   }
+   Stmt * getPC() {
+	   return mPC;
+   }
+};
 
 class Environment {
    std::vector<StackFrame> mStack;
@@ -255,24 +258,23 @@ public:
 		break;
 
 		case UO_Deref:
-		int *val=mStack.back().getStmtVal(expr);
+		int *val=(int *)mStack.back().getStmtVal(expr);
 		mStack.back().bindStmt(uop,*val);
-
 		break;
 
-		case UO_PostInc:   break;
-        case UO_PostDec:   break;
-        case UO_PreInc:    break;
-        case UO_PreDec:    break;
-        case UO_AddrOf:    break;
-        case UO_Plus:      break;
-        case UO_Minus:     break;
-        case UO_Not:       break;
-        case UO_LNot:      break;
-        case UO_Real:      break;
-        case UO_Imag:      break;
-        case UO_Extension: break;
-        case UO_Coawait:   break;
+		// case UO_PostInc:   break;
+  //       case UO_PostDec:   break;
+  //       case UO_PreInc:    break;
+  //       case UO_PreDec:    break;
+  //       case UO_AddrOf:    break;
+  //       case UO_Plus:      break;
+  //       case UO_Minus:     break;
+  //       case UO_Not:       break;
+  //       case UO_LNot:      break;
+  //       case UO_Real:      break;
+  //       case UO_Imag:      break;
+  //       case UO_Extension: break;
+  //       case UO_Coawait:   break;
 	}
    }
 
@@ -381,20 +383,22 @@ public:
 	   } 
 	   else if ( callee == mMalloc )
 	   {
-	   	auto param=callee->param_begin();
+	   	//To Do:how to get the last node from callexpr,that is a question
+	   	//child_iterator
+	   	auto param=callexpr->child_end();
+	   	//Expr * param = callexpr->getArg(0);
 	   	if(isa<UnaryExprOrTypeTraitExpr>(*param))
 	   	{
-	   		Expr *expr=(*param)->getArgumentExpr();
-   			int size =sizeof(expr);
-   			long addr=mStack.back().bindHeapStmt(callexpr,size);
+   			int size =(int)(mStack.back().getStmtVal(*param));
+   			mStack.back().bindHeapStmt(callexpr,size);
 	   	}
 
 	   }
 	   else if (callee == mFree )
 	   {
-	   	auto param=callee->param_begin();
+	   	auto param=callexpr->child_end();
 	   	long addr=mStack.back().getStmtVal(*param);
-	   	mStack.back().mHeap->Free(addr);
+	   	mStack.back().freeHeap(addr);
 	   }
 	   else 
 	   {
