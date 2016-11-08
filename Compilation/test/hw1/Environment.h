@@ -16,25 +16,40 @@ using namespace std;
 class StackFrame {
    /// StackFrame maps Variable Declaration to Value
    /// Which are either integer or addresses (also represented using an Integer value)
-   std::map<Decl*, int> mVars;
-   std::map<Stmt*, int> mExprs;
+   std::map<Decl*, long> mVars;
+   std::map<Stmt*, long> mExprs;
+   Heap * mHeap;
    /// The current stmt
    Stmt * mPC;
 public:
-   StackFrame() : mVars(), mExprs(), mPC() {
+   StackFrame() : mVars(), mExprs(), mHeap(), mPC() {
    }
 
+   void bindHeapStmt(Stmt * stmt,int size)
+   {
+   	  long addr=mHeap->Malloc(size);
+   	  mExprs[stmt]=addr;
+   }
+   // void setHeap()
+   // {
+
+   // }
+   // long getHeapStmt(Stmt *stmt)
+   // {
+   // 	  assert (mExprs.find(stmt) != mExprs.end());
+	  // return mExprs[stmt];
+   // }
    void bindDecl(Decl* decl, int val) {
       mVars[decl] = val;
    }
-   int getDeclVal(Decl * decl) {
+   long getDeclVal(Decl * decl) {
       assert (mVars.find(decl) != mVars.end());
       return mVars.find(decl)->second;
    }
    void bindStmt(Stmt * stmt, int val) {
 	   mExprs[stmt] = val;
    }
-   int getStmtVal(Stmt * stmt) {
+   long getStmtVal(Stmt * stmt) {
 	   assert (mExprs.find(stmt) != mExprs.end());
 	   return mExprs[stmt];
    }
@@ -47,38 +62,45 @@ public:
 };
 
 /// Heap maps address to a value
-/*
 class Heap {
    /// The allocated bufs, key is the address, val is its size
-   std::map<int, int> mBufs;
+   std::map<long, long> mBufs;
    /// The map that maps address to value
-   std::map<int, int> mContents;
+   std::map<long, long> mContents;
 public:
-   int Malloc(int size) {
-      assert (mBufs.find(addr) == mHeap.end());
+	Heap() : mBufs(), mContents(){
+   }
+
+   long Malloc(int size) {
+      //assert (mBufs.find(addr) == mHeap.end());
       /// Allocate the buf
-      int * buf = malloc(size * sizeof(int) );
-      mBufs.insert(std::make_pair(addr, size));
+      int * buf = (int *)malloc(size * sizeof(int) );
+      mBufs.insert(std::make_pair((long)buf, size));
 
       /// Initialize the Content
       for (int i=0; i<size; i ++) {
-         mContents.insert(std::make_pair(buf+i, 0));
+         mContents.insert(std::make_pair((long)(buf+i), 0));
       }
-      return buf;
+      return (long)buf;
    } 
-   void Free (int addr) {
+   void Free (long addr) {
       /// Clear the contents;
-      assert (mHeap.find(addr) != mHeap.end());
-      int * buf = addr;
-      int size = mHeap.find(addr)->second;
+      //assert (mHeap.find(addr) != mHeap.end());
+   	  assert (mBufs.find(addr) != mBufs.end());
+      int * buf = (int *)addr;
+      long size = mBufs.find(addr)->second;
+      mBufs.erase(mBufs.find(addr));
+
       for (int i = 0; i < size; i++) {
-          assert (mContents.find(buf+i) != mContents.end());
-          mContents.erase(buf+i);
+      	assert (mContents.find((long)(buf+i)) == mContents.end());
+          mContents.erase((long)(buf+i));
       }
         /// Free the allocated buf
-      free(mHeap.find(addr)->second);
+      //free(mHeap.find(addr)->second);
+      free(buf);
    }
-   void Update(int addr, int val) {
+
+   void Update(long addr, long val) {
       assert (mContents.find(addr) != mContents.end());
       mContents[addr] = val;
    }
@@ -87,7 +109,7 @@ public:
       return mContents.find(addr)->second;
     }
 };
-*/
+
 
 class Environment {
    std::vector<StackFrame> mStack;
@@ -126,16 +148,6 @@ public:
    void binop(BinaryOperator *bop) {
 	   auto * left = bop->getLHS();
 	   auto * right = bop->getRHS();
-	   // if (isa<IntegerLiteral>(left))
-	   //  {
-	   //  	IntegerLiteral * integer = dyn_cast<IntegerLiteral>(left);
-	   //  	//valLeft=integer->getValue().bitsToDouble();
-	   //  }
-	   //  if (isa<IntegerLiteral>(right))
-	   //  {
-	   //  	IntegerLiteral * integer = dyn_cast<IntegerLiteral>(right);
-	   //  	//cout<<integer->getValue().bitsToDouble()<<endl;
-	   //  }
 
 	//assignment operation
 	   if (bop->isAssignmentOp()) {
@@ -149,7 +161,7 @@ public:
 	   }
 	   int valLeft=mStack.back().getStmtVal(left);
 	   int valRight=mStack.back().getStmtVal(right);
-	    
+
 	   if(bop->isComparisonOp())
 	   {
 	   	switch(bop->getOpcode())
@@ -231,28 +243,38 @@ public:
    {
    	Expr *expr=uop->getSubExpr();
    	int val=mStack.back().getStmtVal(expr);
-   	//if( uop->isPrefix() )
-   	//{
-   		switch(uop->getOpcode())
-   		{
-	   		case UO_Plus:
-	   		mStack.back().bindStmt(uop,val);
-	   		break;
+	switch(uop->getOpcode())
+	{
+		case UO_Plus:
+		mStack.back().bindStmt(uop,val);
+		break;
 
-	   		
-	   		case UO_Minus:
-	   		mStack.back().bindStmt(uop,-val);
-	   		break;
-   		}
-   	//}
+		
+		case UO_Minus:
+		mStack.back().bindStmt(uop,-val);
+		break;
+
+		case UO_Deref:
+		int *val=mStack.back().getStmtVal(expr);
+		mStack.back().bindStmt(uop,*val);
+
+		break;
+
+		case UO_PostInc:   break;
+        case UO_PostDec:   break;
+        case UO_PreInc:    break;
+        case UO_PreDec:    break;
+        case UO_AddrOf:    break;
+        case UO_Plus:      break;
+        case UO_Minus:     break;
+        case UO_Not:       break;
+        case UO_LNot:      break;
+        case UO_Real:      break;
+        case UO_Imag:      break;
+        case UO_Extension: break;
+        case UO_Coawait:   break;
+	}
    }
-
-   // bool isinteger(BinaryOperator *bop)
-   // {
-   // 	const auto * lhs = bop->getLHS();
-  	// const auto * rhs = bop->getRHS();
-  	// return isa<IntegerLiteral>(lhs) or isa<IntegerLiteral>(rhs);
-   // }
 
    void integerliteral(IntegerLiteral* integer)
    {
@@ -265,36 +287,6 @@ public:
    {
    	return mStack.back().getStmtVal(expr);
    }
-
-   // vector<Expr*> getargs(CallExpr * callexpr)
-   // {
-   // 	vector<Expr*> args;
-   // 	for(CallExpr::arg_iterator it=callexpr->arg_begin(), ie=callexpr->arg_end();it!=ie;++it)
-   // 	{
-   // 		args.push_back(*it);
-   // 	}
-   // 	return args;
-   // }
-
-   // void funcdecl(FunctionDecl *func)
-   // {
-   // 	// int argc=func->getNumParams();
-   // 	// for(int i=0;i<argc;++i)
-   // 	// {
-   // 	// 	mStack.front().bindDecl(func->parameters()[i], val);
-   // 	// }
-   // }
-
-   // void parmdecl(ParmVarDecl *parm)
-   // {
-
-   // }
-   // int getret(ReturnStmt *retstmt)
-   // {
-   // 	return mStack.front().getStmtVal(retstmt);
-   // }
-
-   
 
    void decl(DeclStmt * declstmt) 
    {
@@ -341,14 +333,12 @@ public:
 		   mStack.back().bindStmt(castexpr, val );
 	   }
    }
- //   CallExpr* getcallexpr(CallExpr * callexpr)
- //   {
-	// FunctionDecl * callee = callexpr->getDirectCallee();
-	// if((callee !=mInput)&&(callee!=mOutput))
-	// {
-	// 	return callexpr;
-	// }
- //   }
+   void unarysizeof(UnaryExprOrTypeTraitExpr *uop)
+   {
+   	auto *expr=uop->getArgumentExpr();
+   	int val =sizeof(expr);
+   	mStack.back().bindStmt(uop,val);
+   }
 
    void ret(ReturnStmt *retstmt)
    {
@@ -363,6 +353,12 @@ public:
    	//CallExpr * callexpr = dyn_cast<CallExpr>(stmt);
    	mStack.back().bindStmt(stmt,val);
    }
+   // long getsizeof(UnaryExprOrTypeTraitExpr *uop)
+   // {
+   // 	auto *expr=uop->getArgumentExpr();
+   // 	int val =sizeof(expr);
+   // 	mStack.back().bindStmt(uop,val);
+   // }
 
    /// Support Function Call
    void call(CallExpr * callexpr) 
@@ -383,6 +379,23 @@ public:
 		   val = mStack.back().getStmtVal(decl);
 		   llvm::errs() << val;
 	   } 
+	   else if ( callee == mMalloc )
+	   {
+	   	auto param=callee->param_begin();
+	   	if(isa<UnaryExprOrTypeTraitExpr>(*param))
+	   	{
+	   		Expr *expr=(*param)->getArgumentExpr();
+   			int size =sizeof(expr);
+   			long addr=mStack.back().bindHeapStmt(callexpr,size);
+	   	}
+
+	   }
+	   else if (callee == mFree )
+	   {
+	   	auto param=callee->param_begin();
+	   	long addr=mStack.back().getStmtVal(*param);
+	   	mStack.back().mHeap->Free(addr);
+	   }
 	   else 
 	   {
 		   /// You could add your code here for Function call Return

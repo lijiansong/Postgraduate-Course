@@ -90,6 +90,11 @@ public:
             VisitStmt(uop);
             mEnv->unaryop(uop);
    }
+   virtual void VisitUnaryExprOrTypeTraitExpr(UnaryExprOrTypeTraitExpr *uop)
+   {
+            VisitStmt(uop);
+            mEnv->unarysizeof(uop);
+   }
    virtual void VisitReturnStmt(ReturnStmt *retstmt) {
            VisitStmt(retstmt);
            //Visit(retstmt);
