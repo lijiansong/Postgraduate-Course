@@ -8,10 +8,12 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Tooling/Tooling.h"
-#include<iostream>
+#include <iostream>
+#include <string>
 
 using namespace clang;
 using namespace std;
+#define INF 0x7fffffffffffffff
 
 /// Heap maps address to a value
 class Heap {
@@ -298,11 +300,17 @@ public:
 		Decl * decl = *it;
 		if (VarDecl * vardecl = dyn_cast<VarDecl>(decl)) 
 		{
-			if( !( vardecl->hasInit() ) )
+			string type=(vardecl->getType()).getAsString();
+			if( !( vardecl->hasInit() ) && (type.compare("int *")) && (type.compare("int **")))
 			{
 				mStack.back().bindDecl(vardecl, 0);
 			}
-			else
+			//pointer type
+			else if(!( vardecl->hasInit() ) && ( !(type.compare("int *")) || !(type.compare("int **")) ))
+			{
+				mStack.back().bindDecl(vardecl, INF);
+			}
+			else if( vardecl->hasInit() )
 			{
 				int val=mStack.back().getStmtVal(vardecl->getInit());
 		   		mStack.back().bindDecl(vardecl, val);
