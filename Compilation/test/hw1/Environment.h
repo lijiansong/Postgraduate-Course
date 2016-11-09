@@ -46,7 +46,7 @@ public:
       mBufs.erase(mBufs.find(addr));
 
       for (int i = 0; i < size; i++) {
-      	assert (mContents.find((long)(buf+i)) == mContents.end());
+      	assert (mContents.find((long)(buf+i)) != mContents.end());
           mContents.erase((long)(buf+i));
       }
         /// Free the allocated buf
@@ -58,7 +58,7 @@ public:
       assert (mContents.find(addr) != mContents.end());
       mContents[addr] = val;
    }
-   int get(int addr) {
+   long get(long addr) {
       assert (mContents.find(addr) != mContents.end());
       return mContents.find(addr)->second;
     }
@@ -69,22 +69,22 @@ class StackFrame {
    /// Which are either integer or addresses (also represented using an Integer value)
    std::map<Decl*, long> mVars;
    std::map<Stmt*, long> mExprs;
-   Heap * mHeap;
+   //Heap * mHeap;
    /// The current stmt
    Stmt * mPC;
 public:
-   StackFrame() : mVars(), mExprs(), mHeap(), mPC() {
+   StackFrame() : mVars(), mExprs(), /*mHeap(),*/ mPC() {
    }
 
-   void bindHeapStmt(Stmt * stmt,int size)
-   {
-   	  long addr=mHeap->Malloc(size);
-   	  mExprs[stmt]=addr;
-   }
-   void freeHeap(long addr)
-   {
-   	mHeap->Free(addr);
-   }
+   // void bindHeapStmt(Stmt * stmt,int size)
+   // {
+   // 	  long addr=mHeap->Malloc(size);
+   // 	  mExprs[stmt]=addr;
+   // }
+   // void freeHeap(long addr)
+   // {
+   // 	mHeap->Free(addr);
+   // }
    // void setHeap()
    // {
 
@@ -118,6 +118,7 @@ public:
 
 class Environment {
    std::vector<StackFrame> mStack;
+   Heap mHeap;
 
    FunctionDecl * mFree;				/// Declartions to the built-in functions
    FunctionDecl * mMalloc;
@@ -154,8 +155,24 @@ public:
 	   auto * left = bop->getLHS();
 	   auto * right = bop->getRHS();
 
+	   int valLeft=mStack.back().getStmtVal(left);
+	   int valRight=mStack.back().getStmtVal(right);
 	//assignment operation
 	   if (bop->isAssignmentOp()) {
+	   	   //string type=(bop->getType()).getAsString();
+	   	   //if(type.compare("int *"))
+	   	//process pointer type, e.g. *dptr = ptr;
+	   	// todo
+	   	if(isa<UnaryOperator>(left))
+	   	{
+	   		UnaryOperator *uop = dyn_cast<UnaryOperator>(left);
+	   		if( (uop->getOpcode()) == UO_Deref)
+	   		{
+	   			Expr *expr = uop->getSubExpr();
+                int addr = mStack.back().getStmtVal(expr);
+                mHeap.Update(addr, valRight);
+	   		}
+	   	}
 		   int val = mStack.back().getStmtVal(right);
 		   mStack.back().bindStmt(left, val);
 		   //cout<<"-----assignment left val: "<<left->getStmtClassName()<<endl;
@@ -164,8 +181,7 @@ public:
 			   mStack.back().bindDecl(decl, val);
 		   }
 	   }
-	   int valLeft=mStack.back().getStmtVal(left);
-	   int valRight=mStack.back().getStmtVal(right);
+	   
 
 	   if(bop->isComparisonOp())
 	   {
@@ -260,8 +276,8 @@ public:
 		break;
 
 		case UO_Deref:
-		int *val=(int *)mStack.back().getStmtVal(expr);
-		mStack.back().bindStmt(uop,*val);
+		//int *val=(int *)mStack.back().getStmtVal(expr);
+		mStack.back().bindStmt(uop, mHeap.get(val));
 		break;
 
 		// case UO_PostInc:   break;
@@ -294,35 +310,34 @@ public:
 
    void decl(DeclStmt * declstmt) 
    {
-	   for (DeclStmt::decl_iterator it = declstmt->decl_begin(), ie = declstmt->decl_end();
-			   it != ie; ++ it) 
+	   for (DeclStmt::decl_iterator it = declstmt->decl_begin(), ie = declstmt->decl_end(); it != ie; ++ it) 
 	   {
 		Decl * decl = *it;
 		if (VarDecl * vardecl = dyn_cast<VarDecl>(decl)) 
 		{
-			string type=(vardecl->getType()).getAsString();
-			if( !( vardecl->hasInit() ) && (type.compare("int *")) && (type.compare("int **")))
-			{
-				mStack.back().bindDecl(vardecl, 0);
-			}
-			//pointer type
-			else if(!( vardecl->hasInit() ) && ( !(type.compare("int *")) || !(type.compare("int **")) ))
-			{
-				mStack.back().bindDecl(vardecl, INF);
-			}
-			else if( vardecl->hasInit() )
-			{
-				int val=mStack.back().getStmtVal(vardecl->getInit());
-		   		mStack.back().bindDecl(vardecl, val);
-			}
-	   	}
-	   }
-		
+			//string type=(vardecl->getType()).getAsString();
+			if( !( vardecl->hasInit() ) /*&& (type.compare("int *")) && (type.compare("int **"))*/)
+			 {
+			 	mStack.back().bindDecl(vardecl, 0);
+			 }
+			//pointer type,e.g. int *, int **
+			 // else if(!( vardecl->hasInit() ) && ( !(type.compare("int *")) || !(type.compare("int **")) ))
+			 // {
+			 // 	mStack.back().bindDecl(vardecl, INF);
+			 // }
+			 else if( vardecl->hasInit() )
+			 {
+			 	int val=mStack.back().getStmtVal(vardecl->getInit());
+		    	mStack.back().bindDecl(vardecl, val);
+			 }
+	    	}
+	    }
    }
 
    void declref(DeclRefExpr * declref) 
    {
 	   mStack.back().setPC(declref);
+	   mStack.back().bindStmt(declref, 0);
 	   if (declref->getType()->isIntegerType()) 
 	   {
 		   Decl* decl = declref->getFoundDecl();
@@ -330,24 +345,53 @@ public:
 		   int val = mStack.back().getDeclVal(decl);
 		   mStack.back().bindStmt(declref, val);
 	   }
+	   else if(declref->getType()->isPointerType()) 
+	   {
+         Decl* decl = declref->getFoundDecl();
+         int val = mStack.back().getDeclVal(decl);
+         mStack.back().bindStmt(declref, val);
+      }
    }
 
    void cast(CastExpr * castexpr) 
    {
 	   mStack.back().setPC(castexpr);
+	   Expr * expr = castexpr->getSubExpr();
 	   if (castexpr->getType()->isIntegerType()) 
 	   {
-		   Expr * expr = castexpr->getSubExpr();
+		   
 		   int val = mStack.back().getStmtVal(expr);
 		   //cout<<"------CastExpr expr val: "<<val<<" getSubExpr expr:"<<expr->getStmtClassName()<<endl;
 		   mStack.back().bindStmt(castexpr, val );
 	   }
+	   else
+	   {
+         int val = mStack.back().getStmtVal(expr);
+         mStack.back().bindStmt(castexpr, val );
+       }
    }
+
    void unarysizeof(UnaryExprOrTypeTraitExpr *uop)
    {
-   	auto *expr=uop->getArgumentExpr();
-   	int val =sizeof(expr);
-   	mStack.back().bindStmt(uop,val);
+   	// auto *expr=uop->getArgumentExpr();
+   	// int val =sizeof(expr);
+   	  int val;
+      if(uop->getKind() == UETT_SizeOf )
+      {
+         if(uop->getArgumentType()->isIntegerType())
+         {
+            val = sizeof(long);
+         }
+         else if(uop->getArgumentType()->isPointerType())
+         {
+            val = sizeof(int *);
+         }
+         else
+         {
+            val = 16;
+         }
+      }    
+   	  mStack.back().bindStmt(uop,val);
    }
 
    void ret(ReturnStmt *retstmt)
@@ -363,12 +407,6 @@ public:
    	//CallExpr * callexpr = dyn_cast<CallExpr>(stmt);
    	mStack.back().bindStmt(stmt,val);
    }
-   // long getsizeof(UnaryExprOrTypeTraitExpr *uop)
-   // {
-   // 	auto *expr=uop->getArgumentExpr();
-   // 	int val =sizeof(expr);
-   // 	mStack.back().bindStmt(uop,val);
-   // }
 
    /// Support Function Call
    void call(CallExpr * callexpr) 
@@ -382,7 +420,7 @@ public:
 		  scanf("%d", &val);
 
 		  mStack.back().bindStmt(callexpr, val);
-	   } 
+	   }
 	   else if (callee == mOutput) 
 	   {
 		   Expr * decl = callexpr->getArg(0);
@@ -391,22 +429,28 @@ public:
 	   } 
 	   else if ( callee == mMalloc )
 	   {
-	   	//To Do:how to get the last node from callexpr,that is a question
 	   	//child_iterator
-	   	auto param=callexpr->child_end();
-	   	//Expr * param = callexpr->getArg(0);
-	   	if(isa<UnaryExprOrTypeTraitExpr>(*param))
-	   	{
-   			int size =(int)(mStack.back().getStmtVal(*param));
-   			mStack.back().bindHeapStmt(callexpr,size);
-	   	}
-
+	   	// auto param=callexpr->child_end();
+	   	// //Expr * param = callexpr->getArg(0);
+	   	// if(isa<UnaryExprOrTypeTraitExpr>(*param))
+	   	// {
+   		// 	int size =(int)(mStack.back().getStmtVal(*param));
+   		// 	mStack.back().bindHeapStmt(callexpr,size);
+	   	// }
+	   	 Expr * unaryExprOrTypeTraitExpr = callexpr->getArg(0);
+         val = mStack.back().getStmtVal(unaryExprOrTypeTraitExpr);
+         long buf = mHeap.Malloc(val);
+         mStack.back().bindStmt(callexpr, buf);
 	   }
 	   else if (callee == mFree )
 	   {
-	   	auto param=callexpr->child_end();
-	   	long addr=mStack.back().getStmtVal(*param);
-	   	mStack.back().freeHeap(addr);
+	   	// auto param=callexpr->child_end();
+	   	// long addr=mStack.back().getStmtVal(*param);
+	   	// mStack.back().freeHeap(addr);
+	   	 Expr * ueortt = callexpr->getArg(0);
+         val = mStack.back().getStmtVal(ueortt);
+         mHeap.Free(val);
+         mStack.back().bindStmt(callexpr, 0);
 	   }
 	   else 
 	   {
