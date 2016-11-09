@@ -23,6 +23,11 @@ public:
 	   VisitStmt(bop);
 	   mEnv->binop(bop);
    }
+   virtual void VisitArraySubscriptExpr(ArraySubscriptExpr *arrayexpr)
+   {
+    VisitStmt(arrayexpr);
+    mEnv->array(arrayexpr);
+   }
 
    virtual void VisitDeclRefExpr(DeclRefExpr * expr) {
 	   VisitStmt(expr);

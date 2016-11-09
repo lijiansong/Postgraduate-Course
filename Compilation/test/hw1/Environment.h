@@ -58,7 +58,7 @@ public:
       assert (mContents.find(addr) != mContents.end());
       mContents[addr] = val;
    }
-   long get(long addr) {
+   long Get(long addr) {
       assert (mContents.find(addr) != mContents.end());
       return mContents.find(addr)->second;
     }
@@ -162,7 +162,6 @@ public:
 	   	   //string type=(bop->getType()).getAsString();
 	   	   //if(type.compare("int *"))
 	   	//process pointer type, e.g. *dptr = ptr;
-	   	// todo
 	   	if(isa<UnaryOperator>(left))
 	   	{
 	   		UnaryOperator *uop = dyn_cast<UnaryOperator>(left);
@@ -173,16 +172,26 @@ public:
                 mHeap.Update(addr, valRight);
 	   		}
 	   	}
-		   int val = mStack.back().getStmtVal(right);
-		   mStack.back().bindStmt(left, val);
+	   	if(isa<ArraySubscriptExpr>(left))
+	   	{
+	   		ArraySubscriptExpr *array=dyn_cast<ArraySubscriptExpr>(left);
+	   		Expr *leftexpr=array->getLHS();
+   	        long base=mStack.back().getStmtVal(leftexpr);
+   	        Expr *rightexpr=array->getRHS();
+   	        long offset=mStack.back().getStmtVal(rightexpr);
+   	        mHeap.Update(base + offset*sizeof(int), valRight);
+	   		//mStack.back().bindStmt(left)
+	   	}
+
+		   //int val = mStack.back().getStmtVal(right);
+		   mStack.back().bindStmt(left, valRight);
 		   //cout<<"-----assignment left val: "<<left->getStmtClassName()<<endl;
 		   if (DeclRefExpr * declexpr = dyn_cast<DeclRefExpr>(left)) {
 			   Decl * decl = declexpr->getFoundDecl();
-			   mStack.back().bindDecl(decl, val);
+			   mStack.back().bindDecl(decl, valRight);
 		   }
 	   }
 	   
-
 	   if(bop->isComparisonOp())
 	   {
 	   	switch(bop->getOpcode())
@@ -270,14 +279,13 @@ public:
 		mStack.back().bindStmt(uop,val);
 		break;
 
-		
 		case UO_Minus:
 		mStack.back().bindStmt(uop,-val);
 		break;
 
 		case UO_Deref:
 		//int *val=(int *)mStack.back().getStmtVal(expr);
-		mStack.back().bindStmt(uop, mHeap.get(val));
+		mStack.back().bindStmt(uop, mHeap.Get(val));
 		break;
 
 		// case UO_PostInc:   break;
@@ -294,6 +302,18 @@ public:
   //       case UO_Extension: break;
   //       case UO_Coawait:   break;
 	}
+   }
+
+   void array(ArraySubscriptExpr *arrayexpr)
+   {
+   	Expr *leftexpr=arrayexpr->getLHS();
+   	//cout<<leftexpr->getStmtClassName()<<endl;
+   	int base=mStack.back().getStmtVal(leftexpr);
+   	Expr *rightexpr=arrayexpr->getRHS();
+   	//cout<<rightexpr->getStmtClassName()<<endl;
+   	int offset=mStack.back().getStmtVal(rightexpr);
+   	//cout<<valRight<<endl;
+   	mStack.back().bindStmt(arrayexpr,mHeap.Get(base + offset*sizeof(int)));
    }
 
    void integerliteral(IntegerLiteral* integer)
@@ -318,7 +338,20 @@ public:
 			//string type=(vardecl->getType()).getAsString();
 			if( !( vardecl->hasInit() ) /*&& (type.compare("int *")) && (type.compare("int **"))*/)
 			 {
-			 	mStack.back().bindDecl(vardecl, 0);
+			 	if( !( vardecl->getType()->isArrayType() ) )
+			 		mStack.back().bindDecl(vardecl, 0);
+			 	else
+			 	{
+			 		//get the type string, e.g. int [2]
+			 		string type=(vardecl->getType()).getAsString();
+			 		int index=type.find("[");
+			 		int size=0;
+    				if(index!=string::npos)
+    					size=type[index+1]-'0';
+			 		//cout<<type<<size<<endl;
+			 		long buf=mHeap.Malloc(size);
+			 		mStack.back().bindDecl(vardecl, buf);
+			 	}
 			 }
 			//pointer type,e.g. int *, int **
 			 // else if(!( vardecl->hasInit() ) && ( !(type.compare("int *")) || !(type.compare("int **")) ))
@@ -341,16 +374,21 @@ public:
 	   if (declref->getType()->isIntegerType()) 
 	   {
 		   Decl* decl = declref->getFoundDecl();
-
 		   int val = mStack.back().getDeclVal(decl);
 		   mStack.back().bindStmt(declref, val);
 	   }
 	   else if(declref->getType()->isPointerType()) 
 	   {
-         Decl* decl = declref->getFoundDecl();
-         int val = mStack.back().getDeclVal(decl);
-         mStack.back().bindStmt(declref, val);
-      }
+           Decl* decl = declref->getFoundDecl();
+           int val = mStack.back().getDeclVal(decl);
+           mStack.back().bindStmt(declref, val);
+       }
+       else if(declref->getType()->isArrayType())
+       {
+       	   Decl* decl = declref->getFoundDecl();
+           int val = mStack.back().getDeclVal(decl);
+           mStack.back().bindStmt(declref, val);
+       }
    }
 
    void cast(CastExpr * castexpr) 
@@ -385,10 +423,6 @@ public:
          else if(uop->getArgumentType()->isPointerType())
          {
             val = sizeof(int *);
-         }
-         else
-         {
-            val = 16;
          }
       }    
    	  mStack.back().bindStmt(uop,val);
