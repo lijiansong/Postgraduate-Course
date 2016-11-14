@@ -143,6 +143,7 @@ class Environment {
    std::vector<StackFrame> mStack;
    //mHeap to process the mem allocation
    Heap mHeap;
+   std::vector<StackFrame> mVarGlobal;
 
    /// Declartions to the built-in functions
    FunctionDecl * mFree;
@@ -154,20 +155,50 @@ class Environment {
    FunctionDecl * mEntry;
 public:
    /// Get the declartions to the built-in functions
-   Environment() : mStack(), mFree(NULL), mMalloc(NULL), mInput(NULL), mOutput(NULL), mEntry(NULL) {
+   Environment() : mStack(), mVarGlobal(),mFree(NULL), mMalloc(NULL), mInput(NULL), mOutput(NULL), mEntry(NULL) {
    }
 
 
    /// Initialize the Environment
-   void init(TranslationUnitDecl * unit) {
-	   for (TranslationUnitDecl::decl_iterator i =unit->decls_begin(), e = unit->decls_end(); i != e; ++ i) {
-		   if (FunctionDecl * fdecl = dyn_cast<FunctionDecl>(*i) ) {
+   void init(TranslationUnitDecl * unit) 
+   {
+	   for (TranslationUnitDecl::decl_iterator i =unit->decls_begin(), e = unit->decls_end(); i != e; ++ i) 
+     {
+		   if (FunctionDecl * fdecl = dyn_cast<FunctionDecl>(*i) ) 
+       {
 			   if (fdecl->getName().equals("FREE")) mFree = fdecl;
 			   else if (fdecl->getName().equals("MALLOC")) mMalloc = fdecl;
 			   else if (fdecl->getName().equals("GET")) mInput = fdecl;
 			   else if (fdecl->getName().equals("PRINT")) mOutput = fdecl;
 			   else if (fdecl->getName().equals("main")) mEntry = fdecl;
 		   }
+       //process global varible
+       if(VarDecl *vardecl=dyn_cast<VarDecl>(*i))
+       {
+          if(!( vardecl->hasInit()))
+          {
+              StackFrame stack;
+              stack.bindDecl(vardecl, 0);
+              mVarGlobal.push_back(stack);
+              //mVarGlobal.back().bindDecl(vardecl,0);
+              //mStack.back().bindDecl(vardecl,0);
+          }
+          else if( vardecl->hasInit() )
+          {
+              //now only process global varible with integer
+              //int val=mStack.back().getStmtVal(vardecl->getInit());
+              if(isa<IntegerLiteral>(vardecl->getInit()))
+              {
+                  StackFrame stack;
+                  IntegerLiteral *integer=dyn_cast<IntegerLiteral>(vardecl->getInit());
+                  int val=integer->getValue().getSExtValue();
+                  stack.bindDecl(vardecl, val);
+                  mVarGlobal.push_back(stack);
+                  //mStack.push_back(stack);
+              }
+          }
+       }
+
 	   }
 	   mStack.push_back(StackFrame());
    }
