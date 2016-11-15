@@ -36,3 +36,4 @@ $xdot file.dot
 [How to parse C programs with clang](http://amnoid.de/tmp/clangtut/tut.html)<br>
 [other refs... course](http://swtv.kaist.ac.kr/courses/cs453-fall13)<br>
 [Clang Analyzer... Checker Dev Manual...](http://clang-analyzer.llvm.org/checker_dev_manual.html)<br>
+[Remove every uses of getGlobalContext() in LLVM (but the C API)...](https://reviews.llvm.org/rL266379)
