@@ -12,5 +12,10 @@ $ make
 $ ./llvm-assignment your-bitcode-file
 ```
 
+LLVM IR has three equivalent forms:
+- An in-memory representation(the Instruction class, among others)
+- An on-disk representation that is encoded in a space-efficient form(the bitcodefiles)
+- An on-disk representation in ahuman-readable text form(the LLVM assembly files)
+
 ## Postscripts
 - Remove every uses of [getGlobalContext](https://reviews.llvm.org/rL266379), but the C API, and the [solution...](https://reviews.llvm.org/D19094)
