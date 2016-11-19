@@ -13,7 +13,7 @@ LLVMLIBS=$(shell $(LLVM_CONFIG) --libs irreader passes core support)
 SYSTEMLIBS=$(shell $(LLVM_CONFIG) --system-libs)
 
 HELLO=llvm-assignment
-HELLO_OBJECTS=llvm-assignment.o
+HELLO_OBJECTS=LLVMAssignment.o
 
 default: $(HELLO)
 
