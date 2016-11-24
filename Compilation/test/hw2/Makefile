@@ -6,7 +6,7 @@ endif
 
 SRC_DIR?=$(PWD)
 LDFLAGS+=$(shell $(LLVM_CONFIG) --ldflags)
-COMMON_FLAGS=-Wall -Wextra
+COMMON_FLAGS=-Wall -Wextra -g
 CXXFLAGS+=$(COMMON_FLAGS) $(shell $(LLVM_CONFIG) --cxxflags) -fno-rtti
 CPPFLAGS+=$(shell $(LLVM_CONFIG) --cppflags) -I$(SRC_DIR)
 LLVMLIBS=$(shell $(LLVM_CONFIG) --libs irreader passes core support)
