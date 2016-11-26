@@ -9,7 +9,7 @@ LDFLAGS+=$(shell $(LLVM_CONFIG) --ldflags)
 COMMON_FLAGS=-Wall -Wextra -g
 CXXFLAGS+=$(COMMON_FLAGS) $(shell $(LLVM_CONFIG) --cxxflags) -fno-rtti
 CPPFLAGS+=$(shell $(LLVM_CONFIG) --cppflags) -I$(SRC_DIR)
-LLVMLIBS=$(shell $(LLVM_CONFIG) --libs irreader passes core support)
+LLVMLIBS=$(shell $(LLVM_CONFIG) --libs irreader bitwriter passes core support)
 SYSTEMLIBS=$(shell $(LLVM_CONFIG) --system-libs)
 
 HELLO=llvm-assignment
