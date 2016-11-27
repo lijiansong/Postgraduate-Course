@@ -19,12 +19,11 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/ToolOutputFile.h>
+#include <llvm/Support/FileSystem.h>
 #include <llvm/Transforms/Scalar.h>
-
 #include "llvm/IR/Function.h"
 #include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
-
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/User.h"
@@ -35,16 +34,24 @@
 #include "llvm/IR/Metadata.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Argument.h"
-
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/BasicBlock.h"
 
-
+#include <string>
+#include <iostream>
 #include <vector>
+#include <set>
 
-using namespace std;
 using namespace llvm;
+using namespace std;
 
+// class function_data
+// {
+// public:
+//   llvm::StringRef fun_name;
+//   unsigned int numOfParams ;
+//   std::vector<llvm::Type::TypeID> params;
+// };
 
 ///!TODO TO BE COMPLETED BY YOU FOR ASSIGNMENT 2
 struct FuncPtrPass : public FunctionPass 
@@ -52,248 +59,263 @@ struct FuncPtrPass : public FunctionPass
   static char ID; // Pass identification, replacement for typeid
   FuncPtrPass() : FunctionPass(ID) {}
 
-  //recursively process function ptr
-  // void funcptr(Value *func_pointer)
-  // {
-  //   if(isa<LoadInst>(func_pointer))
-  //   {
-  //     Instruction *load_inst=dyn_cast<Instruction>(func_pointer);
-  //     LoadInst *_load_inst=dyn_cast<LoadInst>(load_inst);
-  //     Value *operand=_load_inst->getPointerOperand();
-
-  //     for (User *U : operand->users())
-  //     {
-  //       if (Instruction *user_inst = dyn_cast<Instruction>(U))
-  //       {
-        
-  //         if(isa<StoreInst>(user_inst))
-  //         {
-  //           StoreInst *user_store=dyn_cast<StoreInst>(user_inst);
-  //           const Value *store_operand=user_store->getValueOperand();
-  //           if(store_operand!=NULL)
-  //           {
-  //             errs()<<store_operand->getName()<<"\n";
-  //             return ;
-  //           }
-  //           else
-  //           {
-  //             if(isa<LoadInst>(store_operand))
-  //             {
-  //               Instruction *operand_inst=dyn_cast<Instruction>(store_operand);
-  //               LoadInst *_operand_inst=dyn_cast<LoadInst>(operand_inst);
-  //               funcptr(_operand_inst->getPointerOperand());
-  //             }
-      
-  //           }
-
-  //         }
-  //       }
-  //     }//end of user
-
-  //   }
-  // }
-  bool runOnFunction(Function &F) override 
+  //type str match
+  StringRef getTypeString(Type *type)
   {
-    for(Function::iterator bb_it=F.begin(),bb_ie=F.end();bb_it!=bb_ie;++bb_it)
-    {
-      //Iterator over BasicBlock for Instructions in BB
-      //errs()<<"Function :"<<bb_it->getName()<<"\n";
-      for(BasicBlock::iterator ii=bb_it->begin(), ie=bb_it->end();ii!=ie;++ii)
+      StringRef param_type = "";
+      switch(type->getTypeID())
       {
-        //Get Instruction and see if it is a calling instruction
-        Instruction *inst=dyn_cast<Instruction>(ii);
-        if(CallInst *call_inst=dyn_cast<CallInst>(inst))
-        {
-          Function *func=call_inst->getCalledFunction();
-          if(func!=NULL)
+      case 0 :
+        param_type = "void";
+        break;
+
+      case 1:
+      case 2:
+        param_type = "float";
+        break;
+
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+        param_type = "double";
+        break;
+
+      case 7:
+         param_type = "label";
+         break;
+
+      case 10:
+          if(type->getIntegerBitWidth()==8)
           {
-            //filtering useless dgb info
-            if(func->getName()=="llvm.dbg.value") 
-              continue;
-            else
-              errs()<<call_inst->getDebugLoc().getLine()<<" : "<<func->getName()<<"\n";
+              param_type = "char";
           }
-          //function pointer
           else
           {
-            Value *func_pointer=call_inst->getCalledValue();
+              param_type = "int";
+          }
+          break;
 
-            // for(User *user : func_pointer->users())
-            // {
-            //   if (Instruction *user_inst = dyn_cast<Instruction>(user))
-            //   {
-            //     errs()<<user_inst->getName()<<"\n";
-            //     errs()<<*user_inst<<"\n";
-            //   }
-            // }
+      case 11:
+          param_type = "function";
+          break;
 
-            if(isa<Argument>(func_pointer))
-            {
-              errs()<<call_inst->getDebugLoc().getLine()<<" : ";
-              Argument *argument=dyn_cast<Argument>(func_pointer);
-              errs()<<"argument"<<"\n";
-              Function *parent_func=argument->getParent();
-              errs()<<parent_func->getName()<<"\n";
-              int count=0;
-              //auto arg_list=parent_func->getArgumentList();
-              for(Function::arg_iterator arg_it=parent_func->arg_begin(),arg_ie=parent_func->arg_end();arg_it!=arg_ie;++arg_it,++count)
-              {
-                //errs()<<arg_it->getName()<<"\n";
-                if(arg_it->getName() == func_pointer->getName())
-                {
-                  errs()<<count<<" "<<arg_it->getName()<<"\n";
-                  for(User *parent_user : parent_func->users())
-                  {
-                    if(Instruction *parent_inst=dyn_cast<Instruction>(parent_user))
-                    {
-                      errs()<<*parent_inst<<"\n";
-                      Value *funcptr_operand=parent_inst->getOperand(count);
-                      errs()<<funcptr_operand->getName()<<"\n";
-                    }
-                  }
-                  //Instruction *parent=dyn_cast<Instruction>(parent_func);
-                  //errs()<<*parent<<"\n";
-                }//end of if
+      case 12:
+          param_type = "struct";
+          break;
 
-              }//end of for arg_iterator
-            }
-            else
-            {
-              Instruction *funcptr_inst=dyn_cast<Instruction>(func_pointer);
-              int count=0;
-              vector<StringRef> func_name;
-              for (User::op_iterator i = funcptr_inst->op_begin(), e = funcptr_inst->op_end(); i != e; ++i,++count)
-              {
-                //int index=isa<StoreInst>(funcptr_inst)?0:1;
+      case 13:
+          param_type = "array";
+          break;
 
-                Value *operand=funcptr_inst->getOperand(count);
-                func_name.push_back(operand->getName());
-                //errs()<<call_inst->getDebugLoc().getLine()<<" : "<<operand->getName()<<"\n";
-                //errs()<<*funcptr_inst<<"\n";
-                count=0;
-              }
-              errs()<<call_inst->getDebugLoc().getLine()<<" : ";
-              for(unsigned i=0;i<func_name.size();++i)
-                errs()<<func_name[i]<<" ";
-              errs()<<"\n";
-              func_name.clear();
-            }//end of else
-            
+      case 14:
+          param_type = "pointer";
+          break;   
 
-            // for(Value::use_iterator i=funcptr_inst->use_begin(),e=funcptr_inst->use_end();i!=e;++i)
-            // {
-            //   int index=isa<StoreInst>(funcptr_inst)?0:1;
-            //   Value *operand=inst->getOperand(index);
-            //   errs()<<call_inst->getDebugLoc().getLine()<<" : "<<operand->getName()<<"\n";
-            // }
-            
-            // for (Use &def_inst : inst->operands())
-            // {
-            //   Value *v=def_inst.get();
-            //   if(inst->getName()==func_pointer)
-            //     errs()<<*def_inst<<"\n";
-            // }
+      default :
+          param_type = "default";
+          break;
+     }
+     return param_type;
+  }
+  //todo: arg num match
 
-
-            // if(isa<LoadInst>(func_pointer))
-            // {
-            //   //LoadInst *load_inst=dyn_cast<LoadInst>(func_pointer);
-            //   //const Value *operand=load_inst->getPointerOperand();
-            //   Instruction *load_inst=dyn_cast<Instruction>(func_pointer);
-            //   LoadInst *_load_inst=dyn_cast<LoadInst>(load_inst);
-            //   Value *operand=_load_inst->getPointerOperand();
-
-            //   for (User *U : operand->users())
-            //   {
-            //     if (Instruction *user_inst = dyn_cast<Instruction>(U))
-            //     {
-            //       // int index=isa<StoreInst>(user_inst)?0:1;
-            //       // Value *operand=user_inst->getOperand(index);
-            //       // errs()<<call_inst->getDebugLoc().getLine()<<" : "<<operand->getName()<<"\n";
-            //       if(isa<StoreInst>(user_inst))
-            //       {
-            //         StoreInst *user_store=dyn_cast<StoreInst>(user_inst);
-            //         const Value *store_operand=user_store->getValueOperand();
-            //         if(store_operand!=NULL)
-            //           errs()<<call_inst->getDebugLoc().getLine()<<" : "<<store_operand->getName()<<"\n";
-            //         else
-            //         {
-            //           errs()<<"bb1";
-            //         }
-            //       }
-              
-            //     }
-            //   }//end of user
-
-            // }
-          }//end of function pointer
-
+  //process return instruction to get the function pointer
+  void getRetFuncptr(Function * funcptr,set<Function*> &ret_list)
+  {
+    //for each basic block in the function that funcptr points to
+    Function::iterator bb_it = funcptr->begin() , bb_ie = funcptr->end();
+    for(;bb_it != bb_ie ; ++bb_it)
+    {
+      //for each instruction in the basic block
+      BasicBlock::iterator ii = bb_it->begin() , ie = bb_it->end();
+      for(;ii != ie ; ++ii)
+      {
+        ReturnInst *ret_inst = dyn_cast<ReturnInst>(ii);
+        if(ret_inst)
+        {
+          Value *value = ret_inst->getReturnValue();
+          //errs()<<value->getName()<<"\n";
+          getFunc(value,ret_list);
         }
       }
     }
-    // for (User *U : F.users())
-    // {
-    //   if (Instruction *inst = dyn_cast<Instruction>(U)) 
-    //   {
-    //     errs() << "F is used in instruction:\n";
-    //     errs() << *inst << "\n";
-    //     int index=isa<StoreInst>(inst)?0:1;
+  }
+  //process the function pointer that is passed by argument
+  void getArgFuncptr(Argument *arg,set<Function*> &arg_list)
+  {
+    //get the position of the argument that is a function pointer
+    unsigned pos = arg->getArgNo();
+    Function *func = arg->getParent();
+    auto user_it = func->user_begin() , user_ie = func->user_end();
+    Value * v;
+    for(; user_it != user_ie ; ++user_it)
+    {
+      set<CallInst*> call_inst_list;
+      User * up = dyn_cast<User>(*user_it);
+      getCallInst(up,call_inst_list);
+      set<CallInst*>::iterator i = call_inst_list.begin() , e = call_inst_list.end();
+      for (; i != e; ++i)
+      {
+        v = (*i)->getArgOperand(pos);
+        getFunc(v,arg_list);
+      }
+    }
+  }
+  //process the call instruction by its user
+  void  getCallInst(User * user,set<CallInst*> &call_inst_list)
+  {
+    CallInst *call = dyn_cast<CallInst>(user);
+    if(call)
+    {
+      call_inst_list.insert(call);
+    }
+    else
+    {
+      auto user_it = user->user_begin() , user_ie = user->user_end();
+      for(; user_it != user_ie ; ++user_it)
+      {
+        call = dyn_cast<CallInst>(*user_it);
+        if(call)
+        {
+          call_inst_list.insert(call);
+        }
+        else
+        {
+          User *up = *user_it;
+          //errs()<<up->getName()<<"\n";
+          getCallInst(up,call_inst_list);
+        }
+      }
+    }
+  }
 
-    //     Value *operand=inst->getOperand(index);
-    //     errs()<<"operand: "<<operand->getName()<<"\n";
-    //     for (User::op_iterator i = inst->op_begin(), e = inst->op_end(); i != e; ++i)
-    //     {
-    //       int index=isa<StoreInst>(inst)?1:0;
-    //       Value *operand=inst->getOperand(index);
-    //       errs()<<"def "<<operand->getName()<<"\n";
+  //process the function pointer
+  void getFunc(Value *value,set<Function*> &call_list)
+  {
+		Type *type = value->getType();
+		if(type->isPointerTy())
+		{
+      Function *funcptr = dyn_cast<Function>(value);
+      //if function pointer is not null, we get the real function,exit
+      if(funcptr)
+      {
+        call_list.insert(funcptr);
+        return;
+      }
+      //the function pointer may be passed by the arg, get the use of the argument
+      else if(Argument *arg = dyn_cast<Argument>(value))
+      {
+        getArgFuncptr(arg,call_list);
+      }
+      //the function pointer is a call intruction,recursively process
+      else if(CallInst *call = dyn_cast<CallInst>(value))
+      {
+        set<Function*> possible_call_list;
+        getFunc(call->getCalledValue(),possible_call_list);
+        set<Function*>::iterator i = possible_call_list.begin() , e = possible_call_list.end();
+        //process the return instruction
+        for (; i != e; ++i)
+        {
+          getRetFuncptr(*i,call_list);
+        }
+      }
+      //todo:corner case-bonus,load instruction
 
-    //     }
-    //     //if(isa<StoreInst>(inst))
-    //     //{
-    //       // for(Value::use_iterator i=inst->use_begin(),e=inst->use_end();i!=e;++i)
-    //       // {
-    //       //   int index=isa<StoreInst>(inst)?1:0;
-    //       //   Value *operand=inst->getOperand(index);
-    //       //   errs()<<"operand: "<<operand->getName()<<"\n";
-    //       // }
-    //     //}
-    //   }
-    // }
-    //Instruction *pi
-    //errs() << "Hello: ";
-    //errs().write_escaped(F.getName()) << '\n';
-    
-    // for(Function::iterator bb_it=F.begin(),bb_ie=F.end();bb_it!=bb_ie;++bb_it)
-    // {
-    //   errs()<<"Function: "<<F.getName()<<"\n";
-    //   for(BasicBlock::iterator ii=bb_it->begin(),ie=bb_it->end();ii!=ie;++ii)
-    //   {
-    //     //errs()<<"BasicBlock: "<<bb_it->getName()<<"\n";
-    //     Instruction *inst=dyn_cast<Instruction>(ii);
-    //     //errs()<<"Instruction: "<<inst->getName()<<"\n";
+      else
+      {
+        Value::use_iterator use_it=value->use_begin(),use_ie=value->use_end();
+        //for each instruction that use the function pointer
+        for(;use_it != use_ie; ++use_it)
+        {
+          Instruction *inst = dyn_cast<Instruction>(*use_it);
+          if(inst)
+          {
+            auto op_it = inst->op_begin(),op_ie=inst->op_end();
+            for(;op_it!=op_ie;++op_it)
+            {
+              //get the function pointer in the instruction
+              Function *funcptr = dyn_cast<Function>(op_it->get()); 
+              if(funcptr)
+              {
+                call_list.insert(funcptr);
+                //errs()<<funcptr->getName()<<"\n";
+              }
+              else
+              {
+                getFunc(op_it->get(),call_list);
+              }
+            }
+          }
+        }//end of for
 
-    //     if(CallInst *call=dyn_cast<CallInst>(inst))
-    //     {
-    //       errs()<<"Call: "<<call->getName()<<"\n";
-    //     }
-    //     for(Value::use_iterator i=inst->use_begin(),e=inst->use_end();i!=e;++i)
-    //     {
-    //       int index=isa<StoreInst>(inst)?1:0;
-    //       Value *operand=inst->getOperand(index);
-    //       if(Instruction *Inst=dyn_cast<Instruction>(*i))
-    //       {
-    //         //errs()<<"used Instructions: "<<operand->getName()<<"\n";
-    //         //unsigned line=inst->getDebugLoc().getLine();
-    //         //errs()<<"Line no : "<<line<<"\n";
-    //       }
-    //     }
-    //     //for(Instruction::iterator inst_it=ii->begin(),inst_ie=ii->end();inst_it!=inst_ie;++inst_it)
-    //     // for(auto &inst_it : bb_it)
-    //     // {
-    //     //   errs()<<"Instruction: "<<inst_it->getName()<<"\n";
-    //     // }
-    //   }
-    // }
+      }//end of else
+
+    }//end of if(type)
+  }
+
+  bool runOnFunction(Function &F) override 
+  {
+    //for each basic block in the function
+    Function::iterator bb_it = F.begin() , bb_ie = F.end();
+    for(;bb_it != bb_ie ; ++bb_it)
+    {
+      //for each intruction in the basic block
+    	BasicBlock::iterator ii = bb_it->begin() , ie = bb_it->end();
+    	for(;ii != ie ; ++ii)
+      {
+        Instruction *inst=dyn_cast<Instruction>(ii);
+        //only process the call instruction to get the possible function call
+    		if(isa<CallInst>(ii))
+        {
+          CallInst *call = dyn_cast<CallInst>(inst);
+          //errs()<<*call<<"\n";
+    			Function *func = call->getCalledFunction();
+    			//FunctionType *type = call->getFunctionType();
+          //function pointer
+    			if(func==NULL)
+          {
+    				set<Function *> call_list;
+            call_list.clear();
+            getFunc(call->getCalledValue(),call_list);
+            bool flag = false;
+            if(call_list.size() != 0)
+            {
+              //output the function name from the call_list
+              errs()<<call->getDebugLoc()->getLine()<<" : ";
+              set<Function *>::iterator call_it=call_list.begin(),call_ie=call_list.end();
+              for( ;call_it != call_ie; ++call_it)
+              {
+                if(!flag)
+                {
+                  errs()<<(*call_it)->getName();
+                }
+                else
+                {
+                  errs()<<", "<<(*call_it)->getName();
+                }
+                flag=true;
+              }
+              errs()<<"\n";
+            }//end of call_list
+    			}//end of func==NULL
+          //debug call,e.g. llvm.dbg.value, ignore these info
+          else if(func->isIntrinsic())
+          {
+    				continue;
+    			}
+          //func is not null, so it is direct function call
+          else
+          {
+            //output the call info directly
+            errs()<<call->getDebugLoc().getLine()<<" : "<<func->getName()<<"\n";
+    			}
+
+    		}//end of if()
+
+    	}//end of for(ii)
+
+	  }//end of outer loop
     return false;
   }
 };
@@ -301,8 +323,6 @@ struct FuncPtrPass : public FunctionPass
 
 char FuncPtrPass::ID = 0;
 static RegisterPass<FuncPtrPass> X("funcptrpass", "Print function call instruction");
-//static RegisterPass<FuncPtrPass> X("funcptrpass", "Print function call instruction",false,false);
-
 
 static cl::opt<std::string>
 InputFilename(cl::Positional,
@@ -310,9 +330,10 @@ InputFilename(cl::Positional,
               cl::init(""));
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) 
+{
    //LLVMContext &Context = getGlobalContext();
-  static LLVMContext Context;
+   static LLVMContext Context;
    SMDiagnostic Err;
    // Parse the command line to read the Inputfilename
    cl::ParseCommandLineOptions(argc, argv,
@@ -321,7 +342,8 @@ int main(int argc, char **argv) {
 
    // Load the input module
    std::unique_ptr<Module> M = parseIRFile(InputFilename, Err, Context);
-   if (!M) {
+   if (!M) 
+   {
       Err.print(argv[0], errs());
       return 1;
    }
@@ -334,4 +356,13 @@ int main(int argc, char **argv) {
    /// Your pass to print Function and Call Instructions
    Passes.add(new FuncPtrPass());
    Passes.run(*M.get());
+
+   //write the changed call instruction to file
+   // std::error_code EC;
+   // std::unique_ptr<tool_output_file> Out(
+   //  new tool_output_file(InputFilename, EC, sys::fs::F_None));
+   // WriteBitcodeToFile(M.get(), Out->os());
+   // Out->keep();
+
 }
+
