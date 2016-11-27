@@ -119,6 +119,84 @@ struct FuncPtrPass : public FunctionPass
      return param_type;
   }
   //todo: arg num match
+  // void _GetElementPtrInst(GetElementPtrInst* GEP)
+  // {
+  //   Value* v = GEP->getOperand(0);
+  //   for(User* U : v->users())
+  //   {
+  //     if(GetElementPtrInst* GEPL = dyn_cast<GetElementPtrInst>(U))
+  //     {
+  //       if(cmpGEPs(GEP, GEPL)==1)
+  //       {
+  //         for(User* UL : GEPL->users())
+  //         {
+  //           if(StoreInst* storeInst = dyn_cast<StoreInst>(UL))
+  //           {
+  //             Value* vl = storeInst->getOperand(0);
+  //             if(Function* func = dyn_cast<Function>(vl))
+  //             {
+  //               fnList.insert(func->getName());
+  //               _fnList.insert(vl);
+  //             }
+  //           }
+  //         }
+  //       }
+  //       else
+  //       {
+
+  //       }
+  //     }
+  //   }
+  // }
+
+  // int cmpGEPs(GetElementPtrInst* GEPL, GetElementPtrInst* GEPR)
+  // {
+  //   unsigned int ASL = GEPL->getPointerAddressSpace();
+  //   unsigned int ASR = GEPR->getPointerAddressSpace();
+
+  //   if( ASL != ASR ) return 0;
+  //   Type* ETL = GEPL->getSourceElementType();
+  //   Type* ETR = GEPR->getSourceElementType();
+  //   string bufferL;
+  //   raw_string_ostream osL(bufferL);
+  //   osL << *ETL;
+  //   string strETL = osL.str();
+  //   string bufferR;
+  //   raw_string_ostream osR(bufferR);
+  //   osR << *ETL;
+  //   string strETR = osR.str();
+
+  //   if(strETL != strETR) return 0;
+
+  //   unsigned int NPL = GEPL->getNumOperands();
+  //   unsigned int NPR = GEPR->getNumOperands();
+
+  //   if(NPL != NPR) return 0;
+
+  //   for(unsigned i=0, e = GEPL->getNumOperands(); i!=e; ++i)
+  //   {
+  //     Value* vL = GEPL->getOperand(i);
+  //     Value* vR = GEPR->getOperand(i);
+  //     if(cmpValues(vL, vR)==0) return 0;
+  //   }
+  //   return 1;
+  // }
+
+  // int cmpValues(Value* L, Value* R)
+  // {
+  //   string bufferL;
+  //   raw_string_ostream osL(bufferL);
+  //   osL << *L;
+  //   string strVL = osL.str();
+
+  //   string bufferR;
+  //   raw_string_ostream osR(bufferR);
+  //   osR << *R;
+  //   string strVR = osR.str();
+
+  //   if(strVL != strVR) return 0;
+  //   return 1;
+  // }
 
   //process return instruction to get the function pointer
   void getRetFuncptr(Function * funcptr,set<Function*> &ret_list)
@@ -194,6 +272,7 @@ struct FuncPtrPass : public FunctionPass
   void getFunc(Value *value,set<Function*> &call_list)
   {
 		Type *type = value->getType();
+    //errs()<<*type<<"\n";
 		if(type->isPointerTy())
 		{
       Function *funcptr = dyn_cast<Function>(value);
@@ -281,6 +360,17 @@ struct FuncPtrPass : public FunctionPass
             bool flag = false;
             if(call_list.size() != 0)
             {
+              //replace the determined function
+              // if(call_list.size()==1)
+              // {
+              //   set<Function *>::iterator call_it=call_list.begin(),call_ie=call_list.end();
+              //   for( ;call_it != call_ie; ++call_it)
+              //   {
+              //     errs()<<(*call_it)->getName()<<"\n";
+              //     call->setCalledFunction(*call_it);
+              //     errs()<<*call<<"\n";
+              //   }
+              // }
               //output the function name from the call_list
               errs()<<call->getDebugLoc()->getLine()<<" : ";
               set<Function *>::iterator call_it=call_list.begin(),call_ie=call_list.end();
@@ -358,11 +448,11 @@ int main(int argc, char **argv)
    Passes.run(*M.get());
 
    //write the changed call instruction to file
-   // std::error_code EC;
-   // std::unique_ptr<tool_output_file> Out(
-   //  new tool_output_file(InputFilename, EC, sys::fs::F_None));
-   // WriteBitcodeToFile(M.get(), Out->os());
-   // Out->keep();
+   std::error_code EC;
+   std::unique_ptr<tool_output_file> Out(
+    new tool_output_file(InputFilename, EC, sys::fs::F_None));
+   WriteBitcodeToFile(M.get(), Out->os());
+   Out->keep();
 
 }
 
