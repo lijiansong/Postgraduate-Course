@@ -1,6 +1,10 @@
 Postgraduate-Course
 =======================
 This archieve is the code implement of my postgraduate course, such as Data Mining, Information Retrieval, Compilation Technology, Concurrence and  Multi-Core Programming and etc.
+`
+format:
+$ indent -npro -nip -nlp -npsl -i4 -ts4 -sob -l200 -ss -bl -bli 0
+`
 
 # Content
 * [Data Mining](#data-mining)
