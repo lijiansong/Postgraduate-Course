@@ -84,6 +84,7 @@ struct node
 	  vector < node * >children;
 };
 
+vd getColSD(vvs &);
 void printCov(vvd &);
 pp getMaxCov(vvs &);
 vd getRowMean(vvs &);

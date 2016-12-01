@@ -6,6 +6,8 @@ static mss protocolMap;
 static mss serviceMap;
 static mss deLabelMap;
 
+
+
 //get the mean of each column
 vd getColMean(vvs &dataTable)
 {
@@ -15,10 +17,10 @@ vd getColMean(vvs &dataTable)
 	{
 		for(int j=1;j<dataTable.size();++j)
 		{
-			value=atof(dataTable[j][i].c_str());
+			value=atof(dataTable[j][i].c_str())/(dataTable.size()-1);
 			sum+=value;
 		}
-		result.push_back(sum/(dataTable.size()-1));
+		result.push_back(sum);
 		sum=0.0;
 	}
 	return result;
@@ -34,11 +36,29 @@ vvd getColPointMul(vvs &dataTable)
 		{
 			for(int k=1;k<dataTable.size();++k)
 			{
-				sum+=( atof(dataTable[k][i].c_str()) * atof(dataTable[k][j].c_str()) )/(dataTable.size()-1);
+				sum+=( atof(dataTable[k][i].c_str()) * atof(dataTable[k][j].c_str()) )/(dataTable.size()-2);
 			}
 			result[i][j]=sum;
 			sum=0.0;
 		}
+	}
+	return result;
+}
+//get the standard deviation of each column
+vd getColSD(vvs &dataTable)
+{
+	double value,sum=0.0;
+	vd mean=getColMean(dataTable);
+	vd result;
+	for(int i=0;i<dataTable[0].size()-1;++i)
+	{
+		for(int j=1;j<dataTable.size();++j)
+		{
+			value = atof(dataTable[j][i].c_str());
+			sum += (value*value)/(dataTable.size()-1);
+		}
+		result.push_back( sqrt( sum - mean[i] * mean[i] ) );
+		sum=0.0;
 	}
 	return result;
 }
@@ -49,11 +69,12 @@ vvd computeCov(vvs &dataTable)
 	vvd result(dataTable[0].size()-1,vd(dataTable[0].size()-1,0.0));
 	vvd pointMul=getColPointMul(dataTable);
 	vd mean=getColMean(dataTable);
+	vd sd=getColSD(dataTable);
 	for(int i=0;i<dataTable[0].size()-1;++i)
 	{
-		for(int j=1;j<dataTable[0].size()-1;++j)
+		for(int j=i+1;j<dataTable[0].size()-1;++j)
 		{
-			result[i][j]=pointMul[i][i]*pointMul[i][j]-mean[i]*mean[j];
+			result[i][j]=( pointMul[i][j]-(dataTable.size()-1)/(dataTable.size()-2)*mean[i]*mean[j] )/(sd[i]*sd[j]);
 		}
 	}
 	return result;
