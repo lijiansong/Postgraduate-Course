@@ -20,7 +20,7 @@ $ indent -npro -nip -nlp -npsl -i4 -ts4 -sob -l200 -ss -bl -bli 0
 频繁模式挖掘数据集参考了 VLDB2015 Dong Xin, Jiawei Han的一篇[paper](https://github.com/lijiansong/Postgraduate-Course/blob/master/Data-Mining/VLDB2005-RP%20Local/vldb05.pdf)中提出的RP-Local算法所用的数据集 [Frequent Itemset Mining Dataset Repository](http://fimi.ua.ac.be/data/), 该Repository中有大量典型的数据挖掘算法的[paper和代码实现.](http://fimi.ua.ac.be/src/) [To learn more details...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Data-Mining/VLDB2005-RP%20Local)<br>
 
 - 决策树(Decision tree)<br>
-Based on the dataset [kddcup99])(http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html), build a decision tree to classfy the attacking type, more info, see [here...]()
+Based on the dataset [kddcup99])(http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html), build a decision tree to classfy the attacking type, code implement, see [here...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Data-Mining/decision-tree)
 
 To learn more details about the implement of Apriori(in Cpp, under Linux platform), see [here...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Data-Mining/Apriori)
 
