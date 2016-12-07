@@ -21,7 +21,7 @@ LLVM IR has three equivalent forms:
 - bitcode generation using following cmds
 ```
 $ clang -c –emit-llvm –g3 funptr.c
-$ opt –mem2reg funcptr.bc –o funcptr.opt
+$ opt –mem2reg -S funcptr.bc –o funcptr.opt
 ```
 
 ## Postscripts
