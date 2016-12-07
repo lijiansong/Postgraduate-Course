@@ -17,5 +17,12 @@ LLVM IR has three equivalent forms:
 - An on-disk representation that is encoded in a space-efficient form(the bitcodefiles)
 - An on-disk representation in ahuman-readable text form(the LLVM assembly files)
 
+## Gen bitcode
+- bitcode generation using following cmds
+```
+$ clang –emit-llvm –g3 funptr.c
+$ opt –mem2reg funcptr.bc –o funcptr.opt
+```
+
 ## Postscripts
 - Remove every uses of [getGlobalContext](https://reviews.llvm.org/rL266379), but the C API, and the [solution...](https://reviews.llvm.org/D19094)
