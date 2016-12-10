@@ -31,7 +31,7 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 ## Compilation Technology
 - [LLVM](https://github.com/lijiansong/Postgraduate-Course/tree/master/Compilation/LLVM)
 - [Clang](https://github.com/lijiansong/Postgraduate-Course/tree/master/Compilation/Clang)
-- [some toy code...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Compilation/test)
+- [some toy code...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Compilation/Clang%20%26%20LLVM%20Tutorial)
 
 
 ## Concurrence and  Multi-Core Programming
