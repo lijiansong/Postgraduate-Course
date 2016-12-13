@@ -1,0 +1,121 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{amssymb,amsfonts,amsmath}
+\usepackage{multirow}
+\usepackage{epsfig}
+\usepackage{subfigure}
+
+\def\pdfshellescape{1}
+\usepackage{epstopdf}
+
+\usepackage{color}
+\usepackage{float}
+
+%opening
+\title{Assignment 5}
+\author{Algorithm Design and Analysis}
+
+\begin{document}
+
+\maketitle
+
+Notice:\\
+\begin{enumerate} 
+\item {\bf Due} 9:00 a.m., Dec. 09 for hard copy and 11:55 p.m., Dec. 09 for  digital version;
+\item Please submit your answers in hard copy {\bf AND} submit a digital version to UCAS website https://www2.ucas.ac.cn/ .
+\item Please choose \textbf{at least 4} problems from Problem 1-7 and \textbf{at least 2} problems from Problem 8-10.
+\item When you're asked to give an algorithm, you should do at least the following things:
+\begin{itemize} 
+\item 
+Describe the basic idea of your algorithm in natural language {\bf AND} pseudo-code;
+\item 
+Prove the correctness of your algorithm.
+\item Analyse the complexity of your algorithm.
+\end{itemize} 
+\end{enumerate}
+
+
+\section{Load balance}
+\noindent
+You have some different computers and jobs. For each job, it can only be done on one of two specified computers.
+The load of a computer is the number of jobs which have been done on the computer. Give the number of jobs and two computer ID for each job. You task is to minimize the max load.
+
+(hint: binary search)
+\section{Matrix}
+\noindent
+For a matrix filled with $0$ and $1$, you know the sum of every row and column. You are asked to give such a matrix which satisfys the conditions.
+
+\section{Unique Cut}
+\noindent
+Let $G = (V, E)$ be a directed graph, with source $s \in V$ , sink $t \in V$ , and nonnegative edge capacities $c_e$. Give a polynomial-time algorithm to decide whether $G$ has a unique minimum $s − t$ cut.
+
+\section{Problem Reduction}
+\noindent
+There is a matrix with numbers which means the cost when you walk through this point.
+you are asked to walk through the matrix from the top left point to the right bottom point and then return to the top left point with the minimal cost.
+Note that when you walk from the top to the bottom you can just walk to the right or bottom point and when you return, you can just walk to the top or left point. And each point 
+CAN NOT be walked through more than once.  
+
+\section{Network Cost}
+\noindent
+For a network, there is one source and one sink. Every edge is directed and has two value $c$ and $a$. $c$ means the maximum flow of the adge. $a$ is a coefficient number which means that if the flow of the edge is $x$, the cost is $ax^2$.
+
+Design an algorithm to get the Minimum Cost Maximum Flow.
+
+\section{Maximum Cohesiveness}
+\noindent
+Given an undirected graph, each edge is assigned one weight, find a subset $S$ of
+nodes to maximize $e(S)/|S|$, where $e(S)$ denotes the sum of edge weights in $S$
+and $|S|$ is the number of nodes in $S$.
+Give a polynomial-time algorithm that takes a rational number $\alpha$ and de-
+termines whether there exists a set $S$ with cohesiveness at least $\alpha$.
+
+
+\section{Maximum flow}
+\noindent
+Another way to formulate the maximum-flow problem as a linear program is via flow decomposition. Suppose we consider all (exponentially many) s-t paths $p$ in the network G, and let $f_p$ be the amount of flow on path $p$. Then maximum flow says to find
+
+\[
+\begin{array}{rrrrrr}
+ \max & z & = &\sum{f_p}   & & \\
+ s.t. &  \sum_{e \in p}f_p  & \leq & u_e ,& for \quad all \quad edge \quad e &   \\
+      & f_p  & \geq & 0  & &  \\
+\end{array} \nonumber
+\]
+
+(The first constraint says that the total flow on all paths through e must be less than ue.) Take the dual of this linear program and give an English explanation of the objective and constraints.
+
+\section{Ford-Fulkerson algorithm}
+Implement Ford-Fulkerson algorithm to find the maximum flow of the following network, and list your intermediate steps.
+Use you implementation to solve problem 1 and show your answers.
+
+
+\noindent
+INPUT: ($N$, $M$) means number of jobs and computers. Next $N$ line, each line has two computer ID for a job. see more detial in the file problem1.data.
+
+\noindent
+OUTPUT: the minimum number of the max load.
+
+\section{Push-relabel}
+\noindent
+Implement push-relabel algorithm to find the maximum flow of a network, and list your intermediate steps.
+Use your implementation to solve problem 2 and write a check problem to see if your answer is right.
+
+\noindent
+INPUT: Numbers of rows and columns. And the sum of them. See more detial in the file problem2.data. 
+
+\noindent
+OUTPUT: The matrix you get. Any one satisfy the conditions will be accept. 
+
+\section{Cycle canceling}
+\noindent
+Implement Cycle canceling algorithm to find the minimum cost flow of a network, and list your intermediate steps.
+
+\noindent
+INPUT: A directed graph $G = <V,E>$. Each edge e has a capacity $c_{e}$ and a cost $w_{e}$. Two special points: source s and sink t. Please make the input in DIMACS format. For DIMACS format, see DIMACS maximum flow problems.html in this folder.
+
+\noindent
+OUTPUT: For each edge e, to assign a flow $ f_{e}$ such that $ \sum _{e \in E} f_{e}w_{e}$ is minimized.
+
+\end{document}
