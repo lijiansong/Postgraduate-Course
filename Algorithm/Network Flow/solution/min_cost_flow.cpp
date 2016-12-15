@@ -5,12 +5,13 @@
 #include <algorithm>
 #include <fstream>
 #include <cstdio>
-//#include <queue>
 using namespace std;
 const int MAXV=1001;
 const int INF=0x7fffffff;
 //the number of nodes and edges
 int V,edges;
+//flow of each edge
+int flow[MAXV][MAXV]={0};
 int supply/*,demand*/;
 //source node and the sink node
 int s,t;
@@ -90,9 +91,20 @@ int min_cost_flow(int s,int t,int f)
 			e.cap-=d;
 			G[v][e.rev].cap+=d;
 			//cout<<d<<endl;
+			flow[prevv[v]][v]+=d;
 			//cout<<"from "<<prevv[v]+1<<" to "<<v+1<<" flow: "<<d<<endl;
 		}
 	}
+	//output the flow of each edge
+	for(int i=0;i<V;++i)
+	{
+		for(int j=0;j<V;++j)
+		{
+			if(flow[i][j]!=0)
+			cout<<"from "<<i+1<<" to "<<j+1<<" flow: "<<flow[i][j]<<endl;
+		}
+	}
+	
 	return res;
 }
 
@@ -108,7 +120,7 @@ void parse(string line)
 	else if('p'==ch)
 	{
 		sscanf(line.c_str(),"%*s %*s %d %d",&V,&edges);
-		cout<<"nodes num: "<<V<<" arcs num: "<<edges<<endl;
+		//cout<<"nodes num: "<<V<<" arcs num: "<<edges<<endl;
 	}
 	//the source and the sink, parse to get the supply
 	else if('n'==ch)
@@ -120,13 +132,13 @@ void parse(string line)
 		{
 			s=tmp_s-1;
 			supply=tmp_supply;
-			cout<<"s: "<<tmp_s<<" supply: "<<tmp_supply<<endl;
+			//cout<<"s: "<<tmp_s<<" supply: "<<tmp_supply<<endl;
 		}
 		//the sink node
 		else
 		{
 			t=tmp_s-1;
-			cout<<"t: "<<tmp_s<<endl;
+			//cout<<"t: "<<tmp_s<<endl;
 		}
 	}
 	//the edges
@@ -136,7 +148,7 @@ void parse(string line)
 		sscanf(line.c_str(),"%*s %d %d %d %d %d",&tmp_from,&tmp_to,&tmp_minflow,&tmp_maxflow,&tmp_cost);
 		if(0==tmp_minflow)
 		{
-			cout<<"from: "<<tmp_from<<" to: "<<tmp_to<<" cap: "<<tmp_maxflow<<" cost: "<<tmp_cost<<endl;
+			//cout<<"from: "<<tmp_from<<" to: "<<tmp_to<<" cap: "<<tmp_maxflow<<" cost: "<<tmp_cost<<endl;
 			add_edge(tmp_from-1,tmp_to-1,tmp_maxflow,tmp_cost);
 		}
 		else
@@ -153,7 +165,7 @@ void parse(string line)
 int main()
 {
 	ifstream infile;
-	infile.open("in.txt");
+	infile.open("p10-in.txt");
 	if(infile.is_open())
 	{
 		string line;
@@ -161,7 +173,7 @@ int main()
 		{
 			parse(line);
 		}
-		cout<<min_cost_flow(s,t,supply)<<endl;
+		cout<<"min cost: "<<min_cost_flow(s,t,supply)<<endl;
 		s=0,t=0,supply=0;
 		infile.close();
 	}

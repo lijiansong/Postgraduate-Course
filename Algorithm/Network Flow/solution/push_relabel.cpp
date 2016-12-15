@@ -92,7 +92,7 @@ void push_relabel()
 
 int main()
 {
-    freopen("in.txt","r",stdin);
+    freopen("p2-in.txt","r",stdin);
     while(cin>>m>>n)
     {
         //0~m-1 is the row node,m~m+n-1 is the column node, s is m+n, t is m+n+1
