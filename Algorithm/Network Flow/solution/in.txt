@@ -1,0 +1,19 @@
+c This is a simple example file to demonstrate the DIMACS
+c input file format for minimum cost flow problems. The solution
+c vector is [2,2,2,0,4] with cost at 14.
+c
+c Problem line (nodes, links)
+p min 4 5
+c
+c Node descriptor lines (supply+ or demand-)
+n 1 4
+n 4 -4
+c
+c Arc descriptor lines (from, to, minflow, maxflow, cost)
+a 1 2 0 4 2
+a 1 3 0 2 2
+a 2 3 0 2 1
+a 2 4 0 3 3
+a 3 4 0 5 1
+c
+c End of file
