@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <cstdio>
+//#include <queue>
 using namespace std;
 const int MAXV=1001;
 const int INF=0x7fffffff;
@@ -14,10 +15,10 @@ int supply/*,demand*/;
 //source node and the sink node
 int s,t;
 //edge
-struct edge
+typedef struct
 {
 	int to,cap,cost,rev;
-};
+}edge;
 //the network graph
 vector<edge> G[MAXV];
 //minimum distance
@@ -38,14 +39,14 @@ void add_edge(int from,int to,int cap,int cost)
 	// G[to].push_back((edge){from,0,-cost,G[from].size()-1});
 }
 
-//min-cost flow algorithm
+//min-cost flow algorithm, from s to t and the supply is f
 int min_cost_flow(int s,int t,int f)
 {
 	int res=0;
 	//using Bellman-Ford Algorithm to get the shortest path from s to t
 	while(f>0)
 	{
-		fill(dist,dist+V,INF);
+		fill(dist, dist + V, INF);
 		dist[s]=0;
 		bool update=true;
 		while(update)
@@ -53,10 +54,10 @@ int min_cost_flow(int s,int t,int f)
 			update=false;
 			for(int v=0;v<V;++v)
 			{
-				if(dist[v]==INF)	continue;
-				for(int i=0;i<G[v].size();++i)
+				if(dist[v]==INF) continue;
+				for(int i=0;i < G[v].size(); ++i)
 				{
-					edge &e=G[v][i];
+					edge &e = G[v][i];
 					if(e.cap>0 && dist[e.to]>dist[v]+e.cost)
 					{
 						dist[e.to]=dist[v]+e.cost;
@@ -67,24 +68,29 @@ int min_cost_flow(int s,int t,int f)
 				}
 			}
 		}
+		//cannot augmenting
 		if(dist[t]==INF)
 		{
 			return -1;
 		}
 
-		//argument along the shortest path form s to t
+		//augmenting along the shortest path from s to t
 		int d=f;
-		for(int v=0;v!=s;v=prevv[v])
+		for(int v=t;v!=s;v=prevv[v])
 		{
 			d=min(d,G[prevv[v]][preve[v]].cap);
 		}
+
 		f-=d;
 		res+=d*dist[t];
+		//cout<<"t: "<<t<<" s: "<<s<<endl;
 		for(int v=t;v!=s;v=prevv[v])
 		{
 			edge &e=G[prevv[v]][preve[v]];
 			e.cap-=d;
 			G[v][e.rev].cap+=d;
+			//cout<<d<<endl;
+			//cout<<"from "<<prevv[v]+1<<" to "<<v+1<<" flow: "<<d<<endl;
 		}
 	}
 	return res;
