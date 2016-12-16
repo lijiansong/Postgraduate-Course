@@ -5,6 +5,8 @@ Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~db
 * [Divide and Conquer](#divide-and-conquer)
 * [Dynamic Programming](#dynamic-programming)
 * [Greedy](#greedy)
+* [Linear Programming](#linear-programming)
+* [Network Flow](#network-flow)
 
 ## Divide and Conquer
 - [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Divide%20and%20Conquer/Assignment1_DandC.pdf)
