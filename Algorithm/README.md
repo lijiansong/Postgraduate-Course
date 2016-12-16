@@ -16,4 +16,13 @@ Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~db
 
 ## Greedy
 - [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Greedy/Assignment3_Greedy.pdf)
-- [Solution]()
+- [Solution](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm/Greedy/solution)
+
+## Linear Programming 
+- [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Linear%20Programming/Assignment4_LP.pdf)
+- [Solution](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm/Linear%20Programming/solution)
+
+## Network Flow 
+- [Assignment](https://github.com/lijiansong/Postgraduate-Course/blob/master/Algorithm/Network%20Flow/Assignment5_NF.pdf)
+- [Solution](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm/Network%20Flow/solution)
+
