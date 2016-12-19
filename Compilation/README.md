@@ -22,6 +22,7 @@ $xdot file.dot
 
 
 ## Reference
+[Equations for very Busy Expressions](http://web.cs.wpi.edu/~kal/PLT/PLT9.6.1.html)
 [CGO-2004, LLVM tech report...](http://llvm.org/pubs/2004-01-30-CGO-LLVM.html)<br>
 [Build system tools, Ninja](http://www.aosabook.org/en/posa/ninja.html)<br>
 [LLVM Core Libraries Infrastruction](http://llvm.org/releases/3.0/docs/UsingLibraries.html)<br>
