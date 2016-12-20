@@ -11,6 +11,36 @@ $ clang -c –emit-llvm –g3 funptr.c
 $ opt -dot-cfg-only funcptr.bc
 $ opt –mem2reg -S funcptr.bc –o funcptr.opt
 ```
+- with so many test cases, it may be anoying to generate the bitcode file one by one, `system` function may be useful, we can call `system()` like this.
+
+```
+#include <cstdlib>
+#include <cstdio>
+#include <string>
+#include <sstream>
+#include <cstring>
+using namespace std;
+int main(int argc, char const *argv[])
+{
+	for(int i=1;i<=34;++i)
+	{
+		stringstream ss;
+		ss<<i;
+		//char *num=itoa(i);
+		string cmd_str="clang -c -emit-llvm -g3 test"+ss.str()+".c";
+		printf("%s\n",cmd_str.c_str());
+		system(cmd_str.c_str());
+
+		cmd_str="opt -S -mem2reg test"+ss.str()+".bc -o test"+ss.str()+".opt";
+		printf("%s\n",cmd_str.c_str());
+		system(cmd_str.c_str());
+		//delete num;
+		ss.clear();
+	}
+	printf("done!\n");
+	return 0;
+}
+```
 
 ## Reference
 [1] [Birch, Johnnie; van Engelen, Robert; Gallivan, Kyle. "Value Range Analysis of Conditionally Updated Variables and Pointers".](http://www.cs.fsu.edu/~engelen/cpcpaper.pdf)
