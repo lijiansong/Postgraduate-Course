@@ -5,5 +5,5 @@ The resulting information can be used in optimizations such as `redundancy elimi
 Techniques for value range analysis typically use `symbolic analysis` extensively.
 
 ## Reference
-[1] [Birch, Johnnie; van Engelen, Robert; Gallivan, Kyle. "Value Range Analysis of Conditionally Updated Variables and Pointers"](http://www.cs.fsu.edu/~engelen/cpcpaper.pdf)
+[1] [Birch, Johnnie; van Engelen, Robert; Gallivan, Kyle. "Value Range Analysis of Conditionally Updated Variables and Pointers".](http://www.cs.fsu.edu/~engelen/cpcpaper.pdf)
 [2] [Adding Range Analysis to LLVM](http://llvm.1065342.n5.nabble.com/Range-Analysis-GSoC-2011-Proposal-td40546.html)
