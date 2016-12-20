@@ -22,7 +22,7 @@ LLVM IR has three equivalent forms:
 ```
 $ clang -c -emit-llvm -g3 funcptr.c
 $ opt -dot-cfg-only funcptr.bc
-$ opt –mem2reg -S funcptr.bc –o funcptr.opt
+$ opt -S –mem2reg funcptr.bc –o funcptr.opt
 ```
 
 ## Postscripts
