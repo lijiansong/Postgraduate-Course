@@ -43,5 +43,5 @@ int main(int argc, char const *argv[])
 ```
 
 ## Reference
-[1] [Birch, Johnnie; van Engelen, Robert; Gallivan, Kyle. "Value Range Analysis of Conditionally Updated Variables and Pointers".](http://www.cs.fsu.edu/~engelen/cpcpaper.pdf)
-[2] [Adding Range Analysis to LLVM](http://llvm.1065342.n5.nabble.com/Range-Analysis-GSoC-2011-Proposal-td40546.html)
+[1] [Birch, Johnnie; van Engelen, Robert; Gallivan, Kyle. "Value Range Analysis of Conditionally Updated Variables and Pointers".](http://www.cs.fsu.edu/~engelen/cpcpaper.pdf)<br>
+[2] [Adding Range Analysis to LLVM](http://llvm.1065342.n5.nabble.com/Range-Analysis-GSoC-2011-Proposal-td40546.html)<br>
