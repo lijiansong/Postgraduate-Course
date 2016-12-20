@@ -6,8 +6,8 @@ This archieve is the code implement of my postgraduate course, such as Data Mini
 /etc/hosts
 $ sudo rcnscd restart
 Windows:
-C:\Windows\System32\drivers\etc\hosts<br>
-$ ipconfig /flushdns<br>
+C:\Windows\System32\drivers\etc\hosts
+$ ipconfig /flushdns
 format:
 $ indent -npro -nip -nlp -npsl -i4 -ts4 -sob -l200 -ss -bl -bli 0
 `
