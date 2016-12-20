@@ -8,7 +8,7 @@ Techniques for value range analysis typically use `symbolic analysis` extensivel
 - bitcode generation using following cmds
 ```
 $ clang -c –emit-llvm –g3 funptr.c
-$ opt -dot-cfg-only funcptr.bc
+$ opt -dot-cfg funcptr.bc
 $ opt -dot-cfg-only funcptr.bc
 $ opt -S –mem2reg funcptr.bc –o funcptr.opt
 ```
