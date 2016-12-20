@@ -18,6 +18,14 @@ int main(int argc, char const *argv[])
 		cmd_str="opt -S -mem2reg test"+ss.str()+".bc -o test"+ss.str()+".opt";
 		printf("%s\n",cmd_str.c_str());
 		system(cmd_str.c_str());
+
+		cmd_str="opt -dot-cfg test"+ss.str()+".opt";
+		printf("%s\n",cmd_str.c_str());
+		system(cmd_str.c_str());
+
+		cmd_str="mv cfg.foo.dot test"+ss.str()+".dot";
+		printf("%s\n",cmd_str.c_str());
+		system(cmd_str.c_str());
 		//delete num;
 		ss.clear();
 	}
