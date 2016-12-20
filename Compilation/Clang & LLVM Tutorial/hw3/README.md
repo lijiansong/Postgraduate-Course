@@ -11,6 +11,7 @@ $ clang -c –emit-llvm –g3 funptr.c
 $ opt -dot-cfg funcptr.bc
 $ opt -dot-cfg-only funcptr.bc
 $ opt -S –mem2reg funcptr.bc –o funcptr.opt
+$ opt -dot-cfg funcptr.opt
 ```
 - with so many test cases, it may be anoying to generate the bitcode file one by one, `system` function may be useful, we can call `system()` like this.
 
