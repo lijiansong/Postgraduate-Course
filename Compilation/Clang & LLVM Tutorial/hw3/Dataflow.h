@@ -17,7 +17,8 @@ using namespace llvm;
 ///Base dataflow visitor class, defines the dataflow function
 
 template <class T>
-class DataflowVisitor {
+class DataflowVisitor 
+{
 public:
     virtual ~DataflowVisitor() { }
 
@@ -26,16 +27,22 @@ public:
     /// @block the Basic Block
     /// @dfval the input dataflow value
     /// @isforward true to compute dfval forward, otherwise backward
-    virtual void compDFVal(BasicBlock *block, T *dfval, bool isforward) {
-        if (isforward == true) {
+    virtual void compDFVal(BasicBlock *block, T *dfval, bool isforward) 
+    {
+        if (isforward == true) 
+        {
            for (BasicBlock::iterator ii=block->begin(), ie=block->end(); 
-                ii!=ie; ++ii) {
+                ii!=ie; ++ii) 
+           {
                 Instruction * inst = &*ii;
                 compDFVal(inst, dfval);
            }
-        } else {
+        } 
+        else 
+        {
            for (BasicBlock::reverse_iterator ii=block->rbegin(), ie=block->rend();
-                ii != ie; ++ii) {
+                ii != ie; ++ii) 
+           {
                 Instruction * inst = &*ii;
                 compDFVal(inst, dfval);
            }
@@ -62,7 +69,8 @@ public:
 /// For each basicblock, we compute its input dataflow val and its output dataflow val
 ///
 template<class T>
-struct DataflowResult {
+struct DataflowResult 
+{
     typedef typename std::map<BasicBlock *, std::pair<T, T> > Type;
 };
 
@@ -97,9 +105,11 @@ void compBackwardDataflow( Function *fn,
 
 template<class T>
 void printDataflowResult(raw_ostream &out,
-                         const typename DataflowResult<T>::Type &dfresult) {
+                         const typename DataflowResult<T>::Type &dfresult) 
+{
     for ( typename DataflowResult<T>::Type::const_iterator it = dfresult.begin();
-            it != dfresult.end(); ++it ) {
+            it != dfresult.end(); ++it ) 
+    {
         if (it->first == NULL) out << "*";
         else it->first->dump();
         out << "\n\tin : "
@@ -110,6 +120,6 @@ void printDataflowResult(raw_ostream &out,
     }
 }
 
-#include "Dataflow.tpp"
+#include "Dataflow_.h"
 
 #endif /* !_DATAFLOW_H_ */

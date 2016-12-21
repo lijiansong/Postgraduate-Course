@@ -29,14 +29,33 @@ using namespace llvm;
 
 
 ///!TODO TO BE COMPLETED BY YOU FOR ASSIGNMENT 2
-struct FuncPtrPass : public FunctionPass {
+struct FuncPtrPass : public FunctionPass 
+{
   static char ID; // Pass identification, replacement for typeid
   FuncPtrPass() : FunctionPass(ID) {}
 
   
-  bool runOnFunction(Function &F) override {
+  bool runOnFunction(Function &F) override 
+  {
     errs() << "Hello: ";
     errs().write_escaped(F.getName()) << '\n';
+    //for each basic block in the function
+ //    Function::iterator bb_it = F.begin (), bb_ie = F.end ();
+	// for (; bb_it != bb_ie; ++bb_it)
+	// {
+	// 	//for each intruction in the basic block
+	// 	BasicBlock::iterator ii = bb_it->begin (), ie = bb_it->end ();
+	// 	for (; ii != ie; ++ii)
+	// 	{
+	// 		Instruction *inst = dyn_cast < Instruction > (ii);
+	// 		if (isa < ReturnInst > (inst))
+	// 		{
+	// 			ReturnInst * ret = dyn_cast < ReturnInst > (ii);
+	// 			errs()<<"+++++++++++"<<ret->getName()<<"\n";
+
+	// 		}
+	// 	}//end of ii
+	// }//end of bb_it
     return false;
   }
 };
@@ -54,8 +73,10 @@ InputFilename(cl::Positional,
               cl::init(""));
 
 
-int main(int argc, char **argv) {
-   LLVMContext &Context = getGlobalContext();
+int main(int argc, char **argv) 
+{
+   //LLVMContext &Context = getGlobalContext();
+   static LLVMContext Context;
    SMDiagnostic Err;
    // Parse the command line to read the Inputfilename
    cl::ParseCommandLineOptions(argc, argv,
@@ -64,7 +85,8 @@ int main(int argc, char **argv) {
 
    // Load the input module
    std::unique_ptr<Module> M = parseIRFile(InputFilename, Err, Context);
-   if (!M) {
+   if (!M) 
+   {
       Err.print(argv[0], errs());
       return 1;
    }
