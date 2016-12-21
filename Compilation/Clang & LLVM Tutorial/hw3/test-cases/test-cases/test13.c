@@ -16,7 +16,7 @@ int foo(int a, int b) {
    }
    // range of z is [-10.. 100] 
    y = z * x;    // range of y is [-100..1000]
-   return z;    
+   return y;    
 }
 
 /// Expected output
