@@ -13,6 +13,13 @@ $ opt -dot-cfg-only funcptr.bc
 $ opt -S –mem2reg funcptr.bc –o funcptr.opt
 $ opt -dot-cfg funcptr.opt
 ```
+
+- for each basic block, we define the following data-flow equation：
+```
+in[B]=∪ A∈ pred(B)
+out[B]=in[B]∪gen[B]
+```
+
 - with so many test cases, it may be anoying to generate the bitcode file one by one, `system` function may be useful, we can call `system()` like this.
 
 ```
