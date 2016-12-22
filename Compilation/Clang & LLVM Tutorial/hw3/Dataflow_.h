@@ -12,12 +12,48 @@
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/Function.h>
 
+//todo: all process logic to be written here
+//using namespace std;
+
 template<class T>
 void compForwardDataflow (Function *fn,
                           DataflowVisitor<T> *visitor,
                           typename DataflowResult<T>::Type *result,
                           const T & initval)
 {
+    std::set<BasicBlock *> worklist;
+    // Initialize the worklist with all exit blocks
+    for(Function::iterator bi=fn->begin(),be=fn->end();bi!=be;++bi)
+    {
+        BasicBlock *bb=&*bi;
+        result->insert(std::make_pair(bb,std::make_pair(initval,initval)));
+        worklist.insert(bb);
+    }
+
+    // Iteratively compute the dataflow result
+    
+    //init
+    BasicBlock *bb=*worklist.begin();
+    worklist.erase(worklist.begin());
+
+
+
+    while(!worklist.empty())
+    {
+        bb=*worklist.begin();
+        worklist.erase(worklist.begin());
+
+        T bbEnterVal = (*result)[bb].first;
+
+        for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
+        {
+            //merge(map<string,aaa> dest,map<string,aaa> src);  
+        }
+
+        visitor->compDFVal(bb, &bbEnterVal, true);
+        (*result)[bb].second = bbEnterVal;
+
+    }
     return;
 }
 
