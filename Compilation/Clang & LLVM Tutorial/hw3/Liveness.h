@@ -18,11 +18,18 @@
 #include "llvm/IR/IntrinsicInst.h"
 
 #include "Dataflow.h"
+#include <string>
+#include <vector>
 using namespace llvm;
+using namespace std;
 
 struct LivenessInfo 
 {
-   std::set<Instruction *> LiveVars;             /// Set of variables which are live
+   std::set<Instruction *> LiveVars;/// Set of variables which are live
+   
+   // interval of each vars,name of each vars is the key, and vector<int> is its range 
+   map<string,pair<int,int> > VarRanges;
+
    LivenessInfo() : LiveVars() {}
    LivenessInfo(const LivenessInfo & info) : LiveVars(info.LiveVars) {}
   
@@ -44,21 +51,76 @@ inline raw_ostream &operator<<(raw_ostream &out, const LivenessInfo &info)
     return out;
 }
 
-	
 class LivenessVisitor : public DataflowVisitor<struct LivenessInfo> 
 {
 public:
    LivenessVisitor() {}
+
    void merge(LivenessInfo * dest, const LivenessInfo & src) override 
    {
        for (std::set<Instruction *>::const_iterator ii = src.LiveVars.begin(), 
             ie = src.LiveVars.end(); ii != ie; ++ii) 
        {
            //errs()<<"+++++ "<<*ii<<"\n";
+
            dest->LiveVars.insert(*ii);
+           // if(isa<ICmpInst>(ii))
+           // {
+           //  //get its condition val and update its range 
+           // }
        }
    }
+    //handle the icmpinst of the bb's pred basic block
+    void handlePredIcmp(/*const*/ BasicBlock &bb) override
+    {
+       //for each intruction in the basic block
+       BasicBlock::iterator ii = bb->begin (), ie = bb->end ();
+       for (; ii != ie; ++ii)
+       {
+         Instruction *inst = dyn_cast < Instruction > (ii);
+         if (isa < ICmpInst > (inst))
+         {
+          //get its condition vars and the lhs and rhs
+         }
+         if(isa<BranchInst>)
+       }
+    }
 
+    //handle binary op,e.g.: + - * /
+    void handleBinaryOp(Instruction *inst,LivenessInfo *dfval) override
+    {
+      switch (inst->getOpcode()) 
+      {
+        case Instruction::Add:
+            break;
+
+        case Instruction::Mul:
+            break;
+
+        case Instruction::Sub:
+            break;
+
+        case Instruction::SDiv:
+            break;
+        case Instruction::UDiv:
+            break;
+
+        case Instruction::SRem:
+        case Instruction::URem:
+            break;
+
+        case Instruction::Or:
+            break;
+
+        case Instruction::And:
+            break;
+
+        case Instruction::Xor:
+            break;
+      }
+    }
+
+   //compute the interval of each inst
    void compDFVal(Instruction *inst, LivenessInfo * dfval) override
    {
         if (isa<DbgInfoIntrinsic>(inst)) return;
@@ -68,7 +130,13 @@ public:
         {
            Value * val = *oi;
            if (isa<Instruction>(val)) 
-               dfval->LiveVars.insert(cast<Instruction>(val));
+           {
+            dfval->LiveVars.insert(cast<Instruction>(val));
+            errs()<<*val<<"\n";
+
+           }
+           // else if(isa<>(val))
+           // {}
         }
    }
 };
@@ -105,7 +173,8 @@ public:
        DataflowResult<LivenessInfo>::Type result;
        LivenessInfo initval;
 
-       compBackwardDataflow(&F, &visitor, &result, initval);
+       //compBackwardDataflow(&F, &visitor, &result, initval);
+       compForwardDataflow(&F, &visitor, &result, initval);
        //printDataflowResult<LivenessInfo>(errs(), result);
        return false;
    }

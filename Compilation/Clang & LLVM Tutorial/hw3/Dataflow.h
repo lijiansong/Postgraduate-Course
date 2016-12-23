@@ -37,7 +37,7 @@ public:
                 Instruction * inst = &*ii;
                 compDFVal(inst, dfval);
            }
-        } 
+        }
         else 
         {
            for (BasicBlock::reverse_iterator ii=block->rbegin(), ie=block->rend();
@@ -62,6 +62,11 @@ public:
     /// @return true if dest changed
     ///
     virtual void merge( T *dest, const T &src ) = 0;
+
+    //todo: add process functions
+    //virtual void merge( T *dest, const T &src ) = 0;
+    //virtual void merge( T *dest, const T &src ) = 0;
+    //virtual void merge( T *dest, const T &src ) = 0;
 };
 
 ///

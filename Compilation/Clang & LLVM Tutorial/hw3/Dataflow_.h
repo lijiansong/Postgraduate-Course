@@ -13,7 +13,7 @@
 #include <llvm/IR/Function.h>
 
 //todo: all process logic to be written here
-//using namespace std;
+using namespace std;
 
 template<class T>
 void compForwardDataflow (Function *fn,
@@ -32,10 +32,12 @@ void compForwardDataflow (Function *fn,
 
     // Iteratively compute the dataflow result
     
-    //init
+    //the start block has no in dataflow, process independently
     BasicBlock *bb=*worklist.begin();
     worklist.erase(worklist.begin());
-
+    //T bbEnterVal = (*result)[bb].first;
+    //compute the start block's out-flow value(each var's interval)
+    visitor->compDFVal( bb, &((*result)[bb].second), true );
 
 
     while(!worklist.empty())
@@ -47,10 +49,14 @@ void compForwardDataflow (Function *fn,
 
         for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
         {
-            //merge(map<string,aaa> dest,map<string,aaa> src);  
+            //merge all pred basic blocks
+            //visitor->merge(&bbexitval, (*result)[succ].first);
+            //merge(dest, src)
+            visitor->merge(&bbEnterVal,(*result)[pi].second);
         }
 
         visitor->compDFVal(bb, &bbEnterVal, true);
+        //compute the basic block's out-flow
         (*result)[bb].second = bbEnterVal;
 
     }

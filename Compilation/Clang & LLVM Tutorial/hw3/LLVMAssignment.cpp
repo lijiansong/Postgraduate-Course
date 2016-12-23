@@ -37,8 +37,8 @@ struct FuncPtrPass : public FunctionPass
   
   bool runOnFunction(Function &F) override 
   {
-    errs() << "Hello: ";
-    errs().write_escaped(F.getName()) << '\n';
+    // errs() << "Hello: ";
+    // errs().write_escaped(F.getName()) << '\n';
     //for each basic block in the function
  //    Function::iterator bb_it = F.begin (), bb_ie = F.end ();
 	// for (; bb_it != bb_ie; ++bb_it)
