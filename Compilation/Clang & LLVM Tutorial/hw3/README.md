@@ -25,7 +25,7 @@ struct LivenessInfo
 {
    std::set<Instruction *> LiveVars;             /// Set of variables which are live
    // interval of each vars
-   map<string,vector<int> > VarIntervals;
+   map<string,pair<int,int> > VarRanges;
 
    LivenessInfo() : LiveVars() {}
    LivenessInfo(const LivenessInfo & info) : LiveVars(info.LiveVars) {}
