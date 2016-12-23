@@ -15,7 +15,7 @@ $ ./llvm-assignment your-bitcode-file
 LLVM IR has three equivalent forms:
 - An in-memory representation(the Instruction class, among others)
 - An on-disk representation that is encoded in a space-efficient form(the bitcodefiles)
-- An on-disk representation in ahuman-readable text form(the LLVM assembly files)
+- An on-disk representation in a human-readable text form(the LLVM assembly files)
 
 ## Gen bitcode
 - bitcode generation using following cmds
