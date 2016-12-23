@@ -19,6 +19,33 @@ $ opt -dot-cfg funcptr.opt
 in[B]=∪ A∈ pred(B)
 out[B]=in[B]∪gen[B]
 ```
+- main data-structures:
+```
+struct LivenessInfo 
+{
+   std::set<Instruction *> LiveVars;             /// Set of variables which are live
+   // interval of each vars
+   map<string,vector<int> > VarIntervals;
+
+   LivenessInfo() : LiveVars() {}
+   LivenessInfo(const LivenessInfo & info) : LiveVars(info.LiveVars) {}
+  
+   bool operator == (const LivenessInfo & info) const 
+   {
+       return LiveVars == info.LiveVars;
+   }
+};
+///
+/// Dummy class to provide a typedef for the detailed result set
+/// For each basicblock, we compute its input dataflow val and its output dataflow val
+/// T can be LivenessInfo
+template<class T>
+struct DataflowResult 
+{
+    typedef typename std::map<BasicBlock *, std::pair<T, T> > Type;
+};
+
+```
 
 - with so many test cases, it may be anoying to generate the bitcode file one by one, `system` function may be useful, we can call `system()` like this.
 
