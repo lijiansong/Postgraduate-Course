@@ -16,7 +16,7 @@ $ opt -dot-cfg funcptr.opt
 
 - for each basic block, we define the following data-flow equation：
 ```
-in[B]=∪ out[A] | A∈ pred(B)
+in[B]=∪ out[A] | A∈ pred(B) && A！=S
 out[B]=in[B]∪gen[B]
 ```
 - main data-structures:
