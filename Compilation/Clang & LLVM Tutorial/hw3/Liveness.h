@@ -210,8 +210,8 @@ public:
       if(left[0]<=right[0] && right[1]<=left[1])
       {
         int tmp_left=right[0]-left[0];
-        int tmp_right=right[1]-left[1];
-        if(!tmp_left&&!tmp_right)
+        int tmp_right=left[1]-right[1];
+        if(tmp_left>=1 && tmp_right>=1)
         {
           result.push_back( left[0] );
           result.push_back( right[0]-1 );
@@ -220,8 +220,12 @@ public:
         }
         else
         {
-          errs()<<"cut: other cases"<<"\n";
+            errs()<<"cut: other cases"<<"\n";
         }
+      }
+      else
+      {
+          errs()<<"*****cut: other cases"<<"\n";
       }
       return result;
     }
@@ -928,21 +932,7 @@ public:
    void compDFVal(Instruction *inst, LivenessInfo * dfval,typename DataflowResult<LivenessInfo>::Type * result) override
    {
         if (isa<DbgInfoIntrinsic>(inst)) return;
-        // if(isa<ICmpInst>(inst))
-        // {
-        //   ICmpInst *icmpInst= dyn_cast<ICmpInst>(inst);
-        // }
-        if(isa<BranchInst>(inst))
-        {
-          // BranchInst *branch=dyn_cast<BranchInst>(inst);
-          // if(branch->isConditional())
-          // {
-          //   Value * condition = branch->getCondition();
-          //   ICmpInst * cmpInst = (ICmpInst *)condition;
-          //   //handleConditionalBranch();
-          // }
-          return;
-        }
+        if(isa<BranchInst>(inst)) return;
         if(isa<ReturnInst>(inst))
         {
             ReturnInst *ret_inst=dyn_cast<ReturnInst>(inst);

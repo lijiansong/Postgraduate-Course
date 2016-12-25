@@ -20,7 +20,7 @@ using namespace llvm;
 ///
 
 template<class T>
-struct DataflowResult 
+struct DataflowResult
 {
     typedef typename std::map<BasicBlock *, std::pair<T, T> > Type;
 };
