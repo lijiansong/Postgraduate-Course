@@ -68,6 +68,7 @@ public:
     //virtual void merge( T *dest, const T &src ) = 0;
     //virtual void merge( T *dest, const T &src ) = 0;
     //virtual void handlePredIcmp()
+    virtual void handlePredIcmp(BasicBlock* pred_bb, typename DataflowResult <T>::Type * result) = 0;
 };
 
 ///

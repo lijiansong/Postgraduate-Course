@@ -77,7 +77,7 @@ public:
          // }
         //merge
         auto it=src.VarRanges.begin();
-        auto ie=src.varRanges.end();
+        auto ie=src.VarRanges.end();
         for(;it!=ie;++it)
         {
             if(dest->VarRanges.count( (*it).first ) > 0)
@@ -102,13 +102,23 @@ public:
         {
             if(left.size()==2 && right.size()==2)
             {
-                //merge 
+                //merge
                 if(!intersect(left,right).empty())
                 {
                     int resultMin=min(left[0],right[0]);
                     int resultMax=max(left[1],right[1]);
                     result.push_back(resultMin);
                     result.push_back(resultMax);
+                }
+                else if(left[1]+1==right[0])
+                {
+                    result.push_back(left[0]);
+                    result.push_back(right[1]);
+                }
+                else if(right[1]+1==left[0])
+                {
+                    result.push_back(right[0]);
+                    result.push_back(left[1]);
                 }
                 else
                 {
@@ -118,9 +128,33 @@ public:
                     result.push_back(right[1]);
                 }
             }
-            else if(letf.size()==4 && right.size()==2)
+            else if(left.size()==4 && right.size()==2)
             {
-
+                //todo:
+                vector<int> tmp_left;
+                tmp_left.push_back(left[0]);
+                tmp_left.push_back(left[1]);
+                vector<int> tmp_result=join(tmp_left,right);
+                tmp_left.clear();
+                tmp_left.push_back(left[2]);
+                tmp_left.push_back(left[3]);
+                result=join(tmp_left,tmp_result);
+            }
+            else if(left.size()==2&& right.size()==4)
+            {
+                //todo
+                vector<int> tmp_right;
+                tmp_right.push_back(right[0]);
+                tmp_right.push_back(right[1]);
+                vector<int> tmp_result=join(tmp_right,left);
+                tmp_right.clear();
+                tmp_right.push_back(right[2]);
+                tmp_right.push_back(right[3]);
+                result=join(tmp_right,tmp_result);
+            }
+            else
+            {
+                //todo: other cases
             }
         }
         return result;
@@ -196,514 +230,529 @@ public:
     //handle the icmpinst of the pred_bb's pred basic block
     void handlePredIcmp(/*const*/ BasicBlock *pred_bb,
                                   /*BasicBlock *bb,*/
-                                  typename DataflowResult<LivenessInfo>::Type &result)
+                         typename DataflowResult<LivenessInfo>::Type *result) override
     {
        //for each intruction in the basic block
        BasicBlock::iterator ii = pred_bb->begin (), ie = pred_bb->end ();
        for (; ii != ie; ++ii)
        {
-            Instruction *inst = dyn_cast < Instruction > (*ii);
-            if(inst->isConditional())
+            Instruction *inst = dyn_cast < Instruction > (ii);
+            if(isa<BranchInst>(inst))
             {
-                Value * condition = inst->getCondition();
-                //ICmpInst * cmpInst = (ICmpInst *)condition;
-                ICmpInst * cmpInst=dyn_cast<ICmpInst>(condition);
-
-                int predicate = cmpInst->isSigned() ? cmpInst->getSignedPredicate() : cmpInst->getUnsignedPredicate();
-                //get the lhs and the rhs
-                Value * lhs = cmpInst->getOperand(0);
-                Value * rhs = cmpInst->getOperand(1);
-                ConstantInt * rhsConstant = tryGetConstantValue(rhs);
-                ConstantInt * lhsConstant = tryGetConstantValue(lhs);
-                vector<int> lhsRange = tryGetRange(lhs,(*result)[pred_bb].second);
-                vector<int> rhsRange = tryGetRange(rhs,(*result)[pred_bb].second);
-
-                //range is empty
-                vector<int> range; 
-
-                Value * variable = NULL;
-                ConstantInt * constant = NULL;
-
-                //both lhs and rhs is constant
-                if((lhsConstant && rhsConstant) /*|| (lhsRange.empty() && rhsRange.empty())*/)
+                BranchInst *br_inst=dyn_cast<BranchInst>(inst);
+                if(br_inst->isConditional())
                 {
-                    errs()<<"both lhs and rhs is constant!"<<"\n";
-                    return;
-                }
-                //rhs is a constant int, but lhs is not
-                else if(rhsConstant)
-                {
-                    variable=lhs;
-                    constant=rhsConstant;
-                }
-                //lhs is a constant int, but rhs is not
-                else if(lhsConstant)
-                {
-                    variable=rhs;
-                    constant=lhsConstant;
-                }
-                //both variables
-                else
-                {
-                  variable=NULL;
-                }
-                // else
-                // {
-                //     //both have ranges, we have to assign new may ranges to both variables!
-                //     if (!lhsRange.empty() && !rhsRange.empty()) 
-                //     {
-                //         variable = NULL;
-                //     }
-                //     // assign to rhs, since it has no range
-                //     else if(!lhsRange.empty())
-                //     {
-                //         range=lhsRange;
-                //         variable=rhs;
-                //     }
-                //     //assign to lhs, since it has no range
-                //     else if(!rhsRange.empty())
-                //     {
-                //         range=rhsRange;
-                //         variable=lhs;
-                //     }
-                // }//end of else
+                    Value * condition = br_inst->getCondition();
+                    //ICmpInst * cmpInst = (ICmpInst *)condition;
+                    ICmpInst * cmpInst=dyn_cast<ICmpInst>(condition);
 
-                BasicBlock * trueBlock = branchInst->getSuccessor(0);
-                BasicBlock * falseBlock = branchInst->getSuccessor(1);
-                //process each probably case
-                if(variable && constant)
-                {
-                    vector<int> variableRange = tryGetRange(variable,(*result)[pred_bb].second);
-                    // X == C
-                    if(predicate == CmpInst::ICMP_EQ)
+                    int predicate = cmpInst->isSigned() ? cmpInst->getSignedPredicate() : cmpInst->getUnsignedPredicate();
+                    //get the lhs and the rhs
+                    Value * lhs = cmpInst->getOperand(0);
+                    Value * rhs = cmpInst->getOperand(1);
+                    ConstantInt * rhsConstant = tryGetConstantValue(rhs);
+                    ConstantInt * lhsConstant = tryGetConstantValue(lhs);
+                    vector<int> lhsRange = tryGetRange(lhs,&((*result)[pred_bb].second));
+                    vector<int> rhsRange = tryGetRange(rhs,&((*result)[pred_bb].second));
+
+                    //range is empty
+                    vector<int> range; 
+
+                    Value * variable = NULL;
+                    ConstantInt * constant = NULL;
+
+                    //both lhs and rhs is constant
+                    if((lhsConstant && rhsConstant) /*|| (lhsRange.empty() && rhsRange.empty())*/)
                     {
-                        vector<int> constantRange;
-                        map<string,vector<int>> trueMap=&((*result)[pred_bb].second).VarRanges;
-                        if(trueMap.count(variable->getName().str())>0)
+                        errs()<<"both lhs and rhs is constant!"<<"\n";
+                        return;
+                    }
+                    //rhs is a constant int, but lhs is not
+                    else if(rhsConstant)
+                    {
+                        variable=lhs;
+                        constant=rhsConstant;
+                    }
+                    //lhs is a constant int, but rhs is not
+                    else if(lhsConstant)
+                    {
+                        variable=rhs;
+                        constant=lhsConstant;
+                    }
+                    //both variables
+                    else
+                    {
+                      variable=NULL;
+                    }
+                    // else
+                    // {
+                    //     //both have ranges, we have to assign new may ranges to both variables!
+                    //     if (!lhsRange.empty() && !rhsRange.empty()) 
+                    //     {
+                    //         variable = NULL;
+                    //     }
+                    //     // assign to rhs, since it has no range
+                    //     else if(!lhsRange.empty())
+                    //     {
+                    //         range=lhsRange;
+                    //         variable=rhs;
+                    //     }
+                    //     //assign to lhs, since it has no range
+                    //     else if(!rhsRange.empty())
+                    //     {
+                    //         range=rhsRange;
+                    //         variable=lhs;
+                    //     }
+                    // }//end of else
+
+                    BasicBlock * trueBlock = br_inst->getSuccessor(0);
+                    BasicBlock * falseBlock = br_inst->getSuccessor(1);
+                    //process each probably case
+                    if(variable && constant)
+                    {
+                        vector<int> variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                        // X == C
+                        if(predicate == CmpInst::ICMP_EQ)
                         {
-                            trueMap.erase(variable->getName().str());
-                            constantRange.push_back(constant->getSExtValue());
-                            constantRange.push_back(constant->getSExtValue());
+                            vector<int> constantRange;
+                            map<string,vector<int>> *trueMap=&(((*result)[pred_bb].second).VarRanges);
+                            if(trueMap->count(variable->getName().str())>0)
+                            {
+                                trueMap->erase(variable->getName().str());
+                                constantRange.push_back(constant->getSExtValue());
+                                constantRange.push_back(constant->getSExtValue());
+                                vector<int> intersection = intersect(variableRange, constantRange);
+                                if (!intersection.empty())
+                                {
+                                    //trueMap[variable->getName().str()] = intersection;
+                                    //(*result)[trueBlock].first.VarRanges[variable->getName().str()]=intersection;
+                                    (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersection));
+                                }
+                                vector<int> _cut=cut(variableRange,constantRange);
+                                (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),_cut));
+                                //(*result)[trueBlock].first.VarRanges
+                            }
+                            //[-inf,inf]
+                            else
+                            {
+                            }
+                            trueMap=NULL;
+                        }
+                        // X != C
+                        else if(predicate == CmpInst::ICMP_NE)
+                        {
+                            vector<int> constantRange;
+                            map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                            falseMap->erase(variable->getName().str());
+                            constantRange.push_back(constant->getSExtValue()); // min
+                            constantRange.push_back(constant->getSExtValue()); // max
                             vector<int> intersection = intersect(variableRange, constantRange);
                             if (!intersection.empty())
                             {
-                                //trueMap[variable->getName().str()] = intersection;
-                                //(*result)[trueBlock].first.VarRanges[variable->getName().str()]=intersection;
-                                (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersection));
+                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersection));
                             }
                             vector<int> _cut=cut(variableRange,constantRange);
-                            (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),_cut));
-                            //(*result)[trueBlock].first.VarRanges
+                            (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),_cut));
+                            falseMap=NULL;
+                          
                         }
-                        //[-inf,inf]
+                        // X > C
+                        else if( ( (predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == lhs ) 
+                                  || ( (predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == rhs ) )
+                        {
+                            vector<int> constantRangeTrue;
+                            vector<int> constantRangeFalse;
+                            map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                            falseMap->erase(variable->getName().str());      
+                            constantRangeTrue.push_back(constant->getSExtValue()+1); // min
+                            constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+
+                            //falseMap.erase(variable->getName().str());        
+                            constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                            constantRangeFalse.push_back(constant->getSExtValue()); // max
+                            
+                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                            if (!intersectTrue.empty()) 
+                            {
+                              //trueMap[variable->getName().str()] = intersectTrue;
+                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                            }
+                            if (!intersectFalse.empty()) 
+                            {
+                              // falseMap[variable->getName().str()] = intersectFalse;
+                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                            }
+                            falseMap=NULL;
+                            
+                        }
+                        // X < C
+                        else if( ( (predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs ) 
+                                  || ( (predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == rhs ) )
+                        {
+                            vector<int> constantRangeTrue;
+                            vector<int> constantRangeFalse;
+                            map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                            falseMap->erase(variable->getName().str());
+
+                            constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                            constantRangeTrue.push_back(constant->getSExtValue()-1); // max
+          
+                            constantRangeFalse.push_back(constant->getSExtValue()); // min
+                            constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+                            
+                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                            if (!intersectTrue.empty()) 
+                            {
+                              //trueMap[variable->getName().str()] = intersectTrue;
+                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                            }
+                            if (!intersectFalse.empty()) 
+                            {
+                              //falseMap[variable->getName().str()] = intersectFalse;
+                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                            }
+                            falseMap=NULL;
+                        }
+                        // X >= C
+                        else if( ( (predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs ) 
+                                  || ( (predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == rhs ) )
+                        {
+                            vector<int> constantRangeTrue;
+                            vector<int> constantRangeFalse;
+                          
+                            map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                            falseMap->erase(variable->getName().str());
+
+                            constantRangeTrue.push_back(constant->getSExtValue()); // min
+                            constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+
+                            constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                            constantRangeFalse.push_back(constant->getSExtValue()-1); // max
+                            
+                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                            if (!intersectTrue.empty()) 
+                            {
+                              //trueMap[variable->getName().str()] = intersectTrue;
+                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                            }
+                            if (!intersectFalse.empty()) 
+                            {
+                              //falseMap[variable->getName().str()] = intersectFalse;
+                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                            }
+                            falseMap=NULL;
+                        }
+                        // X <= C
+                        else if( ( (predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs ) 
+                                  || ( (predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == rhs ) )
+                        {
+                            vector<int> constantRangeTrue;
+                            vector<int> constantRangeFalse;
+                                
+                            map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                            falseMap->erase(variable->getName().str());
+
+                            constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                            constantRangeTrue.push_back(constant->getSExtValue()); // max
+          
+                            constantRangeFalse.push_back(constant->getSExtValue()+1); // min
+                            constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+                            
+                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                            if (!intersectTrue.empty()) 
+                            {
+                              //trueMap[variable->getName().str()] = intersectTrue;
+                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                            }
+                            if (!intersectFalse.empty()) 
+                            {
+                              //falseMap[variable->getName().str()] = intersectFalse;
+                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                            }
+                            falseMap=NULL;
+                        }
+                        // else if (variable && !range.empty())
+                        // {
+                        // }
+                        //both operands are ranges
                         else
                         {
-                        }
-                    }
-                    // X != C
-                    else if(predicate == CmpInst::ICMP_NE)
-                    {
-                        vector<int> constantRange;
-                        map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                        falseMap.erase(variable->getName().str());
-                        constantRange.push_back(constant->getSExtValue()); // min
-                        constantRange.push_back(constant->getSExtValue()); // max
-                        vector<int> intersection = intersect(variableRange, constantRange);
-                        if (!intersection.empty())
-                        {
-                          (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersection));
-                        }
-                        vector<int> _cut=cut(variableRange,constantRange);
-                        (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),_cut));
-                      
-                    }
-                    // X > C
-                    else if( ( (predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == lhs ) 
-                              || ( (predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == rhs ) )
-                    {
-                        vector<int> constantRangeTrue;
-                        vector<int> constantRangeFalse;
-                        map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                        falseMap.erase(variable->getName().str());      
-                        constantRangeTrue.push_back(constant->getSExtValue()+1); // min
-                        constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-
-                        //falseMap.erase(variable->getName().str());        
-                        constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                        constantRangeFalse.push_back(constant->getSExtValue()); // max
-                        
-                        vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                        vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                        if (!intersectTrue.empty()) 
-                        {
-                          //trueMap[variable->getName().str()] = intersectTrue;
-                          (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                        }
-                        if (!intersectFalse.empty()) 
-                        {
-                          // falseMap[variable->getName().str()] = intersectFalse;
-                          (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                        }
-                        
-                    }
-                    // X < C
-                    else if( ( (predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs ) 
-                              || ( (predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == rhs ) )
-                    {
-                        vector<int> constantRangeTrue;
-                        vector<int> constantRangeFalse;
-                        map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                        falseMap.erase(variable->getName().str());
-
-                        constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                        constantRangeTrue.push_back(constant->getSExtValue()-1); // max
-      
-                        constantRangeFalse.push_back(constant->getSExtValue()); // min
-                        constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-                        
-                        vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                        vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                        if (!intersectTrue.empty()) 
-                        {
-                          //trueMap[variable->getName().str()] = intersectTrue;
-                          (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                        }
-                        if (!intersectFalse.empty()) 
-                        {
-                          //falseMap[variable->getName().str()] = intersectFalse;
-                          (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                        }
-                    }
-                    // X >= C
-                    else if( ( (predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs ) 
-                              || ( (predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == rhs ) )
-                    {
-                        vector<int> constantRangeTrue;
-                        vector<int> constantRangeFalse;
-                      
-                        map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                        falseMap.erase(variable->getName().str());
-
-                        constantRangeTrue.push_back(constant->getSExtValue()); // min
-                        constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-
-                        constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                        constantRangeFalse.push_back(constant->getSExtValue()-1); // max
-                        
-                        vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                        vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                        if (!intersectTrue.empty()) 
-                        {
-                          //trueMap[variable->getName().str()] = intersectTrue;
-                          (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                        }
-                        if (!intersectFalse.empty()) 
-                        {
-                          //falseMap[variable->getName().str()] = intersectFalse;
-                          (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                        }
-                    }
-                    // X <= C
-                    else if( ( (predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs ) 
-                              || ( (predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == rhs ) )
-                    {
-                        vector<int> constantRangeTrue;
-                        vector<int> constantRangeFalse;
-                            
-                        map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                        falseMap.erase(variable->getName().str());
-
-                        constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                        constantRangeTrue.push_back(constant->getSExtValue()); // max
-      
-                        constantRangeFalse.push_back(constant->getSExtValue()+1); // min
-                        constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-                        
-                        vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                        vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                        if (!intersectTrue.empty()) 
-                        {
-                          //trueMap[variable->getName().str()] = intersectTrue;
-                          (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                        }
-                        if (!intersectFalse.empty()) 
-                        {
-                          //falseMap[variable->getName().str()] = intersectFalse;
-                          (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                        }
-
-                    }
-                    // else if (variable && !range.empty())
-                    // {
-                    // }
-                    //both operands are ranges
-                    else
-                    {
-                        //assign LHS first
-                        range = rhsRange;
-                        variable = lhs;
-                        vector<int> variableRange = tryGetRange(variable);
-                        // X==Y
-                        if(predicate == CmpInst::ICMP_EQ)
-                        {
-
-                        }
-                        //X!=Y
-                        else if(predicate == CmpInst::ICMP_NE)
-                        {
-
-                        }
-                        // X > Y, Y->(min,max)
-                        else if( ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == lhs) || ((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == rhs) ) 
-                        {
-                            vector<int> constantRangeTrue;
-                            vector<int> constantRangeFalse;
-
-                            map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(range[0]+1); // min
-                            constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-
-                            constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                            constantRangeFalse.push_back(range[1]); // max
-
-                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                            if (!intersectTrue.empty()) 
+                            //assign LHS first
+                            range = rhsRange;
+                            variable = lhs;
+                            vector<int> variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                            // X==Y
+                            if(predicate == CmpInst::ICMP_EQ)
                             {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
                             }
-                            if (!intersectFalse.empty()) 
+                            //X!=Y
+                            else if(predicate == CmpInst::ICMP_NE)
                             {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
                             }
-
-                            range=lhsRange;
-                            variable=rhs;
-                            variableRange.clear();
-                            variableRange = tryGetRange(variable);
-                            constantRangeTrue.clear();
-                            constantRangeFalse.clear();
-                            intersectTrue.clear();
-                            intersectFalse.clear();
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                            constantRangeTrue.push_back(range[1]-1); // max
-
-                            constantRangeFalse.push_back(range[0]); // min
-                            constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-                          
-                            intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            intersectFalse = intersect(constantRangeFalse, variableRange);
-
-                            if (!intersectTrue.empty()) 
+                            // X > Y, Y->(min,max)
+                            else if( ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == lhs) || ((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == rhs) ) 
                             {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                vector<int> constantRangeTrue;
+                                vector<int> constantRangeFalse;
+
+                                map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                                falseMap->erase(variable->getName().str());
+
+                                constantRangeTrue.push_back(range[0]+1); // min
+                                constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+
+                                constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                                constantRangeFalse.push_back(range[1]); // max
+
+                                vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+
+                                range=lhsRange;
+                                variable=rhs;
+                                variableRange.clear();
+                                variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                                constantRangeTrue.clear();
+                                constantRangeFalse.clear();
+                                intersectTrue.clear();
+                                intersectFalse.clear();
+                                falseMap->erase(variable->getName().str());
+
+                                constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                                constantRangeTrue.push_back(range[1]-1); // max
+
+                                constantRangeFalse.push_back(range[0]); // min
+                                constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+                              
+                                intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                intersectFalse = intersect(constantRangeFalse, variableRange);
+
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                falseMap=NULL;
+
                             }
-                            if (!intersectFalse.empty()) 
+                            // X < Y, Y->(min,max)
+                            else if( ((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs) || ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == rhs) )
                             {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                vector<int> constantRangeTrue;
+                                vector<int> constantRangeFalse;
+
+                                map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                                falseMap->erase(variable->getName().str());
+
+                                constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                                constantRangeTrue.push_back(range[1]-1); // max
+
+                                constantRangeFalse.push_back(range[0]); // min
+                                constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+
+                                // vector<int> intersectTrue /*= intersect(constantRangeTrue, variableRange)*/;        
+                                // vector<int> intersectFalse /*= intersect(constantRangeFalse, variableRange)*/;      
+                              
+                                vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);
+
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                
+                                range=lhsRange;
+                                variable=rhs;
+                                variableRange.clear();
+                                variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                                constantRangeTrue.clear();
+                                constantRangeFalse.clear();
+                                intersectTrue.clear();
+                                intersectFalse.clear();
+                                falseMap->erase(variable->getName().str());
+
+                                
+                                constantRangeTrue.push_back(range[0]+1); // min
+                                constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+
+                                constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
+                                constantRangeFalse.push_back(range[1]); // max
+
+                                // vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                // vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                falseMap=NULL;
+
                             }
-
-                        }
-                        // X < Y, Y->(min,max)
-                        else if( ((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs) || ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == rhs) )
-                        {
-                            vector<int> constantRangeTrue;
-                            vector<int> constantRangeFalse;
-
-                            map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                            constantRangeTrue.push_back(range[1]-1); // max
-
-                            constantRangeFalse.push_back(range[0]); // min
-                            constantRangeFalse.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
-                          
-                            intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            intersectFalse = intersect(constantRangeFalse, variableRange);
-
-                            if (!intersectTrue.empty()) 
+                            // X >= Y, Y->(min,max)
+                            else if( ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs) || ((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == rhs) )
                             {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                vector<int> constantRangeTrue;
+                                vector<int> constantRangeFalse;
+
+                                map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                                falseMap->erase(variable->getName().str());
+
+                                constantRangeTrue.push_back(range[0]); // min
+                                constantRangeTrue.push_back(INF); // max
+
+                                constantRangeFalse.push_back(MINUS_INF); // min
+                                constantRangeFalse.push_back(range[1]-1); // max
+                              
+                                vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);
+
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                
+                                range=lhsRange;
+                                variable=rhs;
+                                variableRange.clear();
+                                variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                                constantRangeTrue.clear();
+                                constantRangeFalse.clear();
+                                intersectTrue.clear();
+                                intersectFalse.clear();
+                                falseMap->erase(variable->getName().str());
+
+                                
+                                constantRangeTrue.push_back(MINUS_INF); // min
+                                constantRangeTrue.push_back(range[1]); // max
+
+                                constantRangeFalse.push_back(range[0]+1); // min
+                                constantRangeFalse.push_back(INF); // max
+
+                                intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                intersectFalse = intersect(constantRangeFalse, variableRange);      
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                falseMap=NULL;
                             }
-                            if (!intersectFalse.empty()) 
+                            // X <= Y, Y->(min,max)
+                            else if( ((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs) || ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == rhs) )
                             {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                            }
-                            
-                            range=lhsRange;
-                            variable=rhs;
-                            variableRange.clear();
-                            variableRange = tryGetRange(variable);
-                            constantRangeTrue.clear();
-                            constantRangeFalse.clear();
-                            intersectTrue.clear();
-                            intersectFalse.clear();
-                            falseMap.erase(variable->getName().str());
+                                vector<int> constantRangeTrue;
+                                vector<int> constantRangeFalse;
 
-                            
-                            constantRangeTrue.push_back(range[0]+1); // min
-                            constantRangeTrue.push_back(INF /*APInt::getSignedMaxValue(32).getSExtValue()*/); // max
+                                map<string,vector<int>> *falseMap=&(((*result)[pred_bb].second).VarRanges);
+                                falseMap->erase(variable->getName().str());
 
-                            constantRangeFalse.push_back(MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue()*/); // min
-                            constantRangeFalse.push_back(range[1]); // max
+                                constantRangeTrue.push_back(MINUS_INF); // min
+                                constantRangeTrue.push_back(range[1]); // max
 
-                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                            if (!intersectTrue.empty()) 
-                            {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                            }
-                            if (!intersectFalse.empty()) 
-                            {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                constantRangeFalse.push_back(range[0]+1); // min
+                                constantRangeFalse.push_back(INF); // max
+                              
+                                vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);
+
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                
+                                range=lhsRange;
+                                variable=rhs;
+                                variableRange.clear();
+                                variableRange = tryGetRange(variable,&((*result)[pred_bb].second));
+                                constantRangeTrue.clear();
+                                constantRangeFalse.clear();
+                                intersectTrue.clear();
+                                intersectFalse.clear();
+                                falseMap->erase(variable->getName().str());
+
+                                constantRangeTrue.push_back(range[0]); // min
+                                constantRangeTrue.push_back(INF); // max
+
+                                constantRangeFalse.push_back(MINUS_INF); // min
+                                constantRangeFalse.push_back(range[1]-1); // max
+
+                                intersectTrue = intersect(constantRangeTrue, variableRange);        
+                                intersectFalse = intersect(constantRangeFalse, variableRange);      
+                                if (!intersectTrue.empty()) 
+                                {
+                                  //trueMap[variable->getName().str()] = intersectTrue;
+                                  (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
+                                }
+                                if (!intersectFalse.empty()) 
+                                {
+                                  //falseMap[variable->getName().str()] = intersectFalse;
+                                  (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
+                                }
+                                falseMap=NULL;
                             }
 
                         }
-                        // X >= Y, Y->(min,max)
-                        else if( ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs) || ((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == rhs) )
-                        {
-                            vector<int> constantRangeTrue;
-                            vector<int> constantRangeFalse;
-
-                            map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(range[0]); // min
-                            constantRangeTrue.push_back(INF); // max
-
-                            constantRangeFalse.push_back(MINUS_INF); // min
-                            constantRangeFalse.push_back(range[1]-1); // max
-                          
-                            intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            intersectFalse = intersect(constantRangeFalse, variableRange);
-
-                            if (!intersectTrue.empty()) 
-                            {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                            }
-                            if (!intersectFalse.empty()) 
-                            {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                            }
-                            
-                            range=lhsRange;
-                            variable=rhs;
-                            variableRange.clear();
-                            variableRange = tryGetRange(variable);
-                            constantRangeTrue.clear();
-                            constantRangeFalse.clear();
-                            intersectTrue.clear();
-                            intersectFalse.clear();
-                            falseMap.erase(variable->getName().str());
-
-                            
-                            constantRangeTrue.push_back(MINUS_INF); // min
-                            constantRangeTrue.push_back(range[1]); // max
-
-                            constantRangeFalse.push_back(range[0]+1); // min
-                            constantRangeFalse.push_back(INF); // max
-
-                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                            if (!intersectTrue.empty()) 
-                            {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                            }
-                            if (!intersectFalse.empty()) 
-                            {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                            }
-                        }
-                        // X <= Y, Y->(min,max)
-                        else if( ((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs) || ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == rhs) )
-                        {
-                            vector<int> constantRangeTrue;
-                            vector<int> constantRangeFalse;
-
-                            map<string,vector<int>> falseMap=&((*result)[pred_bb].second).VarRanges;
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(MINUS_INF); // min
-                            constantRangeTrue.push_back(range[1]); // max
-
-                            constantRangeFalse.push_back(range[0]+1); // min
-                            constantRangeFalse.push_back(INF); // max
-                          
-                            intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            intersectFalse = intersect(constantRangeFalse, variableRange);
-
-                            if (!intersectTrue.empty()) 
-                            {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                            }
-                            if (!intersectFalse.empty()) 
-                            {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                            }
-                            
-                            range=lhsRange;
-                            variable=rhs;
-                            variableRange.clear();
-                            variableRange = tryGetRange(variable);
-                            constantRangeTrue.clear();
-                            constantRangeFalse.clear();
-                            intersectTrue.clear();
-                            intersectFalse.clear();
-                            falseMap.erase(variable->getName().str());
-
-                            constantRangeTrue.push_back(range[0]); // min
-                            constantRangeTrue.push_back(INF); // max
-
-                            constantRangeFalse.push_back(MINUS_INF); // min
-                            constantRangeFalse.push_back(range[1]-1); // max
-
-                            vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-                            vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
-                            if (!intersectTrue.empty()) 
-                            {
-                              //trueMap[variable->getName().str()] = intersectTrue;
-                              (*result)[trueBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectTrue));
-                            }
-                            if (!intersectFalse.empty()) 
-                            {
-                              //falseMap[variable->getName().str()] = intersectFalse;
-                              (*result)[falseBlock].first.VarRanges.insert(pair<string,vector<int> >(variable->getName().str(),intersectFalse));
-                            }
-                        }
-
-                    }
-                }//end of if variable && constant
-            }//end of if
+                    }//end of if variable && constant
+                }//end of if
+            }
+            
        }//end of for
     }
 
     //handle binary op,e.g.: + - * /
     void handleBinaryOp(Instruction *inst,LivenessInfo *dfval)
     {
-      map<string,vector<int> > varRanges=dfval->VarRanges;
+      map<string,vector<int> > *varRanges=&(dfval->VarRanges);
       string result=inst->getOperandUse(0).getUser()->getName().str();
       vector<int> resultRange;
-      if(VarRanges.count(result)>0)
-          VarRanges.erase(result);
+      if(varRanges->count(result)>0)
+          varRanges->erase(result);
 
       ConstantInt * operandConstant1 = tryGetConstantValue(inst->getOperand(0));
       ConstantInt * operandConstant2 = tryGetConstantValue(inst->getOperand(1));
@@ -907,7 +956,6 @@ public:
         // if(isa<ICmpInst>(inst))
         // {
         //   ICmpInst *icmpInst= dyn_cast<ICmpInst>(inst);
-
         // }
         if(isa<BranchInst>(inst))
         {
@@ -919,6 +967,42 @@ public:
           //   //handleConditionalBranch();
           // }
           return;
+        }
+        if(isa<ReturnInst>(inst))
+        {
+            ReturnInst *ret_inst=dyn_cast<ReturnInst>(inst);
+            Value *ret_value=ret_inst->getReturnValue();
+            // auto it=dfval->VarRanges.begin();
+            // auto ie=dfval->VarRanges.end();
+            // for(;it!=ie;++it)
+            // {
+            // }
+            if(dfval->VarRanges.count( ret_value->getName().str() ) >0 )
+            {
+                int left=dfval->VarRanges[ret_value->getName().str()][0];
+                int right=dfval->VarRanges[ret_value->getName().str()][1];
+                if(left==MINUS_INF)
+                {
+                    errs()<<"[min..";
+                }
+                else
+                {
+                    errs()<<"["<<left<<"..";
+                }
+                if(right==INF)
+                {
+                    errs()<<"max]\n";
+                }
+                else
+                {
+                    errs()<<right<<"]\n";
+                }
+            }
+            else
+            {
+                errs()<<"Error: "<<ret_value->getName().str()<<" doesn't exist!\n";
+                errs()<<"************[min..max]\n";
+            }
         }
         //dfval->LiveVars.erase(inst);
         // for(User::op_iterator oi = inst->op_begin(), oe = inst->op_end();

@@ -49,7 +49,7 @@ void compForwardDataflow (Function *fn,
         //conditionalbranch
         for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
         {
-            handlePredIcmp(*pi,result);
+            visitor->handlePredIcmp(*pi,result);
         }
 
         T bbEnterVal = (*result)[bb].first;
@@ -60,7 +60,7 @@ void compForwardDataflow (Function *fn,
             //visitor->merge(&bbexitval, (*result)[succ].first);
             //merge(dest, src)
             //visitor->handlePredIcmp(pi,result);
-            visitor->merge(&bbEnterVal,(*result)[pi].second);
+            visitor->merge(&bbEnterVal,(*result)[*pi].second);
         }
 
         visitor->compDFVal(bb, &bbEnterVal, true);
