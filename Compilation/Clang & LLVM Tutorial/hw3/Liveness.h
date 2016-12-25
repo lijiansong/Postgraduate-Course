@@ -76,7 +76,21 @@ public:
          //     // }
          // }
         //merge
+        auto it=src.VarRanges.begin();
+        auto ie=src.varRanges.end();
+        for(;it!=ie;++it)
+        {
+            if(dest->VarRanges.count( (*it).first ) > 0)
+            {
+                join( dest->VarRanges[ (*it).first ], (*it).second );
+            }
+            else
+            {
+                dest->VarRanges.insert(pair<string,vector<int> >( (*it).first,(*it).second ));
+            }
+        }
     }
+
     vector<int> join(vector<int> left, vector<int> right)
     {
         vector<int> result;
@@ -84,10 +98,32 @@ public:
             result = right;
         else if (right.empty())
             result = left;
-        else
+        else if(!left.empty() && !right.empty())
         {
-            if()
+            if(left.size()==2 && right.size()==2)
+            {
+                //merge 
+                if(!intersect(left,right).empty())
+                {
+                    int resultMin=min(left[0],right[0]);
+                    int resultMax=max(left[1],right[1]);
+                    result.push_back(resultMin);
+                    result.push_back(resultMax);
+                }
+                else
+                {
+                    result.push_back(left[0]);
+                    result.push_back(left[1]);
+                    result.push_back(right[0]);
+                    result.push_back(right[1]);
+                }
+            }
+            else if(letf.size()==4 && right.size()==2)
+            {
+
+            }
         }
+        return result;
     }
 
     ConstantInt * tryGetConstantValue(Value * value) 
@@ -160,7 +196,7 @@ public:
     //handle the icmpinst of the pred_bb's pred basic block
     void handlePredIcmp(/*const*/ BasicBlock *pred_bb,
                                   /*BasicBlock *bb,*/
-                                  typename DataflowResult<LivenessInfo>::Type &result) override
+                                  typename DataflowResult<LivenessInfo>::Type &result)
     {
        //for each intruction in the basic block
        BasicBlock::iterator ii = pred_bb->begin (), ie = pred_bb->end ();
@@ -661,8 +697,178 @@ public:
     }
 
     //handle binary op,e.g.: + - * /
-    void handleBinaryOp(Instruction *inst,LivenessInfo *dfval) override
+    void handleBinaryOp(Instruction *inst,LivenessInfo *dfval)
     {
+      map<string,vector<int> > varRanges=dfval->VarRanges;
+      string result=inst->getOperandUse(0).getUser()->getName().str();
+      vector<int> resultRange;
+      if(VarRanges.count(result)>0)
+          VarRanges.erase(result);
+
+      ConstantInt * operandConstant1 = tryGetConstantValue(inst->getOperand(0));
+      ConstantInt * operandConstant2 = tryGetConstantValue(inst->getOperand(1));
+
+      vector<int> operandRange1 = tryGetRange(inst->getOperand(0),dfval);
+      vector<int> operandRange2 = tryGetRange(inst->getOperand(1),dfval);
+
+      //two constant
+      if( operandConstant1 && operandConstant1 )
+      {
+          int operand1 = operandConstant1->getSExtValue();
+          int operand2 = operandConstant2->getSExtValue();
+          int dest_result;
+          switch (inst->getOpcode()) 
+          {
+            case Instruction::Add:
+                dest_result=operand1+operand2;
+                break;
+
+            case Instruction::Mul:
+                dest_result=operand1*operand2;
+                break;
+
+            case Instruction::Sub:
+                dest_result=operand1-operand2;
+                break;
+
+            case Instruction::SDiv:
+            case Instruction::UDiv:
+                dest_result=operand1/operand2;
+                break;
+
+            case Instruction::SRem:
+            case Instruction::URem:
+                break;
+
+            case Instruction::Or:
+                break;
+
+            case Instruction::And:
+                break;
+
+            case Instruction::Xor:
+                break;
+          }
+          resultRange.push_back(dest_result);
+          resultRange.push_back(dest_result);
+      }
+      //two ranges
+      else if(!operandRange1.empty() && !operandRange2.empty())
+      {
+          int resultMin;
+          int resultMax;
+          switch (inst->getOpcode()) 
+          {
+            case Instruction::Add:
+                resultMin = operandRange1[0] + operandRange2[0];
+                resultMax = operandRange1[1] + operandRange2[1];
+                break;
+
+            case Instruction::Mul:
+                //the same operand
+                if( (inst->getOperand(0))==(inst->getOperand(1)) )
+                {
+                    if(operandRange1[0]<=0&&operandRange1[1]<=0&&operandRange2[0]<=0&&operandRange2[1]<=0)
+                    {
+                        resultMin=operandRange1[1]*operandRange2[1];
+                        resultMax=operandRange1[0]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]>=0&&operandRange2[0]<=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=0;
+                        resultMax=max(operandRange1[1]*operandRange2[1],operandRange1[0]*operandRange2[0]);
+                    }
+                    else if(operandRange1[0]>=0&&operandRange1[1]>=0&&operandRange2[0]>=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[0]*operandRange2[0];
+                        resultMax=operandRange1[1]*operandRange2[1];
+                    }
+                }
+                else
+                {
+                    if(operandRange1[0]<=0&&operandRange1[1]<=0&&operandRange2[0]<=0&&operandRange2[1]<=0)
+                    {
+                        resultMin=operandRange1[1]*operandRange2[1];
+                        resultMax=operandRange1[0]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]<=0&&operandRange2[0]<=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[0]*operandRange2[1];
+                        resultMax=operandRange1[1]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]<=0&&operandRange2[0]>=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[0]*operandRange2[1];
+                        resultMax=operandRange1[1]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]>=0&&operandRange2[0]<=0&&operandRange2[1]<=0)
+                    {
+                        resultMin=operandRange1[1]*operandRange2[0];
+                        resultMax=operandRange1[0]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]>=0&&operandRange2[0]<=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=min(operandRange1[1]*operandRange2[0],operandRange1[0]*operandRange2[1]);
+                        resultMax=max(operandRange1[0]*operandRange2[0],operandRange1[1]*operandRange2[1]);
+                    }
+                    else if(operandRange1[0]<=0&&operandRange1[1]>=0&&operandRange2[0]>=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[0]*operandRange2[1];
+                        resultMax=operandRange1[1]*operandRange2[1];
+                    }
+                    else if(operandRange1[0]>=0&&operandRange1[1]>=0&&operandRange2[0]<=0&&operandRange2[1]<=0)
+                    {
+                        resultMax=operandRange1[0]*operandRange2[1];
+                        resultMin=operandRange1[1]*operandRange2[0];
+                    }
+                    else if(operandRange1[0]>=0&&operandRange1[1]>=0&&operandRange2[0]<=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[1]*operandRange2[0];
+                        resultMax=operandRange1[1]*operandRange2[1];
+                    }
+                    else if(operandRange1[0]>=0&&operandRange1[1]>=0&&operandRange2[0]>=0&&operandRange2[1]>=0)
+                    {
+                        resultMin=operandRange1[0]*operandRange2[0];
+                        resultMax=operandRange1[1]*operandRange2[1];
+                    }
+
+                }
+                break;
+
+            case Instruction::Sub:
+                if( (inst->getOperand(0))==(inst->getOperand(1)) )
+                {
+                    resultMin = operandRange1[0] - operandRange2[0];
+                    resultMax = operandRange1[1] - operandRange2[1];
+                }
+                else
+                {
+                    resultMin = operandRange1[0] - operandRange2[1];
+                    resultMax = operandRange1[1] - operandRange2[0];
+                }
+                break;
+
+            case Instruction::SDiv:
+            case Instruction::UDiv:
+                break;
+
+            case Instruction::SRem:
+            case Instruction::URem:
+                break;
+
+            case Instruction::Or:
+                break;
+
+            case Instruction::And:
+                break;
+
+            case Instruction::Xor:
+                break;
+          }
+          resultRange.push_back(resultMin);
+          resultRange.push_back(resultMax);
+      }
+
       switch (inst->getOpcode()) 
       {
         case Instruction::Add:
@@ -705,27 +911,29 @@ public:
         // }
         if(isa<BranchInst>(inst))
         {
-          BranchInst *branch=dyn_cast<BranchInst>(inst);
-          if(branch->isConditional())
-          {
-            Value * condition = branch->getCondition();
-            ICmpInst * cmpInst = (ICmpInst *)condition;
-
-            //handleConditionalBranch();
-          }
+          // BranchInst *branch=dyn_cast<BranchInst>(inst);
+          // if(branch->isConditional())
+          // {
+          //   Value * condition = branch->getCondition();
+          //   ICmpInst * cmpInst = (ICmpInst *)condition;
+          //   //handleConditionalBranch();
+          // }
+          return;
         }
-        dfval->LiveVars.erase(inst);
-        for(User::op_iterator oi = inst->op_begin(), oe = inst->op_end();
-            oi != oe; ++oi) 
+        //dfval->LiveVars.erase(inst);
+        // for(User::op_iterator oi = inst->op_begin(), oe = inst->op_end();
+        //     oi != oe; ++oi) 
+        // {
+        //    Value * val = *oi;
+        //    if (isa<Instruction>(val)) 
+        //    {
+        //     //dfval->LiveVars.insert(cast<Instruction>(val));
+        //     //errs()<<*val<<"\n";
+        //    } 
+        // }
+        if(inst->isBinaryOp())
         {
-           Value * val = *oi;
-           if (isa<Instruction>(val)) 
-           {
-            dfval->LiveVars.insert(cast<Instruction>(val));
-            errs()<<*val<<"\n";
-
-           }
-           
+            handleBinaryOp(inst,dfval);
         }
    }
 };

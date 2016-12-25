@@ -67,6 +67,7 @@ public:
     //virtual void merge( T *dest, const T &src ) = 0;
     //virtual void merge( T *dest, const T &src ) = 0;
     //virtual void merge( T *dest, const T &src ) = 0;
+    //virtual void handlePredIcmp()
 };
 
 ///

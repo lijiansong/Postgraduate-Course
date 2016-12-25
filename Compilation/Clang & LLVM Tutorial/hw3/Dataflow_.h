@@ -45,6 +45,13 @@ void compForwardDataflow (Function *fn,
         bb=*worklist.begin();
         worklist.erase(worklist.begin());
 
+
+        //conditionalbranch
+        for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
+        {
+            handlePredIcmp(*pi,result);
+        }
+
         T bbEnterVal = (*result)[bb].first;
 
         for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
@@ -52,6 +59,7 @@ void compForwardDataflow (Function *fn,
             //merge all pred basic blocks
             //visitor->merge(&bbexitval, (*result)[succ].first);
             //merge(dest, src)
+            //visitor->handlePredIcmp(pi,result);
             visitor->merge(&bbEnterVal,(*result)[pi].second);
         }
 
