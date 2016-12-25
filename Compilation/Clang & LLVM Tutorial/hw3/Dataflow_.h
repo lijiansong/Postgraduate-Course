@@ -37,7 +37,7 @@ void compForwardDataflow (Function *fn,
     worklist.erase(worklist.begin());
     //T bbEnterVal = (*result)[bb].first;
     //compute the start block's out-flow value(each var's interval)
-    visitor->compDFVal( bb, &((*result)[bb].second), true );
+    visitor->compDFVal( bb, &((*result)[bb].second),result, true );
 
 
     while(!worklist.empty())
@@ -63,7 +63,7 @@ void compForwardDataflow (Function *fn,
             visitor->merge(&bbEnterVal,(*result)[*pi].second);
         }
 
-        visitor->compDFVal(bb, &bbEnterVal, true);
+        visitor->compDFVal(bb, &bbEnterVal,result, true);
         //compute the basic block's out-flow
         (*result)[bb].second = bbEnterVal;
 
@@ -105,7 +105,7 @@ void compBackwardDataflow (Function *fn,
         }
 
         (*result)[bb].second = bbexitval;
-        visitor->compDFVal(bb, &bbexitval, false);
+        visitor->compDFVal(bb, &bbexitval, result,false);
 
         // If outgoing value changed, propagate it along the CFG
         if (bbexitval == (*result)[bb].first) continue;

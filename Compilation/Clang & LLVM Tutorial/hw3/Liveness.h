@@ -832,7 +832,7 @@ public:
                         resultMin=operandRange1[0]*operandRange2[0];
                         resultMax=operandRange1[1]*operandRange2[1];
                     }
-                }
+                }//end of if
                 else
                 {
                     if(operandRange1[0]<=0&&operandRange1[1]<=0&&operandRange2[0]<=0&&operandRange2[1]<=0)
@@ -913,44 +913,19 @@ public:
 
             case Instruction::Xor:
                 break;
-          }
+          }//end of switch
+
           resultRange.push_back(resultMin);
           resultRange.push_back(resultMax);
-      }
+      }//end of else if
 
-      switch (inst->getOpcode()) 
-      {
-        case Instruction::Add:
-            break;
-
-        case Instruction::Mul:
-            break;
-
-        case Instruction::Sub:
-            break;
-
-        case Instruction::SDiv:
-            break;
-        case Instruction::UDiv:
-            break;
-
-        case Instruction::SRem:
-        case Instruction::URem:
-            break;
-
-        case Instruction::Or:
-            break;
-
-        case Instruction::And:
-            break;
-
-        case Instruction::Xor:
-            break;
-      }
+      //varRanges[result]=resultRange;
+      varRanges->insert(pair<string,vector<int> >(result,resultRange) );
+      varRanges=NULL;
     }
 
    //compute the interval of each inst
-   void compDFVal(Instruction *inst, LivenessInfo * dfval) override
+   void compDFVal(Instruction *inst, LivenessInfo * dfval,typename DataflowResult<LivenessInfo>::Type * result) override
    {
         if (isa<DbgInfoIntrinsic>(inst)) return;
         // if(isa<ICmpInst>(inst))
@@ -1019,6 +994,46 @@ public:
         {
             handleBinaryOp(inst,dfval);
         }
+        if(isa<PHINode>(inst))
+        {
+            PHINode* phi_node = dyn_cast<PHINode>(inst);
+            unsigned num=phi_node->getNumIncomingValues();
+            vector<int> range;
+            for(unsigned i=0;i<num;++i)
+            {
+                Value * value = phi_node->getIncomingValue(i);
+                ConstantInt *constant=tryGetConstantValue(value);
+                if(constant)
+                {
+                    range.push_back(constant->getSExtValue());
+                    range.push_back(constant->getSExtValue());
+                }
+                else
+                {
+                    BasicBlock *pred_bb = phi_node->getIncomingBlock(i);
+                    map<string,vector<int> > pred_map=(*result)[pred_bb].second.VarRanges;
+                    if(pred_map.count(value->getName().str())>0)
+                    {
+                        vector<int> tmp_range=pred_map[value->getName().str()];
+                        for(size_t i=0;i<tmp_range.size();++i)
+                        {
+                            range.push_back(tmp_range[i]);
+                        }
+                    }
+                    else
+                    {
+                        //-inf ~ inf
+                        range.push_back(MINUS_INF);
+                        range.push_back(INF);
+                    }
+                } //end of else
+            }//end of for
+            sort(range.begin(),range.end());
+            vector<int> tmp;
+            tmp.push_back(*( range.begin() ) );
+            tmp.push_back(*( range.end() ) );
+            dfval->VarRanges.insert(pair<string,vector<int> >(phi_node->getName().str(),tmp));
+        }//end of if isa<PHINode>(inst)
    }
 };
 
