@@ -555,7 +555,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							falseMap = NULL;
 
 						}
-						// X < Y, Y->(min,max)
+						// X < Y,
 						else if (((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs) || ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT)
 								&& variable == rhs))
 						{
@@ -565,11 +565,11 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
 							falseMap->erase (variable->getName ().str ());
 
-							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );	// min
-							constantRangeTrue.push_back (range[1] - 1);	// max
+							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );
+							constantRangeTrue.push_back (range[1] - 1);	
 
-							constantRangeFalse.push_back (range[0]);	// min
-							constantRangeFalse.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );	// max
+							constantRangeFalse.push_back (range[0]);
+							constantRangeFalse.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );
 
 							// vector<int> intersectTrue /*= intersect(constantRangeTrue, variableRange)*/;        
 							// vector<int> intersectFalse /*= intersect(constantRangeFalse, variableRange)*/;      
@@ -604,8 +604,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeFalse.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );	// min
 							constantRangeFalse.push_back (range[1]);	// max
 
-							// vector<int> intersectTrue = intersect(constantRangeTrue, variableRange);        
-							// vector<int> intersectFalse = intersect(constantRangeFalse, variableRange);      
+							intersectTrue = intersect(constantRangeTrue, variableRange);        
+							intersectFalse = intersect(constantRangeFalse, variableRange);      
 							if (!intersectTrue.empty ())
 							{
 								//trueMap[variable->getName().str()] = intersectTrue;
