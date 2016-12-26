@@ -53,20 +53,18 @@ void compForwardDataflow (Function *fn,
             visitor->handlePredIcmp(*pi,result);
         }
 
-        T bbEnterVal = (*result)[bb].first;
+        T *bbEnterVal = &((*result)[bb].first);
 
         for (pred_iterator pi = pred_begin(bb), pe = pred_end(bb); pi != pe; ++pi) 
         {
             //merge all pred basic blocks
             //visitor->merge(&bbexitval, (*result)[succ].first);
-            //merge(dest, src)
-            //visitor->handlePredIcmp(pi,result);
-            visitor->merge(&bbEnterVal,(*result)[*pi].second);
+            visitor->merge(bbEnterVal,(*result)[*pi].second);
         }
 
-        visitor->compDFVal(bb, &bbEnterVal,result, true);
+        visitor->compDFVal(bb, bbEnterVal,result, true);
         //compute the basic block's out-flow
-        (*result)[bb].second = bbEnterVal;
+        (*result)[bb].second = *bbEnterVal;
 
     }
     return;

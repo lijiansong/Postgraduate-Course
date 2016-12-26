@@ -36,7 +36,7 @@ struct LivenessInfo
 	// map<string,vector<int> > TrueOut;
 	// map<string,vector<int> > FalseOut;
 
-	  LivenessInfo ():LiveVars () ,VarRanges()/*,TrueOut(),FalseOut() */
+	  LivenessInfo ():LiveVars (), VarRanges ()	/*,TrueOut(),FalseOut() */
 	{
 	}
 	LivenessInfo (const LivenessInfo & info):LiveVars (info.LiveVars)
@@ -69,17 +69,6 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 	void merge (LivenessInfo * dest, const LivenessInfo & src) override
 	{
-		// for (std::set<Instruction *>::const_iterator ii = src.LiveVars.begin(), 
-		//      ie = src.LiveVars.end(); ii != ie; ++ii) 
-		// {
-		//     //errs()<<"+++++ "<<*ii<<"\n";
-
-		//     dest->LiveVars.insert(*ii);
-		//     // if(isa<ICmpInst>(ii))
-		//     // {
-		//     //  //get its condition val and update its range 
-		//     // }
-		// }
 		//merge
 		auto it = src.VarRanges.begin ();
 		auto ie = src.VarRanges.end ();
@@ -260,8 +249,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 					Value *rhs = cmpInst->getOperand (1);
 					ConstantInt *rhsConstant = tryGetConstantValue (rhs);
 					ConstantInt *lhsConstant = tryGetConstantValue (lhs);
-					vector < int >lhsRange = tryGetRange (lhs, &((*result)[pred_bb].second));
-					vector < int >rhsRange = tryGetRange (rhs, &((*result)[pred_bb].second));
+					
 
 					//range is empty
 					vector < int >range;
@@ -489,6 +477,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						//both operands are ranges
 						else
 						{
+							vector < int >lhsRange = tryGetRange (lhs, &((*result)[pred_bb].second));
+							vector < int >rhsRange = tryGetRange (rhs, &((*result)[pred_bb].second));
 							//assign LHS first
 							range = rhsRange;
 							variable = lhs;
@@ -748,11 +738,11 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							}
 
 						}
-					}//end of if variable && constant
-				}//end of if
+					}			//end of if variable && constant
+				}				//end of if
 			}
 
-		}//end of for
+		}						//end of for
 	}
 
 	//handle binary op,e.g.: + - * /
@@ -768,7 +758,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 		ConstantInt *operandConstant2 = tryGetConstantValue (inst->getOperand (1));
 
 		//two constant
-		if ((operandConstant1!=NULL) && (operandConstant2!=NULL))
+		if ((operandConstant1 != NULL) && (operandConstant2 != NULL))
 		{
 			int operand1 = operandConstant1->getSExtValue ();
 			int operand2 = operandConstant2->getSExtValue ();
@@ -809,33 +799,33 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			resultRange.push_back (dest_result);
 		}
 		//left is range, right is a constant
-		else if((operandConstant1==NULL) && (operandConstant2!=NULL))
+		else if ((operandConstant1 == NULL) && (operandConstant2 != NULL))
 		{
 			vector < int >operandRange1 = tryGetRange (inst->getOperand (0), dfval);
 			int operand2 = operandConstant2->getSExtValue ();
 			switch (inst->getOpcode ())
 			{
 			case Instruction::Add:
-				operandRange1[0]+=operand2;
-				operandRange1[1]+=operand2;
+				operandRange1[0] += operand2;
+				operandRange1[1] += operand2;
 				break;
 
 			case Instruction::Mul:
-			{
-				int tmp1=operandRange1[0]*operand2;
-				int tmp2=operandRange1[1]*operand2;
-				operandRange1[0]=min(tmp1,tmp2);
-				operandRange1[1]=max(tmp1,tmp2);
-				break;
-			}
+				{
+					int tmp1 = operandRange1[0] * operand2;
+					int tmp2 = operandRange1[1] * operand2;
+					operandRange1[0] = min (tmp1, tmp2);
+					operandRange1[1] = max (tmp1, tmp2);
+					break;
+				}
 			case Instruction::Sub:
-				operandRange1[0]-=operand2;
-				operandRange1[1]-=operand2;
+				operandRange1[0] -= operand2;
+				operandRange1[1] -= operand2;
 				break;
 
 			case Instruction::SDiv:
 			case Instruction::UDiv:
-				/*dest_result = operand1 / operand2;*/
+				/*dest_result = operand1 / operand2; */
 				break;
 
 			case Instruction::SRem:
@@ -855,7 +845,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			resultRange.push_back (operandRange1[1]);
 		}
 		//right is range,left is a constant
-		else if((operandConstant1!=NULL) && (operandConstant2==NULL))
+		else if ((operandConstant1 != NULL) && (operandConstant2 == NULL))
 		{
 			//vector < int >operandRange1 = tryGetRange (inst->getOperand (0), dfval);
 			vector < int >operandRange2 = tryGetRange (inst->getOperand (1), dfval);
@@ -863,26 +853,26 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			switch (inst->getOpcode ())
 			{
 			case Instruction::Add:
-				operandRange2[0]+=operand1;
-				operandRange2[1]+=operand1;
+				operandRange2[0] += operand1;
+				operandRange2[1] += operand1;
 				break;
 
 			case Instruction::Mul:
-			{
-				int tmp1=operandRange2[0]*operand1;
-				int tmp2=operandRange2[1]*operand1;
-				operandRange2[0]=min(tmp1,tmp2);
-				operandRange2[1]=max(tmp1,tmp2);
-				break;
-			}
+				{
+					int tmp1 = operandRange2[0] * operand1;
+					int tmp2 = operandRange2[1] * operand1;
+					operandRange2[0] = min (tmp1, tmp2);
+					operandRange2[1] = max (tmp1, tmp2);
+					break;
+				}
 			case Instruction::Sub:
-				operandRange2[0]-=operand1;
-				operandRange2[1]-=operand1;
+				operandRange2[0] -= operand1;
+				operandRange2[1] -= operand1;
 				break;
 
 			case Instruction::SDiv:
 			case Instruction::UDiv:
-				/*dest_result = operand1 / operand2;*/
+				/*dest_result = operand1 / operand2; */
 				break;
 
 			case Instruction::SRem:
@@ -902,7 +892,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			resultRange.push_back (operandRange2[1]);
 		}
 		//two ranges
-		else if ((operandConstant1==NULL) && (operandConstant2==NULL))
+		else if ((operandConstant1 == NULL) && (operandConstant2 == NULL))
 		{
 			vector < int >operandRange1 = tryGetRange (inst->getOperand (0), dfval);
 			vector < int >operandRange2 = tryGetRange (inst->getOperand (1), dfval);
@@ -1117,21 +1107,21 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						range.push_back (MINUS_INF);
 						range.push_back (INF);
 					}
-				}//end of else
-			}//end of for
+				}				//end of else
+			}					//end of for
 			sort (range.begin (), range.end ());
 			// for(size_t i=0;i<range.size();++i)
 			// {
-			// 	errs()<<range[i]<<'\n';
+			//  errs()<<range[i]<<'\n';
 			// }
 			vector < int >tmp;
 			tmp.push_back (*(range.begin ()));
-			tmp.push_back (*(range.end ()-1));
+			tmp.push_back (*(range.end () - 1));
 			//errs()<<*(range.end ());
 			//errs()<<phi_node->getName ().str ()<<"\n";
 			// for(size_t i=0;i<tmp.size();++i)
 			// {
-			// 	errs()<<tmp[i]<<'\n';
+			//  errs()<<tmp[i]<<'\n';
 			// }
 			dfval->VarRanges.insert (pair < string, vector < int > >(phi_node->getName ().str (), tmp));
 		}						//end of if isa<PHINode>(inst)
