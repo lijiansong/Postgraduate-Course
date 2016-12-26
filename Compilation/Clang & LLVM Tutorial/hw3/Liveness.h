@@ -69,20 +69,28 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 	{
 	}
 
-	void merge (LivenessInfo * dest, const LivenessInfo & src) override
+	void merge (LivenessInfo * dest, const LivenessInfo & src,BasicBlock *current_bb,typename DataflowResult<LivenessInfo>::Type * result) override
 	{
 		//merge
 		auto it = src.VarRanges.begin ();
 		auto ie = src.VarRanges.end ();
 		for (; it != ie; ++it)
 		{
-			if (dest->VarRanges.count ((*it).first) > 0)
+			//this means the basic block already get the condition range from its pred block
+			if((*result)[current_bb].first.VarRanges.count((*it).first)>0)
 			{
-				join (dest->VarRanges[(*it).first], (*it).second);
+				continue;
 			}
 			else
 			{
-				dest->VarRanges.insert (pair < string, vector < int > >((*it).first, (*it).second));
+				if (dest->VarRanges.count ((*it).first) > 0)
+				{
+					join (dest->VarRanges[(*it).first], (*it).second);
+				}
+				else
+				{
+					dest->VarRanges.insert (pair < string, vector < int > >((*it).first, (*it).second));
+				}
 			}
 		}
 	}
@@ -316,13 +324,12 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							map < string, vector < int >>*trueMap = &(((*result)[pred_bb].second).VarRanges);
 							if (trueMap->count (variable->getName ().str ()) > 0)
 							{
-								trueMap->erase (variable->getName ().str ());
+								//trueMap->erase (variable->getName ().str ());
 								constantRange.push_back (constant->getSExtValue ());
 								constantRange.push_back (constant->getSExtValue ());
 								vector < int >intersection = intersect (variableRange, constantRange);
 								if (!intersection.empty ())
 								{
-									//trueMap[variable->getName().str()] = intersection;
 									//(*result)[trueBlock].first.VarRanges[variable->getName().str()]=intersection;
 									(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersection));
 								}
@@ -340,8 +347,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						else if (predicate == CmpInst::ICMP_NE)
 						{
 							vector < int >constantRange;
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 							constantRange.push_back (constant->getSExtValue ());	// min
 							constantRange.push_back (constant->getSExtValue ());	// max
 							vector < int >intersection = intersect (variableRange, constantRange);
@@ -351,7 +358,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							}
 							vector < int >_cut = cut (variableRange, constantRange);
 							(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), _cut));
-							falseMap = NULL;
+							//falseMap = NULL;
 
 						}
 						// X > C
@@ -360,8 +367,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						{
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 							constantRangeTrue.push_back (constant->getSExtValue () + 1);	// min
 							constantRangeTrue.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );	// max
 
@@ -373,15 +380,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								// falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 
 						}
 						// X < C
@@ -390,8 +395,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						{
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );	// min
 							constantRangeTrue.push_back (constant->getSExtValue () - 1);	// max
@@ -403,15 +408,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 						}
 						// X >= C
 						else if (((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs)
@@ -420,8 +423,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (constant->getSExtValue ());	// min
 							constantRangeTrue.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );	// max
@@ -433,15 +436,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 						}
 						// X <= C
 						else if (((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs)
@@ -450,8 +451,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );	// min
 							constantRangeTrue.push_back (constant->getSExtValue ());	// max
@@ -463,15 +464,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 						}
 						
 					}//end of if variable && constant
@@ -502,8 +501,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (range[0] + 1);	// min
 							constantRangeTrue.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );	// max
@@ -515,12 +514,10 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
 
@@ -532,7 +529,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeFalse.clear ();
 							intersectTrue.clear ();
 							intersectFalse.clear ();
-							falseMap->erase (variable->getName ().str ());
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );	// min
 							constantRangeTrue.push_back (range[1] - 1);	// max
@@ -545,15 +542,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 
 						}
 						// X < Y,
@@ -563,8 +558,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF /*APInt::getSignedMinValue(32).getSExtValue() */ );
 							constantRangeTrue.push_back (range[1] - 1);	
@@ -577,12 +572,10 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
 
@@ -594,7 +587,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeFalse.clear ();
 							intersectTrue.clear ();
 							intersectFalse.clear ();
-							falseMap->erase (variable->getName ().str ());
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (range[0] + 1);	// min
 							constantRangeTrue.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );	// max
@@ -606,15 +599,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							intersectFalse = intersect(constantRangeFalse, variableRange);      
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 
 						}
 						// X >= Y, Y->(min,max)
@@ -624,8 +615,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (range[0]);	// min
 							constantRangeTrue.push_back (INF);	// max
@@ -638,12 +629,10 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
 
@@ -655,7 +644,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeFalse.clear ();
 							intersectTrue.clear ();
 							intersectFalse.clear ();
-							falseMap->erase (variable->getName ().str ());
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF);	// min
 							constantRangeTrue.push_back (range[1]);	// max
@@ -667,15 +656,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							intersectFalse = intersect (constantRangeFalse, variableRange);
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 						}
 						// X <= Y, Y->(min,max)
 						else if (((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs) || ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE)
@@ -684,8 +671,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRangeTrue;
 							vector < int >constantRangeFalse;
 
-							map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
-							falseMap->erase (variable->getName ().str ());
+							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (MINUS_INF);	// min
 							constantRangeTrue.push_back (range[1]);	// max
@@ -698,12 +685,10 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 							if (!intersectTrue.empty ())
 							{
-								//trueMap[variable->getName().str()] = intersectTrue;
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
 							if (!intersectFalse.empty ())
 							{
-								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
 
@@ -715,7 +700,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeFalse.clear ();
 							intersectTrue.clear ();
 							intersectFalse.clear ();
-							falseMap->erase (variable->getName ().str ());
+							//falseMap->erase (variable->getName ().str ());
 
 							constantRangeTrue.push_back (range[0]);	// min
 							constantRangeTrue.push_back (INF);	// max
@@ -735,7 +720,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 								//falseMap[variable->getName().str()] = intersectFalse;
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
 							}
-							falseMap = NULL;
+							//falseMap = NULL;
 						}//end of X <= Y
 
 					}//end of else
@@ -751,8 +736,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 		map < string, vector < int >>*varRanges = &(dfval->VarRanges);
 		string result = inst->getOperandUse (0).getUser ()->getName ().str ();
 		vector < int >resultRange;
-		if (varRanges->count (result) > 0)
-			varRanges->erase (result);
+		// if (varRanges->count (result) > 0)
+		// 	varRanges->erase (result);
 
 		ConstantInt *operandConstant1 = tryGetConstantValue (inst->getOperand (0));
 		ConstantInt *operandConstant2 = tryGetConstantValue (inst->getOperand (1));

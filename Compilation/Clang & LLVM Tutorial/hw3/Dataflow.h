@@ -73,7 +73,7 @@ public:
     /// Merge of two dfvals, dest will be ther merged result
     /// @return true if dest changed
     ///
-    virtual void merge( T *dest, const T &src ) = 0;
+    virtual void merge( T *dest, const T &src,BasicBlock *bb,typename DataflowResult<T>::Type * result ) = 0;
 
     //todo: add process functions
     //virtual void merge( T *dest, const T &src ) = 0;

@@ -59,7 +59,7 @@ void compForwardDataflow (Function *fn,
         {
             //merge all pred basic blocks
             //visitor->merge(&bbexitval, (*result)[succ].first);
-            visitor->merge(bbEnterVal,(*result)[*pi].second);
+            visitor->merge(bbEnterVal,(*result)[*pi].second,bb,result);
         }
 
         visitor->compDFVal(bb, bbEnterVal,result, true);
