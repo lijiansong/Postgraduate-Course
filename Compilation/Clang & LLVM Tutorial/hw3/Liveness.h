@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstring>
 using namespace llvm;
 using namespace std;
 #define MINUS_INF -0x7ffffff
@@ -569,10 +570,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							constantRangeTrue.push_back (range[1] - 1);	
 
 							constantRangeFalse.push_back (range[0]);
-							constantRangeFalse.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );
-
-							// vector<int> intersectTrue /*= intersect(constantRangeTrue, variableRange)*/;        
-							// vector<int> intersectFalse /*= intersect(constantRangeFalse, variableRange)*/;      
+							constantRangeFalse.push_back (INF /*APInt::getSignedMaxValue(32).getSExtValue() */ );     
 
 							vector < int >intersectTrue = intersect (constantRangeTrue, variableRange);
 							vector < int >intersectFalse = intersect (constantRangeFalse, variableRange);
@@ -762,6 +760,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 		//two constant
 		if ((operandConstant1 != NULL) && (operandConstant2 != NULL))
 		{
+			resultRange.clear();
 			int operand1 = operandConstant1->getSExtValue ();
 			int operand2 = operandConstant2->getSExtValue ();
 			int dest_result;
@@ -843,10 +842,11 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			case Instruction::Xor:
 				break;
 			}
+			resultRange.clear();
 			resultRange.push_back (operandRange1[0]);
 			resultRange.push_back (operandRange1[1]);
 		}
-		//right is range,left is a constant
+		//left is a constant,right is range
 		else if ((operandConstant1 != NULL) && (operandConstant2 == NULL))
 		{
 			//vector < int >operandRange1 = tryGetRange (inst->getOperand (0), dfval);
@@ -890,6 +890,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			case Instruction::Xor:
 				break;
 			}
+			resultRange.clear();
 			resultRange.push_back (operandRange2[0]);
 			resultRange.push_back (operandRange2[1]);
 		}
@@ -908,10 +909,13 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 				break;
 
 			case Instruction::Mul:
+			{
 				//the same operand
-				if ((inst->getOperand (0)) == (inst->getOperand (1)))
+				string left=inst->getOperand(0)->getName().str();
+				string right=inst->getOperand(1)->getName().str();
+				if ( strcmp(left.c_str(),right.c_str())==0 )
 				{
-					if (operandRange1[0] <= 0 && operandRange1[1] <= 0 && operandRange2[0] <= 0 && operandRange2[1] <= 0)
+					if((operandRange1[0] <= 0) && (operandRange1[1] <= 0) && (operandRange2[0] <= 0) && (operandRange2[1] <= 0))
 					{
 						resultMin = operandRange1[1] * operandRange2[1];
 						resultMax = operandRange1[0] * operandRange2[0];
@@ -926,57 +930,20 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						resultMin = operandRange1[0] * operandRange2[0];
 						resultMax = operandRange1[1] * operandRange2[1];
 					}
-				}				//end of if
+				}//end of if
 				else
 				{
-					if (operandRange1[0] <= 0 && operandRange1[1] <= 0 && operandRange2[0] <= 0 && operandRange2[1] <= 0)
-					{
-						resultMin = operandRange1[1] * operandRange2[1];
-						resultMax = operandRange1[0] * operandRange2[0];
-					}
-					else if (operandRange1[0] <= 0 && operandRange1[1] <= 0 && operandRange2[0] <= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = operandRange1[0] * operandRange2[1];
-						resultMax = operandRange1[1] * operandRange2[0];
-					}
-					else if (operandRange1[0] <= 0 && operandRange1[1] <= 0 && operandRange2[0] >= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = operandRange1[0] * operandRange2[1];
-						resultMax = operandRange1[1] * operandRange2[0];
-					}
-					else if (operandRange1[0] <= 0 && operandRange1[1] >= 0 && operandRange2[0] <= 0 && operandRange2[1] <= 0)
-					{
-						resultMin = operandRange1[1] * operandRange2[0];
-						resultMax = operandRange1[0] * operandRange2[0];
-					}
-					else if (operandRange1[0] <= 0 && operandRange1[1] >= 0 && operandRange2[0] <= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = min (operandRange1[1] * operandRange2[0], operandRange1[0] * operandRange2[1]);
-						resultMax = max (operandRange1[0] * operandRange2[0], operandRange1[1] * operandRange2[1]);
-					}
-					else if (operandRange1[0] <= 0 && operandRange1[1] >= 0 && operandRange2[0] >= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = operandRange1[0] * operandRange2[1];
-						resultMax = operandRange1[1] * operandRange2[1];
-					}
-					else if (operandRange1[0] >= 0 && operandRange1[1] >= 0 && operandRange2[0] <= 0 && operandRange2[1] <= 0)
-					{
-						resultMax = operandRange1[0] * operandRange2[1];
-						resultMin = operandRange1[1] * operandRange2[0];
-					}
-					else if (operandRange1[0] >= 0 && operandRange1[1] >= 0 && operandRange2[0] <= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = operandRange1[1] * operandRange2[0];
-						resultMax = operandRange1[1] * operandRange2[1];
-					}
-					else if (operandRange1[0] >= 0 && operandRange1[1] >= 0 && operandRange2[0] >= 0 && operandRange2[1] >= 0)
-					{
-						resultMin = operandRange1[0] * operandRange2[0];
-						resultMax = operandRange1[1] * operandRange2[1];
-					}
-
-				}
+					vector<int> tmp;
+					tmp.push_back(operandRange1[0] * operandRange2[0]);
+					tmp.push_back(operandRange1[0] * operandRange2[1]);
+					tmp.push_back(operandRange1[1] * operandRange2[0]);
+					tmp.push_back(operandRange1[1] * operandRange2[1]);
+					sort(tmp.begin(),tmp.end());
+					resultMin=*(tmp.begin());
+					resultMax=*(tmp.end()-1);
+				}//end of else
 				break;
+			}
 
 			case Instruction::Sub:
 				if ((inst->getOperand (0)) == (inst->getOperand (1)))
@@ -1007,11 +974,11 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 
 			case Instruction::Xor:
 				break;
-			}					//end of switch
-
+			}//end of switch
+			resultRange.clear();
 			resultRange.push_back (resultMin);
 			resultRange.push_back (resultMax);
-		}						//end of else if
+		}//end of else if
 
 		//varRanges[result]=resultRange;
 		varRanges->insert (pair < string, vector < int > >(result, resultRange));
