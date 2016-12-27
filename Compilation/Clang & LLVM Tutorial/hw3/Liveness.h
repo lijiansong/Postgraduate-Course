@@ -35,10 +35,12 @@ struct LivenessInfo
 
 	// interval of each vars,name of each vars is the key, and vector<int> is its range 
 	map < string, vector < int >>VarRanges;
+	//whether this block is reacheable by judging its range
+	bool isReachable;
 	// map<string,vector<int> > TrueOut;
 	// map<string,vector<int> > FalseOut;
 
-	  LivenessInfo ():LiveVars (), VarRanges ()	/*,TrueOut(),FalseOut() */
+	  LivenessInfo ():LiveVars (), VarRanges ()	,isReachable(true)/*,TrueOut(),FalseOut() */
 	{
 	}
 	LivenessInfo (const LivenessInfo & info):LiveVars (info.LiveVars)
@@ -211,26 +213,45 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 	vector < int >cut (vector < int >left, vector < int >right)
 	{
 		vector < int >result;
-		if (left[0] <= right[0] && right[1] <= left[1])
+		vector <int> empty;
+		if(!intersect(left,right).empty())
 		{
-			int tmp_left = right[0] - left[0];
-			int tmp_right = left[1] - right[1];
-			if (tmp_left >= 1 && tmp_right >= 1)
+			if (left[0] <= right[0] && right[1] <= left[1])
 			{
-				result.push_back (left[0]);
-				result.push_back (right[0] - 1);
-				result.push_back (right[1] + 1);
-				result.push_back (left[1]);
+				int tmp_left = right[0] - left[0];
+				int tmp_right = left[1] - right[1];
+				if (tmp_left >= 1 && tmp_right >= 1)
+				{
+					result.push_back (left[0]);
+					result.push_back (right[0] - 1);
+					result.push_back (right[1] + 1);
+					result.push_back (left[1]);
+				}
+				else if(tmp_left==0 && tmp_right>=1)
+				{
+					result.push_back (right[1] + 1);
+					result.push_back (left[1]);
+				}
+				else if(tmp_left>=1 && tmp_right==0)
+				{
+					result.push_back (left[0]);
+					result.push_back (right[0] - 1);
+				}
+				else if(tmp_left==0 && tmp_right==0)
+				{
+					result=empty;
+				}
 			}
 			else
 			{
-				errs () << "cut: other cases" << "\n";
+				errs () << "*****cut: other cases" << "\n";
 			}
 		}
 		else
 		{
-			errs () << "*****cut: other cases" << "\n";
+			result=empty;
 		}
+		
 		return result;
 	}
 
@@ -333,8 +354,21 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 									//(*result)[trueBlock].first.VarRanges[variable->getName().str()]=intersection;
 									(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersection));
 								}
+								else
+								{
+									//unreachable
+									(*result)[trueBlock].first.isReachable=false;
+								}
 								vector < int >_cut = cut (variableRange, constantRange);
-								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), _cut));
+								if (!_cut.empty())
+								{
+									(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), _cut));
+								}
+								else
+								{
+									(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), variableRange));
+								}
+								
 								//(*result)[trueBlock].first.VarRanges
 							}
 							//[-inf,inf]
@@ -349,14 +383,29 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							vector < int >constantRange;
 							//map < string, vector < int >>*falseMap = &(((*result)[pred_bb].second).VarRanges);
 							//falseMap->erase (variable->getName ().str ());
-							constantRange.push_back (constant->getSExtValue ());	// min
-							constantRange.push_back (constant->getSExtValue ());	// max
+							constantRange.push_back (constant->getSExtValue ());
+							constantRange.push_back (constant->getSExtValue ());
 							vector < int >intersection = intersect (variableRange, constantRange);
+							vector < int >_cut = cut (variableRange, constantRange);
+							//todo: may be wrong
+							if(!_cut.empty())
+							{
+								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), _cut));
+							}
+							else
+							{
+								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), variableRange));
+							}
+
 							if (!intersection.empty ())
 							{
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersection));
 							}
-							vector < int >_cut = cut (variableRange, constantRange);
+							else
+							{
+								(*result)[falseBlock].first.isReachable=false;
+							}
+							//vector < int >_cut = cut (variableRange, constantRange);
 							(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), _cut));
 							//falseMap = NULL;
 
@@ -382,9 +431,19 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							{
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
+							else
+							{
+								//unreachable
+								(*result)[trueBlock].first.isReachable=false;
+							}
 							if (!intersectFalse.empty ())
 							{
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
+							}
+							else
+							{
+								//unreachable
+								(*result)[falseBlock].first.isReachable=false;
 							}
 							//falseMap = NULL;
 
@@ -410,9 +469,17 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							{
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
+							else
+							{
+								(*result)[trueBlock].first.isReachable=false;
+							}
 							if (!intersectFalse.empty ())
 							{
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
+							}
+							else
+							{
+								(*result)[falseBlock].first.isReachable=false;
 							}
 							//falseMap = NULL;
 						}
@@ -438,9 +505,17 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							{
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
+							else
+							{
+								(*result)[trueBlock].first.isReachable=false;
+							}
 							if (!intersectFalse.empty ())
 							{
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
+							}
+							else
+							{
+								(*result)[falseBlock].first.isReachable=false;
 							}
 							//falseMap = NULL;
 						}
@@ -466,9 +541,17 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 							{
 								(*result)[trueBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectTrue));
 							}
+							else
+							{
+								(*result)[trueBlock].first.isReachable=false;
+							}
 							if (!intersectFalse.empty ())
 							{
 								(*result)[falseBlock].first.VarRanges.insert (pair < string, vector < int > >(variable->getName ().str (), intersectFalse));
+							}
+							else
+							{
+								(*result)[falseBlock].first.isReachable=false;
 							}
 							//falseMap = NULL;
 						}
@@ -1022,16 +1105,23 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 			for (unsigned i = 0; i < num; ++i)
 			{
 				Value *value = phi_node->getIncomingValue (i);
+				BasicBlock *pred_bb = phi_node->getIncomingBlock (i);
 				ConstantInt *constant = tryGetConstantValue (value);
 				if (constant)
 				{
-					//errs()<<constant->getSExtValue ()<<"\n";
-					range.push_back (constant->getSExtValue ());
-					range.push_back (constant->getSExtValue ());
+					// if( ((*result)[pred_bb].first.isReachable) )
+					// {
+						//errs()<<constant->getSExtValue ()<<"\n";
+						range.push_back (constant->getSExtValue ());
+						range.push_back (constant->getSExtValue ());
+					// }
+					// else
+					// {
+					// 	continue;
+					// }	
 				}
 				else
 				{
-					BasicBlock *pred_bb = phi_node->getIncomingBlock (i);
 					map < string, vector < int >>pred_map = (*result)[pred_bb].second.VarRanges;
 					if (pred_map.count (value->getName ().str ()) > 0)
 					{
@@ -1047,8 +1137,8 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 						range.push_back (MINUS_INF);
 						range.push_back (INF);
 					}
-				}				//end of else
-			}					//end of for
+				}//end of else
+			}//end of for
 			sort (range.begin (), range.end ());
 			// for(size_t i=0;i<range.size();++i)
 			// {
@@ -1080,23 +1170,6 @@ class Liveness:public FunctionPass
 	bool runOnFunction (Function & F) override
 	{
 		//F.dump();
-		//for each basic block in the function
-		// Function::iterator bb_it = F.begin (), bb_ie = F.end ();
-		// for (; bb_it != bb_ie; ++bb_it)
-		// {
-		//  //for each intruction in the basic block
-		//  BasicBlock::iterator ii = bb_it->begin (), ie = bb_it->end ();
-		//  for (; ii != ie; ++ii)
-		//  {
-		//    Instruction *inst = dyn_cast < Instruction > (ii);
-		//    if (isa < ReturnInst > (inst))
-		//    {
-		//      ReturnInst * ret = dyn_cast < ReturnInst > (ii);
-		//      errs()<<"+++++++++++"<<ret->getName()<<"\n";
-
-		//    }
-		//  }//end of ii
-		// }//end of bb_it
 		LivenessVisitor visitor;
 		DataflowResult < LivenessInfo >::Type result;
 		LivenessInfo initval;
