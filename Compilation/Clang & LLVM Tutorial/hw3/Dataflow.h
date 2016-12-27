@@ -25,6 +25,12 @@ struct DataflowResult
     typedef typename std::map<BasicBlock *, std::pair<T, T> > Type;
 };
 
+template<class T>
+struct DataflowBackEdge
+{
+    typedef typename std::map<BasicBlock *, BasicBlock * > BackEdge;
+};
+
 ///Base dataflow visitor class, defines the dataflow function
 
 
@@ -39,7 +45,7 @@ public:
     /// @block the Basic Block
     /// @dfval the input dataflow value
     /// @isforward true to compute dfval forward, otherwise backward
-    virtual void compDFVal(BasicBlock *block, T *dfval,typename DataflowResult<T>::Type * result, bool isforward) 
+    virtual void compDFVal(BasicBlock *block, T *dfval,typename DataflowResult<T>::Type * result,typename DataflowBackEdge<T>::BackEdge *back_edge, bool isforward) 
     {
         if (isforward == true) 
         {
@@ -47,7 +53,7 @@ public:
                 ii!=ie; ++ii) 
            {
                 Instruction * inst = &*ii;
-                compDFVal(inst, dfval,result);
+                compDFVal(inst, dfval,result,back_edge);
            }
         }
         else 
@@ -56,7 +62,7 @@ public:
                 ii != ie; ++ii) 
            {
                 Instruction * inst = &*ii;
-                compDFVal(inst, dfval,result);
+                compDFVal(inst, dfval,result,back_edge);
            }
         }
     }
@@ -67,7 +73,7 @@ public:
     /// @inst the Instruction
     /// @dfval the input dataflow value
     /// @return true if dfval changed
-    virtual void compDFVal(Instruction *inst, T *dfval,typename DataflowResult<T>::Type * result ) = 0;
+    virtual void compDFVal(Instruction *inst, T *dfval,typename DataflowResult<T>::Type * result,typename DataflowBackEdge<T>::BackEdge *back_edge ) = 0;
 
     ///
     /// Merge of two dfvals, dest will be ther merged result

@@ -15,22 +15,56 @@
 
 //todo: all process logic to be written here
 using namespace std;
+void printBasicBlock(BasicBlock *bb)
+{
+	BasicBlock::iterator bb_it=bb->begin(),bb_ie=bb->end();
+	for(;bb_it!=bb_ie;++bb_it)
+	{
+		Instruction *inst = dyn_cast < Instruction > (bb_it);
+		errs()<<*inst<<"\n";
+	}
+}
 
 template<class T>
 void compForwardDataflow (Function *fn,
                           DataflowVisitor<T> *visitor,
                           typename DataflowResult<T>::Type *result,
+                          typename DataflowBackEdge<T>::BackEdge *back_edge,
                           const T & initval)
 {
     std::/*set*/vector<BasicBlock *> worklist;
+    map<BasicBlock *,bool> visited;
     // Initialize the worklist with all exit blocks
     for(Function::iterator bi=fn->begin(),be=fn->end();bi!=be;++bi)
     {
         BasicBlock *bb=&*bi;
         result->insert(std::make_pair(bb,std::make_pair(initval,initval)));
         worklist.push_back(bb);
+        visited[bb]=false;
     }
 
+    //find loop,it may be wrong
+    vector<BasicBlock *> tmp = worklist;
+    auto it=tmp.begin();
+    auto ie=tmp.end();
+    for( ;it != ie; ++it )
+    {
+    	BasicBlock *bb = *it;
+    	visited[bb]=true;
+    	for (succ_iterator si = succ_begin(bb), se = succ_end(bb); si != se; si ++) 
+	    {
+	        BasicBlock *succ = *si;
+	        if(visited[succ])
+	        {
+	        	back_edge->insert(make_pair(bb,succ));
+	        	//printBasicBlock(bb);
+	        	//errs()<<"\n\n";
+	        	//printBasicBlock(succ);
+	        }
+	    }
+    }
+    tmp.clear();
+    
     // Iteratively compute the dataflow result
     
     //the start block has no in dataflow, process independently
@@ -38,7 +72,7 @@ void compForwardDataflow (Function *fn,
     worklist.erase(worklist.begin());
     //T bbEnterVal = (*result)[bb].first;
     //compute the start block's out-flow value(each var's interval)
-    visitor->compDFVal( bb, &((*result)[bb].second),result, true );
+    visitor->compDFVal( bb, &((*result)[bb].second),result,back_edge, true );
 
 
     while(!worklist.empty())
@@ -62,7 +96,7 @@ void compForwardDataflow (Function *fn,
             visitor->merge(bbEnterVal,(*result)[*pi].second,bb,result);
         }
 
-        visitor->compDFVal(bb, bbEnterVal,result, true);
+        visitor->compDFVal(bb, bbEnterVal,result,back_edge, true);
         //compute the basic block's out-flow
         (*result)[bb].second = *bbEnterVal;
 
@@ -76,6 +110,7 @@ template<class T>
 void compBackwardDataflow (Function *fn, 
                            DataflowVisitor<T> *visitor,
                            typename DataflowResult<T>::Type *result,
+                           typename DataflowBackEdge<T>::BackEdge *back_edge,
                            const T &initval) 
 {
 
@@ -104,7 +139,7 @@ void compBackwardDataflow (Function *fn,
         }
 
         (*result)[bb].second = bbexitval;
-        visitor->compDFVal(bb, &bbexitval, result,false);
+        visitor->compDFVal(bb, &bbexitval, result,back_edge,false);
 
         // If outgoing value changed, propagate it along the CFG
         if (bbexitval == (*result)[bb].first) continue;

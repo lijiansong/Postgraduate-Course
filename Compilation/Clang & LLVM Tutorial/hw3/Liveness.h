@@ -37,10 +37,12 @@ struct LivenessInfo
 	map < string, vector < int >>VarRanges;
 	//whether this block is reacheable by judging its range
 	bool isReachable;
+
+	//map < BasicBlock *, BasicBlock * > BackEdge;
 	// map<string,vector<int> > TrueOut;
 	// map<string,vector<int> > FalseOut;
 
-	  LivenessInfo ():LiveVars (), VarRanges ()	,isReachable(true)/*,TrueOut(),FalseOut() */
+	  LivenessInfo ():LiveVars (), VarRanges ()	,isReachable(true) /*,TrueOut(),FalseOut() */
 	{
 	}
 	LivenessInfo (const LivenessInfo & info):LiveVars (info.LiveVars)
@@ -1054,7 +1056,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 	}
 
 	//compute the interval of each inst
-	void compDFVal (Instruction * inst, LivenessInfo * dfval, typename DataflowResult < LivenessInfo >::Type * result) override
+	void compDFVal (Instruction * inst, LivenessInfo * dfval, typename DataflowResult < LivenessInfo >::Type * result,typename DataflowBackEdge< LivenessInfo >::BackEdge *back_edge) override
 	{
 		if (isa < DbgInfoIntrinsic > (inst))
 			return;
@@ -1172,10 +1174,11 @@ class Liveness:public FunctionPass
 		//F.dump();
 		LivenessVisitor visitor;
 		DataflowResult < LivenessInfo >::Type result;
+		DataflowBackEdge< LivenessInfo >::BackEdge back_edge;
 		LivenessInfo initval;
 
 		//compBackwardDataflow(&F, &visitor, &result, initval);
-		compForwardDataflow (&F, &visitor, &result, initval);
+		compForwardDataflow (&F, &visitor, &result, &back_edge, initval);
 		//printDataflowResult<LivenessInfo>(errs(), result);
 		return false;
 	}
