@@ -1057,6 +1057,182 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 		varRanges = NULL;
 	}
 
+	vector<int> processLoop(map<BasicBlock *, BasicBlock * > &back_edge,set<BasicBlock *> &loop_list)
+	{
+		vector<int> result;
+		int left,right;
+		int bound=0;
+		int symbol;
+		auto it=loop_list.begin(),ie=loop_list.end();
+		for(;it!=ie;++it)
+		{
+			BasicBlock *bb=*it;
+			//for each intruction in the basic block
+			BasicBlock::iterator inst_it = bb->begin (), inst_ie = bb->end ();
+			for (; inst_it != inst_ie; ++inst_it)
+			{
+				Instruction *inst = dyn_cast < Instruction > (inst_it);
+				if (isa < DbgInfoIntrinsic > (inst))
+					continue;
+				if (isa < BranchInst > (inst))
+				{
+					BranchInst *br_inst = dyn_cast < BranchInst > (inst);
+					if (br_inst->isConditional ())
+					{
+						Value *condition = br_inst->getCondition ();
+						ICmpInst *cmpInst = dyn_cast < ICmpInst > (condition);
+						int predicate = cmpInst->isSigned ()? cmpInst->getSignedPredicate () : cmpInst->getUnsignedPredicate ();
+						Value *lhs = cmpInst->getOperand (0);
+						Value *rhs = cmpInst->getOperand (1);
+						ConstantInt *rhsConstant = tryGetConstantValue (rhs);
+						ConstantInt *lhsConstant = tryGetConstantValue (lhs);
+						//range is empty
+						vector < int >range;
+
+						Value *variable = NULL;
+						ConstantInt *constant = NULL;
+
+						if ((lhsConstant && rhsConstant) /*|| (lhsRange.empty() && rhsRange.empty()) */ )
+						{
+						}
+						else if (rhsConstant)
+						{
+							variable = lhs;
+							constant = rhsConstant;
+						}
+						else if (lhsConstant)
+						{
+							variable = rhs;
+							constant = lhsConstant;
+						}
+						else
+						{
+							variable = NULL;
+						}
+						bound=constant->getSExtValue();
+						if (variable && constant)
+						{
+							// X == C
+							if (predicate == CmpInst::ICMP_EQ)
+							{}
+							// X != C
+							else if (predicate == CmpInst::ICMP_NE)
+							{}
+							// X > C
+							else if (((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == lhs)
+								|| ((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == rhs))
+							{
+								symbol=1;
+							}
+							// X < C
+							else if (((predicate == CmpInst::ICMP_ULT || predicate == CmpInst::ICMP_SLT) && variable == lhs)
+								|| ((predicate == CmpInst::ICMP_UGT || predicate == CmpInst::ICMP_SGT) && variable == rhs))
+							{
+								symbol=2;
+							}
+							// X >= C
+							else if (((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == lhs)
+								|| ((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == rhs))
+							{
+								symbol=3;
+							}
+							// X <= C
+							else if (((predicate == CmpInst::ICMP_ULE || predicate == CmpInst::ICMP_SLE) && variable == lhs)
+								|| ((predicate == CmpInst::ICMP_UGE || predicate == CmpInst::ICMP_SGE) && variable == rhs))
+							{
+								symbol=4;
+							}
+						}
+					}//end of if (br_inst->isConditional ())
+					else
+						continue;
+				}
+				if (inst->isBinaryOp ())
+				{
+					ConstantInt *operandConstant1 = tryGetConstantValue (inst->getOperand (0));
+					ConstantInt *operandConstant2 = tryGetConstantValue (inst->getOperand (1));
+					if ((operandConstant1 == NULL) && (operandConstant2 != NULL))
+					{
+						int operand2 = operandConstant2->getSExtValue ();
+						switch (inst->getOpcode ())
+						{
+						case Instruction::Add:
+						{
+							if(symbol==2)
+							{
+								left=bound;
+								right=bound+operand2-1;
+							}
+							else if(symbol==4)
+							{
+								left=bound;
+								right=bound+operand2;
+							}
+							break;
+						}
+						case Instruction::Mul:
+							break;
+						case Instruction::Sub:
+						{
+							if(symbol==1)
+							{
+								right=bound;
+								left=bound-operand2+1;
+							}
+							else if(symbol==3)
+							{
+								right=bound;
+								left=bound-operand2;
+							}
+							break;
+						}
+						}		
+					}
+					else if ((operandConstant1 != NULL) && (operandConstant2 == NULL))
+					{
+						int operand1 = operandConstant1->getSExtValue ();
+						switch (inst->getOpcode ())
+						{
+						case Instruction::Add:
+						{
+							if(symbol==2)
+							{
+								left=bound;
+								right=bound+operand1-1;
+							}
+							else if(symbol==4)
+							{
+								left=bound;
+								right=bound+operand1;
+							}
+							break;
+						}
+
+						case Instruction::Mul:
+							break;
+						case Instruction::Sub:
+						{
+							if(symbol==1)
+							{
+								right=bound;
+								left=bound-operand1+1;
+							}
+							else if(symbol==3)
+							{
+								right=bound;
+								left=bound-operand1;
+							}
+							break;
+						}
+						}
+					}
+				}
+			}
+		}
+		result.push_back(left);
+		result.push_back(right);
+		return result;
+	}
 	//compute the interval of each inst
 	void compDFVal (Instruction * inst, LivenessInfo * dfval, typename DataflowResult < LivenessInfo >::Type * result,map<BasicBlock *, BasicBlock * > &back_edge,set<BasicBlock *> &loop_list) override
 	{
@@ -1068,32 +1244,43 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 		{
 			ReturnInst *ret_inst = dyn_cast < ReturnInst > (inst);
 			Value *ret_value = ret_inst->getReturnValue ();
-			
-			if (dfval->VarRanges.count (ret_value->getName ().str ()) > 0)
+			//loop
+			if(back_edge.size()>0)
 			{
-				int left = dfval->VarRanges[ret_value->getName ().str ()][0];
-				int right = dfval->VarRanges[ret_value->getName ().str ()][1];
-				if (left == MINUS_INF)
+				vector<int> ans=processLoop(back_edge,loop_list);
+				if(!ans.empty())
 				{
-					/*errs ()*/cout << "[min..";
-				}
-				else
-				{
-					/*errs ()*/cout << "[" << left << "..";
-				}
-				if (right == INF)
-				{
-					/*errs ()*/cout << "max]\n";
-				}
-				else
-				{
-					/*errs () */cout<< right << "]\n";
+					/*errs()*/cout<<"["<<ans[0]<<".."<<ans[1]<<"]\n";
 				}
 			}
 			else
 			{
-				/*errs ()*/cout << "Error: " << ret_value->getName ().str () << " doesn't exist!\n";
-				/*errs ()*/cout << "************[min..max]\n";
+				if (dfval->VarRanges.count (ret_value->getName ().str ()) > 0)
+				{
+					int left = dfval->VarRanges[ret_value->getName ().str ()][0];
+					int right = dfval->VarRanges[ret_value->getName ().str ()][1];
+					if (left == MINUS_INF)
+					{
+						/*errs ()*/cout << "[min..";
+					}
+					else
+					{
+						/*errs ()*/cout << "[" << left << "..";
+					}
+					if (right == INF)
+					{
+						/*errs ()*/cout << "max]\n";
+					}
+					else
+					{
+						/*errs () */cout<< right << "]\n";
+					}
+				}
+				else
+				{
+					/*errs ()*/cout << "Error: " << ret_value->getName ().str () << " doesn't exist!\n";
+					/*errs ()*/cout << "************[min..max]\n";
+				}
 			}
 		}
 		
