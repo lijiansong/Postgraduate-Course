@@ -39,23 +39,6 @@ struct FuncPtrPass : public FunctionPass
   {
     // errs() << "Hello: ";
     // errs().write_escaped(F.getName()) << '\n';
-    //for each basic block in the function
- //    Function::iterator bb_it = F.begin (), bb_ie = F.end ();
-	// for (; bb_it != bb_ie; ++bb_it)
-	// {
-	// 	//for each intruction in the basic block
-	// 	BasicBlock::iterator ii = bb_it->begin (), ie = bb_it->end ();
-	// 	for (; ii != ie; ++ii)
-	// 	{
-	// 		Instruction *inst = dyn_cast < Instruction > (ii);
-	// 		if (isa < ReturnInst > (inst))
-	// 		{
-	// 			ReturnInst * ret = dyn_cast < ReturnInst > (ii);
-	// 			errs()<<"+++++++++++"<<ret->getName()<<"\n";
-
-	// 		}
-	// 	}//end of ii
-	// }//end of bb_it
     return false;
   }
 };
@@ -95,7 +78,7 @@ int main(int argc, char **argv)
 
    ///Transform it to SSA
    Passes.add(llvm::createPromoteMemoryToRegisterPass());
-
+   Passes.add(new LoopInfoWrapperPass());
    /// Your pass to print Function and Call Instructions
    Passes.add(new Liveness());
    Passes.run(*M.get());

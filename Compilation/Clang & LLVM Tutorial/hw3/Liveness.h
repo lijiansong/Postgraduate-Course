@@ -22,6 +22,8 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <map>
+#include <set>
 using namespace llvm;
 using namespace std;
 #define MINUS_INF -0x7ffffff
@@ -1056,7 +1058,7 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 	}
 
 	//compute the interval of each inst
-	void compDFVal (Instruction * inst, LivenessInfo * dfval, typename DataflowResult < LivenessInfo >::Type * result,typename DataflowBackEdge< LivenessInfo >::BackEdge *back_edge) override
+	void compDFVal (Instruction * inst, LivenessInfo * dfval, typename DataflowResult < LivenessInfo >::Type * result,map<BasicBlock *, BasicBlock * > &back_edge,set<BasicBlock *> &loop_list) override
 	{
 		if (isa < DbgInfoIntrinsic > (inst))
 			return;
@@ -1163,22 +1165,28 @@ class LivenessVisitor:public DataflowVisitor < struct LivenessInfo >
 class Liveness:public FunctionPass
 {
   public:
-
+  	LoopInfo *loopInfo;
 	static char ID;
 	  Liveness ():FunctionPass (ID)
 	{
+	}
+	virtual void getAnalysisUsage(AnalysisUsage &AU) const
+	{
+		AU.addRequired<LoopInfoWrapperPass>();
 	}
 
 	bool runOnFunction (Function & F) override
 	{
 		//F.dump();
+		loopInfo = &(getAnalysis<LoopInfoWrapperPass>().getLoopInfo());
 		LivenessVisitor visitor;
 		DataflowResult < LivenessInfo >::Type result;
-		DataflowBackEdge< LivenessInfo >::BackEdge back_edge;
+		map<BasicBlock *, BasicBlock * > back_edge;
+		set<BasicBlock *> loop_list;
 		LivenessInfo initval;
 
 		//compBackwardDataflow(&F, &visitor, &result, initval);
-		compForwardDataflow (&F, &visitor, &result, &back_edge, initval);
+		compForwardDataflow (&F, &visitor, &result, back_edge, loopInfo ,loop_list,initval);
 		//printDataflowResult<LivenessInfo>(errs(), result);
 		return false;
 	}

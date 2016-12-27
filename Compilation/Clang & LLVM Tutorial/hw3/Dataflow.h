@@ -10,7 +10,11 @@
 #define _DATAFLOW_H_
 
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include <map>
+#include <set>
+
+using namespace std;
 
 using namespace llvm;
 
@@ -25,11 +29,11 @@ struct DataflowResult
     typedef typename std::map<BasicBlock *, std::pair<T, T> > Type;
 };
 
-template<class T>
-struct DataflowBackEdge
-{
-    typedef typename std::map<BasicBlock *, BasicBlock * > BackEdge;
-};
+//template<class T>
+// struct DataflowBackEdge
+// {
+//     typedef typename std::map<BasicBlock *, BasicBlock * > BackEdge;
+// };
 
 ///Base dataflow visitor class, defines the dataflow function
 
@@ -45,7 +49,8 @@ public:
     /// @block the Basic Block
     /// @dfval the input dataflow value
     /// @isforward true to compute dfval forward, otherwise backward
-    virtual void compDFVal(BasicBlock *block, T *dfval,typename DataflowResult<T>::Type * result,typename DataflowBackEdge<T>::BackEdge *back_edge, bool isforward) 
+    //bb, &((*result)[bb].second),result,back_edge,loop_list, true
+    virtual void compDFVal(BasicBlock *block, T *dfval,typename DataflowResult<T>::Type * result,map<BasicBlock *, BasicBlock * > &back_edge,set<BasicBlock *> &loop_list, bool isforward) 
     {
         if (isforward == true) 
         {
@@ -53,7 +58,7 @@ public:
                 ii!=ie; ++ii) 
            {
                 Instruction * inst = &*ii;
-                compDFVal(inst, dfval,result,back_edge);
+                compDFVal(inst, dfval,result,back_edge,loop_list);
            }
         }
         else 
@@ -62,7 +67,7 @@ public:
                 ii != ie; ++ii) 
            {
                 Instruction * inst = &*ii;
-                compDFVal(inst, dfval,result,back_edge);
+                compDFVal(inst, dfval,result,back_edge,loop_list);
            }
         }
     }
@@ -73,7 +78,7 @@ public:
     /// @inst the Instruction
     /// @dfval the input dataflow value
     /// @return true if dfval changed
-    virtual void compDFVal(Instruction *inst, T *dfval,typename DataflowResult<T>::Type * result,typename DataflowBackEdge<T>::BackEdge *back_edge ) = 0;
+    virtual void compDFVal(Instruction *inst, T *dfval,typename DataflowResult<T>::Type * result,map<BasicBlock *, BasicBlock * > &back_edge,set<BasicBlock *> &loop_list ) = 0;
 
     ///
     /// Merge of two dfvals, dest will be ther merged result
@@ -101,10 +106,13 @@ public:
 /// @param result The results of the dataflow 
 /// @initval the Initial dataflow value
 template<class T>
-void compForwardDataflow( Function *fn, 
+void compForwardDataflow( Function *fn,
                           DataflowVisitor<T> *visitor,
                           typename DataflowResult<T>::Type *result,
-                          const T& initval);
+                          map<BasicBlock *, BasicBlock * > &back_edge,
+                          LoopInfo * loopInfo,
+                          set<BasicBlock *> &loop_list,
+                          const T & initval);
 /// 
 /// Compute a backward iterated fixedpoint dataflow function, using a user-supplied
 /// visitor function. Note that the caller must ensure that the function is
@@ -118,7 +126,9 @@ template<class T>
 void compBackwardDataflow( Function *fn, 
                            DataflowVisitor<T> *visitor,
                            typename DataflowResult<T>::Type *result,
-                           const T& initval);
+                           map<BasicBlock *, BasicBlock * > &back_edge,
+                           set<BasicBlock *> &loop_list,
+                           const T &initval);
 
 template<class T>
 void printDataflowResult(raw_ostream &out,
