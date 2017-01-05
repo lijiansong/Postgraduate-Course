@@ -1,0 +1,7 @@
+binutils工具
+nm 查看符号表
+objdump
+readelf
+c++filt 解析被修饰过的名称
+
+gcc -g在目标文件中加上调试信息,多了个debug相关的段

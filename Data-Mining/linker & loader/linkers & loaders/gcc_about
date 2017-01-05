@@ -1,0 +1,5 @@
+gcc
+-fno-builtin 关闭内置函数优化选项，比如避免将程序中只使用了一个字符串参数的"printf"替换成"puts"函数
+
+--verbose 将整个编译链接过程的中间步骤打印出来
+(1.ccl编译 2.as汇编 3.collect2链接)

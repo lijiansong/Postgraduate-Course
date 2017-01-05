@@ -1,0 +1,8 @@
+readelf -h xx.o 查看ELF文件头
+readelf -S xx.o 列出ELF文件包含的段，比起objdump -h更为详细
+readelf -s xx.o 查看ELF文件中的符号
+readelf -a xx.o 查看ELF文件详细信息，与objdump -x类似
+readelf -l xx.o 查看Segment的结构(程序头)
+-r 查看动态链接文件的重定位表
+-D 查看符号哈希表
+-d 查看.dynamic段的内容

@@ -1,0 +1,19 @@
+objdump -h xx.o 把ELF文件的各个段的基本信息打印出来,不如readelf -S列出的信息详细(-x可以打印更多信息)
+objdump -s xx.o 把段的内容以16进制方式打印出来
+objdump -d xx.o 把所有包含指令的段反汇编
+objdump -t xx.o 查看ELF文件中的符号
+objdump -r xx.o 显示x.o中的重定位表
+objdump -h xx.so 查看xx.so的GOT（全局偏移表）的位置
+objdump -R xx.so 查看xx.so的需要在动态链接时的重定位项
+
+
+objdump -t libc.a | grep "printf" 查看libc.a的符号,使用grep搜索字符
+
+
+############################################################
+# 将图片放到目标文件的一个段中
+# objcopy -I binary -O elf32-i386 -B i386 image.jpg image.o
+# objdump -ht image.o 查看目标文件的内容
+############################################################
+
+

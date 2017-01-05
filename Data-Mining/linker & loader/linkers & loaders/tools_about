@@ -1,0 +1,20 @@
+binutils工具
+nm 查看符号表
+objdump
+readelf
+c++filt 解析被修饰过的名称
+
+
+gcc -g在目标文件中加上调试信息,多了个debug相关的段
+
+
+strip xxx 去掉ELF文件中的调试信息、符号表(ld -s类似功能)
+
+
+ld a.o b.o -e main -o ab  #-e main表示将main函数作为程序入口，ld链接器默认的程序入口为_start
+
+
+ar将目标文件压缩到一起
+ar -t 查看文件中包含了哪些目标文件
+
+ldd program 查看一个程序主模块或一个共享库依赖于哪些共享库
