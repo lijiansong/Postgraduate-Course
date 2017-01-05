@@ -22,6 +22,8 @@ $xdot file.dot
 
 How to dev a self-making linkers and loaders, we can refer to [The ELF and COFF Linkers...](http://lld.llvm.org/NewLLD.html) understand the `Key Concepts` first!
 
+Cool, [LLVM Developers' Meeting...](http://llvm.org/devmtg/2015-10/)
+
 
 ## Reference
 [Equations for very Busy Expressions](http://web.cs.wpi.edu/~kal/PLT/PLT9.6.1.html)<br>
