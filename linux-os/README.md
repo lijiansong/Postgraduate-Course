@@ -1,6 +1,8 @@
 ## Linux Kernel
 This archieve is mainly about linux kernel.
 
+### Content
+
 [1]使用`gcc -g -Wall hello-world.c -o hello-world`命令编译hello-world.c源文件，使用-选项开源查看完整和详细的gcc编译过程，`gcc -g -Wall -v hello-world.c -o hello-world`.
 使用readelf命令查看ELF格式的二进制可执行程序的内容`readelf -a hello-world`。
 > ELF 文件的主要内容就是由各个 section 及 symbol表组成的。在上面的 section 列表中,主要是 text 段、 data 段和 bss 段。 text 段为代码段,用于保存可执行指令。 data 段为数据段,用于保存有非 0 初始值的全局变量和静态变量。 bss 段用于保存没有初始值或初值为 0 的全局变量和静态变量,当程序加载时, bss 段中的变量会被初始化为 0 。这个段并不占用物理空间 —— 因为完全没有必要,这些变量的值固定初始化为 0 .
@@ -13,6 +15,9 @@ This archieve is mainly about linux kernel.
 - symtab 段:用于保存符号表。
 
 ### REF
+
 [1]《程序员的自我修养--链接/装载和库》
+
 [2]《Linkers & Loaders》
+
 [3]Linux Kernel
