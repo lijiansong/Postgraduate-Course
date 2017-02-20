@@ -39,8 +39,8 @@ import com.google.blockly.android.control.BlocklyController;
 import com.google.blockly.android.ui.BlockViewFactory;
 import com.google.blockly.model.BlockFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -554,6 +554,19 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
     }
 
     /**
+     * @return The path of the XML-formated config file that is stored in the none-assets directory.
+     */
+    @NonNull
+    abstract protected String getXmlPathFromOtherDir();
+
+    /**
+     *
+     * @return The path of the JSON-formated config file that is stored in the none-assets directory.
+     */
+    @NonNull
+    abstract protected List<String> getJsonFileFromOtherDir();
+
+    /**
      * Reloads the block definitions and toolbox contents.
      * @see #getToolboxContentsXmlPath()
      */
@@ -563,10 +576,15 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
 
         BlocklyController controller = getController();
         try {
-            //controller.loadToolboxContents(assetManager.open(getToolboxContentsXmlPath()));
-            InputStream inputStream=
-                    //TODO: modify the code
-            controller.loadToolboxContents();
+            controller.loadToolboxContents(assetManager.open(getToolboxContentsXmlPath()));
+//            InputStream _inputStream=assetManager.open(toolboxPath);
+//            if(!_inputStream) {
+//
+//            }
+//            controller.loadToolboxContents(_inputStream);
+            //add: open the workspace definition file paths
+            FileInputStream inputStream=openFileInput(getXmlPathFromOtherDir());
+            controller.loadToolboxContents(inputStream);
         } catch (IOException e) {
             throw new IllegalArgumentException("Error opening toolbox at " + toolboxPath, e);
         }
@@ -579,12 +597,14 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
     protected void reloadBlockDefinitions() {
         AssetManager assetManager = getAssets();
         List<String> blockDefsPaths = getBlockDefinitionsJsonPaths();
+        List<String> jsonFilePaths=getJsonFileFromOtherDir();
 
         BlockFactory factory = getController().getBlockFactory();
         factory.clear();
 
         String blockDefsPath;
         Iterator<String> iter = blockDefsPaths.iterator();
+
         while (iter.hasNext()) {
             blockDefsPath = iter.next();
             try {
@@ -594,6 +614,22 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
                 // Compile-time bundled assets are assumed to be valid.
                 throw new IllegalStateException("Failed to load block definitions from asset: "
                         + blockDefsPath, e);
+            }
+        }
+
+        //add: open the json block definition files from other paths
+        factory.clear();
+        iter=jsonFilePaths.iterator();
+        FileInputStream inputStream=null;
+        while(iter.hasNext()){
+            blockDefsPath=iter.next();
+            try {
+                inputStream=openFileInput(blockDefsPath);
+                factory.addBlocks(inputStream);
+            } catch (IOException e) {
+                factory.clear();
+                //e.printStackTrace();
+                throw new IllegalStateException("Failed to load block definitions from: "+blockDefsPath,e);
             }
         }
     }
