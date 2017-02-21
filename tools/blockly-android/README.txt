@@ -18,3 +18,10 @@ for the AbstractBlocklyActivity:
 need to change function contains:
 - reloadToolbox
 - reloadBlockDefinitions
+
+codegen need to be modified:
+CodeGeneratorService.java : 210/270
+- loadAssetAsUtf8
+- getBlockDefinitions
+
+- generator.js是存放在 List<String> 可以加载多个，只要对每一个block有一个对应的处理逻辑就会生成对应的代码
