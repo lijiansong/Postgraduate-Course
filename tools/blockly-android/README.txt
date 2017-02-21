@@ -26,18 +26,23 @@ CodeGeneratorService.java : 210/270
 
 - generator.js是存放在 List<String> 可以加载多个，只要对每一个block有一个对应的处理逻辑就会生成对应的代码
 
-//获取getFilesDir()的父目录
-File dataDir = getFilesDir().getParentFile();
-File mydir = new File(dataDir, "aaa");
-mydir.mkdir();
-File file = new File(mydir, "test.txt");
-BufferedWriter fw = null;
-try {
-    file.createNewFile();
-    fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
-    fw.append("测试内容");
-    fw.flush();
-    fw.close();
-} catch (Exception e) {
-    e.printStackTrace();
-}
+修改的方法有问题，不能直接添加，凡是涉及到getBlockDefinitionsJsonPaths()和getToolboxContentsXmlPath()的地方都需要添加对额外目录的处理，e.g.  AbstractBlocklyActivity.java:269-273
+public BlocklyActivityHelper onCreateActivityHelper() {
+        return new BlocklyActivityHelper(this,
+                getBlockDefinitionsJsonPaths(),
+                getToolboxContentsXmlPath());
+    }
+
+BlocklyActivityHelper.java:85 构造方法需要继续修改
+BlocklyController.Builder builder = new BlocklyController.Builder(activity)
+                .setClipDataHelper(mClipDataHelper)
+                .setWorkspaceHelper(mWorkspaceHelper)
+                .setBlockViewFactory(mBlockViewFactory)
+                .setWorkspaceFragment(mWorkspaceFragment)
+                .addBlockDefinitionsFromAssets(blockDefinitionJsonPaths)
+                .setToolboxConfigurationAsset(toolboxPath)
+                .setTrashUi(mTrashBlockList)
+                .setToolboxUi(mToolboxBlockList, mCategoryFragment);
+        mController = builder.build();
+
+测试的时候可以直接在simpleactivity上修改，避免复杂的操作步骤
