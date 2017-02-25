@@ -12,6 +12,8 @@ $ ipconfig /flushdns
 
 format:
 $ indent -npro -nip -nlp -npsl -i4 -ts4 -sob -l200 -ss -bl -bli 0
+
+$ javap -c test
 `
 
 # Content
