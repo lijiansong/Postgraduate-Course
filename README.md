@@ -33,7 +33,9 @@ Based on the dataset [kddcup99])(http://kdd.ics.uci.edu/databases/kddcup99/kddcu
 
 To learn more details about the implement of Apriori(in Cpp, under Linux platform), see [here...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Data-Mining/Apriori)
 
+[Hadoop official tutorial...](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html#Download)
 [Hadoop install links...](http://www.powerxing.com/install-hadoop/)
+
 
 ## Information Retrieval
 - 倒排索引
