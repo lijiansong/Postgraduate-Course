@@ -1,6 +1,8 @@
 package cn.ac.ict.restful;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -25,18 +27,20 @@ public class MainActivity extends AppCompatActivity {
     //HttpClient mHttpClient;
     URL url;
     HttpsURLConnection urlConnection=null;
-//    Handler handler=new Handler(){
-//        public void handleMessage(android.os.Message msg) {
-//            if (msg.what==0x123) {
-//                mTextViewResponse.append(msg.obj.toString()+"\n");
-//            }
-//        }
-//    };
+    Handler handler=new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what==0x123) {
+                mTextViewResponse.append(msg.obj.toString()+"\n");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //mHttpClient=new DefaultHttpClient();
 
         mTextViewResponse= (TextView) findViewById(R.id.txtview_response);
         mBtnAccess= (Button) findViewById(R.id.btn_access);
@@ -46,8 +50,32 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             mTextViewResponse.setText("");
-//            new Thread(){
-//                public void run(){
+            new Thread(){
+                public void run(){
+//                    HttpPost post=new HttpPost("https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id="
+//                            +API_KEY+"&client_secret="+SECRET_KEY);
+//                    try {
+//                        HttpResponse serverResponse=mHttpClient.execute(post);
+//                        HttpEntity entity=serverResponse.getEntity();
+//                        if (entity!=null){
+//                            //get server response
+//                            BufferedReader bufferedReader=new BufferedReader(
+//                                    new InputStreamReader(entity.getContent())
+//                            );
+//                            String line=null;
+//                            while((line=bufferedReader.readLine())!=null)
+//                            {
+//                                Message msg=new Message();
+//                                msg.what=0x123;
+//                                msg.obj=line;
+//                                handler.sendMessage(msg);
+//                            }
+//                        }
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+
                     try {
                         url=new URL("https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id="
                                 +API_KEY+
@@ -60,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                         int statusCode=urlConnection.getResponseCode();
                         if(statusCode!=HttpsURLConnection.HTTP_ACCEPTED){
                             //onCreateDialog().dismiss();
-                            mTextViewResponse.setText("Error!\nFailed to connect to Baidu server!\n\n");
+                            //mTextViewResponse.setText("Error!\nFailed to connect to Baidu server!\n\n");
                         }
                         InputStream inputStream=new BufferedInputStream(urlConnection.getInputStream());
 
@@ -69,14 +97,12 @@ public class MainActivity extends AppCompatActivity {
                         String line=null;
                         while ((line=reader.readLine())!=null){
                             responseText.append(line).append('\n');
-//                            Message msg=new Message();
-//                            msg.what=0x123;
-//                            msg.obj=line;
-//                            handler.sendMessage(msg);
+                            Message msg=new Message();
+                            msg.what=0x123;
+                            msg.obj=line;
+                            handler.sendMessage(msg);
                         }
-                        mTextViewResponse.setText(responseText.toString());
-
-
+                        //mTextViewResponse.setText(responseText.toString());
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
@@ -84,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-//            }.start();
-//        }
+            }.start();
+        }
     }
 }
