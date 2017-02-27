@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -69,6 +74,18 @@ public class MainActivity extends AppCompatActivity {
         return result.toString();
     }
 
+    //get the size of the voice data
+    public long getRawFileSize(){
+        long len=0;
+        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
+        try {
+            len= voiceInputStream.available();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return len;
+    }
+
     //get the mac address of the mobile end
     public String getMacAddress(Context mContext){
         String macStr="";
@@ -83,15 +100,30 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext(){
         return MainActivity.mContext;
     }
-    //get access token
-    public String getAccessToken(){
-        return "";
+
+    //parse the access_token from Baidu server
+    public String getAccessToken() {
+        String accessTokenStr="";
+        if(mResponseStr!=null){
+            JSONObject jsonObject= null;
+            try {
+                jsonObject = new JSONObject(getServerResponseStr());
+                accessTokenStr=jsonObject.getString("access_token");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return accessTokenStr;
     }
 
     //get the response string of Baidu Server
     public String getServerResponseStr(){
-
         return mResponseStr.toString();
+    }
+
+    //get Base64 encoded data string of the voice data
+    public String getVoiceBase64Encode(){
+        return Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT);
     }
 
     @Override
@@ -115,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //TODO:add parsing voice
+            Toast.makeText(MainActivity.this,
+                    "++++\n"+getAccessToken(),
+                    Toast.LENGTH_LONG).show();
         }
     }
     class BtnAccessListener implements View.OnClickListener{
@@ -123,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             mTextViewResponse.setText("");
             //mTextViewResponse.setText(Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT));
             mTextViewResponse.append(getMacAddress(getAppContext()).toString()+"\n");
-            getServerResponseStr();
+            //getServerResponseStr();
             new Thread(){
                 public void run(){
                     try {
@@ -163,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }.start();
+            //mTextViewResponse.append("++++++++++++++++++\n\n\n"+getServerResponseStr());
         }
     }
 }
