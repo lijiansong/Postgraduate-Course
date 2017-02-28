@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">百度语音Restful</string>
+    <string name="action_settings">Settings</string>
+    <string name="btn_access">向百度服务器POST请求</string>
+    <string name="parse_voice">解析语音数据</string>
+</resources>
