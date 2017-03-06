@@ -24,16 +24,16 @@ CodeGeneratorService.java : 210/270
 - loadAssetAsUtf8
 - getBlockDefinitions
 
-- generator.jsÊÇ´æ·ÅÔÚ List<String> ¿ÉÒÔ¼ÓÔØ¶à¸ö£¬Ö»Òª¶ÔÃ¿Ò»¸öblockÓĞÒ»¸ö¶ÔÓ¦µÄ´¦ÀíÂß¼­¾Í»áÉú³É¶ÔÓ¦µÄ´úÂë
+- generator.jsæ˜¯å­˜æ”¾åœ¨ List<String> å¯ä»¥åŠ è½½å¤šä¸ªï¼Œåªè¦å¯¹æ¯ä¸€ä¸ªblockæœ‰ä¸€ä¸ªå¯¹åº”çš„å¤„ç†é€»è¾‘å°±ä¼šç”Ÿæˆå¯¹åº”çš„ä»£ç 
 
-ĞŞ¸ÄµÄ·½·¨ÓĞÎÊÌâ£¬²»ÄÜÖ±½ÓÌí¼Ó£¬·²ÊÇÉæ¼°µ½getBlockDefinitionsJsonPaths()ºÍgetToolboxContentsXmlPath()µÄµØ·½¶¼ĞèÒªÌí¼Ó¶Ô¶îÍâÄ¿Â¼µÄ´¦Àí£¬e.g.  AbstractBlocklyActivity.java:269-273
+ä¿®æ”¹çš„æ–¹æ³•æœ‰é—®é¢˜ï¼Œä¸èƒ½ç›´æ¥æ·»åŠ ï¼Œå‡¡æ˜¯æ¶‰åŠåˆ°getBlockDefinitionsJsonPaths()å’ŒgetToolboxContentsXmlPath()çš„åœ°æ–¹éƒ½éœ€è¦æ·»åŠ å¯¹é¢å¤–ç›®å½•çš„å¤„ç†ï¼Œe.g.  AbstractBlocklyActivity.java:269-273
 public BlocklyActivityHelper onCreateActivityHelper() {
         return new BlocklyActivityHelper(this,
                 getBlockDefinitionsJsonPaths(),
                 getToolboxContentsXmlPath());
     }
 
-BlocklyActivityHelper.java:85 ¹¹Ôì·½·¨ĞèÒª¼ÌĞøĞŞ¸Ä
+BlocklyActivityHelper.java:85 æ„é€ æ–¹æ³•éœ€è¦ç»§ç»­ä¿®æ”¹
 BlocklyController.Builder builder = new BlocklyController.Builder(activity)
                 .setClipDataHelper(mClipDataHelper)
                 .setWorkspaceHelper(mWorkspaceHelper)
@@ -45,4 +45,7 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
                 .setToolboxUi(mToolboxBlockList, mCategoryFragment);
         mController = builder.build();
 
-²âÊÔµÄÊ±ºò¿ÉÒÔÖ±½ÓÔÚsimpleactivityÉÏĞŞ¸Ä£¬±ÜÃâ¸´ÔÓµÄ²Ù×÷²½Öè
+æµ‹è¯•çš„æ—¶å€™å¯ä»¥ç›´æ¥åœ¨simpleactivityä¸Šä¿®æ”¹ï¼Œé¿å…å¤æ‚çš„æ“ä½œæ­¥éª¤
+
+å¼‚æ­¥é€šä¿¡example or ã€Šç¬¬ä¸€è¡Œä»£ç ã€‹key wordsï¼šAsyncTask
+http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection
