@@ -13,14 +13,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -34,45 +39,26 @@ public class MainActivity extends AppCompatActivity {
     private static final String SECRET_KEY="fc4d81ef45486b17da48d6d2e81b65d5";
     private StringBuilder mResponseStr;
     private JSONObject mVoicePackageJsonObject;
+    private StringBuilder mVoiceStr;
 
     TextView mTextViewResponse=null;
     Button mBtnAccess=null;
     Button mBtnPaeseVoice=null;
     //HttpClient mHttpClient;
     URL url;
-    HttpsURLConnection urlConnection=null;
+    //HttpsURLConnection urlConnection=null;
+    HttpURLConnection urlConnection=null;
     Handler handler=new Handler(){
         public void handleMessage(android.os.Message msg) {
             if (msg.what==0x123) {
                 mTextViewResponse.append(msg.obj.toString()+"\n");
             }
+            if(msg.what==0x124){
+                mTextViewResponse.append(msg.obj.toString()+"\n");
+            }
         }
     };
 
-
-    //get the audio file from res/raw dir
-    public String getVoiceStringFromRaw(){
-        //String result="";
-        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
-        StringBuilder result=new StringBuilder();
-        try {
-            //get the bytes of the file
-//            int length=inputStream.available();
-//            byte[] buffer=new byte[length];
-//            inputStream.read(buffer);
-
-            //convert inputstream to string
-            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(voiceInputStream));
-            String line=bufferedReader.readLine();
-            while(line!=null){
-                result.append(line);
-                line=bufferedReader.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result.toString();
-    }
 
     //get the size of the voice data
     public long getRawVoiceSize(){
@@ -83,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //len=getVoiceStringFromRaw().length();
         return len;
     }
 
@@ -107,9 +94,29 @@ public class MainActivity extends AppCompatActivity {
     //get the voice json package size
     public long getVoiceJsonPackageSize(){
         if(mVoicePackageJsonObject!=null)
+            //return mVoicePackageJsonObject.length();
             return mVoicePackageJsonObject.toString().length();
         else
             return -1;
+    }
+
+    //parse the JSON package to get the voice string
+    public String[] getParsedVoiceStr(){
+        String[] result={};
+        try {
+            JSONObject jsonObject=new JSONObject(mVoiceStr.toString());
+            JSONArray resultArray=jsonObject.getJSONArray("result");
+            if(resultArray.length()>0){
+                result=new String[resultArray.length()];
+                for(int i=0;i<resultArray.length();++i){
+                    result[i]=resultArray.getString(i);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 
@@ -150,9 +157,49 @@ public class MainActivity extends AppCompatActivity {
         return mResponseStr.toString();
     }
 
+    //get the audio file from res/raw dir
+    public String getVoiceStringFromRaw(){
+        //String result="";
+        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
+        StringBuilder result=new StringBuilder();
+        try {
+            //get the bytes of the file
+            //            int length=inputStream.available();
+            //            byte[] buffer=new byte[length];
+            //            inputStream.read(buffer);
+
+            //convert inputstream to string
+            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(voiceInputStream));
+            String line=bufferedReader.readLine();
+            while(line!=null){
+                result.append(line);
+                line=bufferedReader.readLine();
+            }
+            voiceInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+
     //get Base64 encoded data string of the voice data
     public String getVoiceBase64Encode(){
-        return Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT);
+        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
+        byte[] buffer;
+        //Base64InputStream base64InputStream=new Base64InputStream(voiceInputStream,Base64.DEFAULT);
+        try {
+            int length=voiceInputStream.available();
+            buffer=new byte[length];
+            voiceInputStream.read(buffer,0,length);
+
+            voiceInputStream.close();
+            //it is necessary to set the flag to NO_WRAP, otherwise Baidu's server will response you with a error msg "json param speech error", such a fucking requirement!
+            return Base64.encodeToString(buffer,Base64.	NO_WRAP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+        //return Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT);
     }
 
     @Override
@@ -162,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
         mResponseStr=new StringBuilder();
         mVoicePackageJsonObject=new JSONObject();
+        mVoiceStr=new StringBuilder();
         //mHttpClient=new DefaultHttpClient();
 
         MainActivity.mContext=getApplicationContext();
@@ -177,9 +225,73 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //TODO:add parsing voice
-            Toast.makeText(MainActivity.this,
-                    "++++\n"+getAccessToken(),
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this,
+//                    "++++\n"+getAccessToken()+"\n raw voice size: "+getRawVoiceSize()+"\n json package size: "+getVoiceJsonPackageSize(),
+//                    Toast.LENGTH_LONG).show();
+
+            new Thread(){
+                @Override
+                public void run() {
+                    //super.run();
+                    try {
+                        url=new URL("http://vop.baidu.com/server_api");
+                        //urlConnection= (HttpsURLConnection) url.openConnection();
+                        urlConnection= (HttpURLConnection) url.openConnection();
+                        urlConnection.setDoOutput(true);
+                        //http header
+                        urlConnection.setRequestProperty("Content-Type", "application/json");
+                        urlConnection.setRequestProperty("Accept-Charset","utf-8");
+                        //response data in json-formated
+                        urlConnection.setRequestProperty("Accept","application/json");
+                        urlConnection.setRequestProperty("Content-Length",""+getVoiceJsonPackageSize());
+                        urlConnection.setReadTimeout(30000);//30s time out,in milliseconds
+                        urlConnection.setConnectTimeout(15000);
+                        urlConnection.setRequestMethod("POST");
+
+                        urlConnection.connect();
+
+                        //write body
+                        OutputStream outputStream=urlConnection.getOutputStream();
+                        BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+                        writer.write(getVoiceJsonPackageStr());
+                        writer.flush();
+                        writer.close();
+                        outputStream.close();
+
+                        //get the response
+                        BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"UTF-8"));
+                        String line=null;
+                        //StringBuilder stringBuilder=new StringBuilder();
+                        while ((line=bufferedReader.readLine())!=null){
+                            //stringBuilder.append(line);
+                            mVoiceStr.append(line);
+                            Message msg=new Message();
+                            msg.what=0x124;
+                            msg.obj=line;
+                            handler.sendMessage(msg);
+                        }
+                        bufferedReader.close();
+                        //String responseStr=stringBuilder.toString();
+
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        urlConnection.disconnect();
+                    }
+                }
+            }.start();
+
+            String []voiceStr=getParsedVoiceStr();
+            if(voiceStr.length!=0){
+                Toast.makeText(MainActivity.this,
+                        "voice content: "+voiceStr[0],
+                        Toast.LENGTH_LONG).show();
+            }
+
         }
     }
     class BtnAccessListener implements View.OnClickListener{
@@ -197,7 +309,8 @@ public class MainActivity extends AppCompatActivity {
                                 "&client_secret="+
                                 SECRET_KEY);
 
-                        urlConnection= (HttpsURLConnection) url.openConnection();
+                        //urlConnection= (HttpsURLConnection) url.openConnection();
+                        urlConnection= (HttpURLConnection) url.openConnection();
                         urlConnection.setRequestMethod("POST");
                         urlConnection.connect();
 
@@ -220,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
                             msg.obj=line;
                             handler.sendMessage(msg);
                         }
-
+                        reader.close();
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
