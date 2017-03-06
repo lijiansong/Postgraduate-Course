@@ -49,3 +49,4 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
 
 异步通信example or 《第一行代码》key words：AsyncTask
 http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection
+<br>see [here...](http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection)
