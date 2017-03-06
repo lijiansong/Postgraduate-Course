@@ -60,30 +60,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    //get the audio file from res/raw dir
-    public String getVoiceStringFromRaw(){
-        //String result="";
-        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
-        StringBuilder result=new StringBuilder();
-        try {
-            //get the bytes of the file
-//            int length=inputStream.available();
-//            byte[] buffer=new byte[length];
-//            inputStream.read(buffer);
-
-            //convert inputstream to string
-            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(voiceInputStream));
-            String line=bufferedReader.readLine();
-            while(line!=null){
-                result.append(line);
-                line=bufferedReader.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result.toString();
-    }
-
     //get the size of the voice data
     public long getRawVoiceSize(){
         long len=0;
@@ -93,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //len=getVoiceStringFromRaw().length();
         return len;
     }
 
@@ -117,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
     //get the voice json package size
     public long getVoiceJsonPackageSize(){
         if(mVoicePackageJsonObject!=null)
+            //return mVoicePackageJsonObject.length();
             return mVoicePackageJsonObject.toString().length();
         else
             return -1;
     }
 
     //parse the JSON package to get the voice string
-    public String[] getVoiceStr(){
+    public String[] getParsedVoiceStr(){
         String[] result={};
         try {
             JSONObject jsonObject=new JSONObject(mVoiceStr.toString());
@@ -179,9 +157,49 @@ public class MainActivity extends AppCompatActivity {
         return mResponseStr.toString();
     }
 
+    //get the audio file from res/raw dir
+    public String getVoiceStringFromRaw(){
+        //String result="";
+        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
+        StringBuilder result=new StringBuilder();
+        try {
+            //get the bytes of the file
+            //            int length=inputStream.available();
+            //            byte[] buffer=new byte[length];
+            //            inputStream.read(buffer);
+
+            //convert inputstream to string
+            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(voiceInputStream));
+            String line=bufferedReader.readLine();
+            while(line!=null){
+                result.append(line);
+                line=bufferedReader.readLine();
+            }
+            voiceInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+
     //get Base64 encoded data string of the voice data
     public String getVoiceBase64Encode(){
-        return Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT);
+        InputStream voiceInputStream=getResources().openRawResource(R.raw.test);
+        byte[] buffer;
+        //Base64InputStream base64InputStream=new Base64InputStream(voiceInputStream,Base64.DEFAULT);
+        try {
+            int length=voiceInputStream.available();
+            buffer=new byte[length];
+            voiceInputStream.read(buffer,0,length);
+
+            voiceInputStream.close();
+            //it is necessary to set the flag to NO_WRAP, otherwise Baidu's server will response you with a error msg "json param speech error", such a fucking requirement!
+            return Base64.encodeToString(buffer,Base64.	NO_WRAP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+        //return Base64.encodeToString(getVoiceStringFromRaw().getBytes(),Base64.DEFAULT);
     }
 
     @Override
@@ -207,9 +225,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //TODO:add parsing voice
-            Toast.makeText(MainActivity.this,
-                    "++++\n"+getAccessToken(),
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this,
+//                    "++++\n"+getAccessToken()+"\n raw voice size: "+getRawVoiceSize()+"\n json package size: "+getVoiceJsonPackageSize(),
+//                    Toast.LENGTH_LONG).show();
+
             new Thread(){
                 @Override
                 public void run() {
@@ -265,6 +284,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }.start();
+
+            String []voiceStr=getParsedVoiceStr();
+            if(voiceStr.length!=0){
+                Toast.makeText(MainActivity.this,
+                        "voice content: "+voiceStr[0],
+                        Toast.LENGTH_LONG).show();
+            }
+
         }
     }
     class BtnAccessListener implements View.OnClickListener{
