@@ -51,6 +51,9 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 ## Algorithm
 Postgraduate course of UCAS, teached by [Bu Dongbo](http://bioinfo.ict.ac.cn/~dbu/), [more details...](https://github.com/lijiansong/Postgraduate-Course/tree/master/Algorithm)
 
+## CS224d: Deep Learning for Natural Language Processing
+ For more details, see [here...](http://cs224d.stanford.edu/syllabus.html)
+
 # Postscript
 This archive will be updated regularly.
 
