@@ -48,5 +48,15 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
 测试的时候可以直接在simpleactivity上修改，避免复杂的操作步骤
 
 异步通信example or 《第一行代码》key words：AsyncTask
+
 http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection
 <br>see [here...](http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection)
+
+- [x] Now I finished packaging cloud services e.g. Baidu Voice Recognition Service
+- [ ] ToDo: define a description rule as easy as possible to describe the cloud service, then package them into a module. To integrate with Blockly, modify the source code of Blockly so that it can support dynamical generating blocks.
+
+- [ ] modify the source code of blockly, a time consuming task
+- [ ] design rules of the description file, and write a parser to parse it
+- [ ] to be continued
+
+
