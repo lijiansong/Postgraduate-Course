@@ -37,6 +37,7 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 [Hadoop install links...](http://www.powerxing.com/install-hadoop/)
 
 ToDo: spare some effort to learn docker and some other container technology, and try to move infrastructure to a containerized architecture...
+Another requirement is supporting Message Queuing Architectures...
 
 ## Information Retrieval
 - 倒排索引
