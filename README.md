@@ -36,7 +36,7 @@ To learn more details about the implement of Apriori(in Cpp, under Linux platfor
 [Hadoop official tutorial...](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html#Download)
 [Hadoop install links...](http://www.powerxing.com/install-hadoop/)
 
-ToDo: spare some effort to learn docker and some other container technology...
+ToDo: spare some effort to learn docker and some other container technology, and try to move infrastructure to a containerized architecture...
 
 ## Information Retrieval
 - 倒排索引
