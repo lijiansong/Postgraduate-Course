@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     private static final int RECORDER_SAMPLERATE=8000;
     private static final int RECORDER_CHANNELS= AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING= AudioFormat.ENCODING_PCM_16BIT;
-    private static final String AUDIO_NAME="/8k16bitMono.pcm";
+    private static final String AUDIO_NAME="/8k16bitmono.pcm";
 
     // want to play 2048 (2K) since 2 bytes we use only 1024
     private int BufferElements2Rec = 1024;
@@ -372,9 +372,9 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             //TODO:add parsing voice
-//            Toast.makeText(MainActivity.this,
-//                    "++++\n"+getAccessToken()+"\n raw voice size: "+getRawVoiceSize()+"\n json package size: "+getVoiceJsonPackageSize(),
-//                    Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this,
+                    "++++\n"+getAccessToken()+"\n raw voice size: "+getRawVoiceSize()+"\n json package size: "+getVoiceJsonPackageSize(),
+                    Toast.LENGTH_LONG).show();
 
             new Thread(){
                 @Override
