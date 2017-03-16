@@ -19,7 +19,7 @@ Many tools can be taken use of to parse the ELF file, such as `readelf, elfutils
 ```
 $ cd xxx_dir
 $ make
-$ elf-parser ./test-cases/hello/hello
+$ ./elf-parser ./test-cases/hello/hello
 $ make clean
 ```
 To generate the assembly code, you can type the following cmds:
