@@ -14,6 +14,11 @@ This archieve is mainly about linux kernel.
 - rodata 段:用于保存只读数据,如 const 修饰的全局变量、字符串常量。
 - symtab 段:用于保存符号表。
 
+g++ -E hello.cpp -o hello.i
+g++ -S hello.cpp -o hello.s
+g++ -c hello.s -o hello.o
+readelf -a hello
+
 [2] 在linux环境下可以利用strace命令跟踪系统调用`strace ./hello-world`,该命令会将操作系统加载/运行和退出的整个过程都显示出来。
 ```
 execve("./hello-world", ["./hello-world"], [/* 61 vars */]) = 0
