@@ -7,6 +7,13 @@
 - `./sbin/start-dfs.sh` then `jps` has no DataNode process, see [here...](http://blog.csdn.net/lulongzhou_llz/article/details/40590427) By changing datanode's VERSION file of `clusterID` be consist with namenode's VERSION file.
 
 ### Hadoop Eclipse install
-- intsall eclipse plugin links, [see here](http://blog.csdn.net/young_kim1/article/details/50208837) or [here](http://www.powerxing.com/hadoop-build-project-using-eclipse/)
+- intsall eclipse plugin links, see [here](http://blog.csdn.net/young_kim1/article/details/50208837) or [here](http://www.powerxing.com/hadoop-build-project-using-eclipse/)
 - [attach source link ](http://blog.csdn.net/lifuxiangcaohui/article/details/25218287)
 - modify the plugins by the following cmd `./eclipse clean`
+
+### HBase Install
+- hbase install see this [page](http://blog.csdn.net/flyfish111222/article/details/51893096)
+
+### HBase Eclipse Plugins
+- HBase Eclipse config see this [page](http://blog.csdn.net/liuxiangke0210/article/details/53787223) and this [page](http://blog.csdn.net/nengyu/article/details/51779395)
+
