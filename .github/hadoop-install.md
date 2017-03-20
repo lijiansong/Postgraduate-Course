@@ -1,4 +1,5 @@
-links see [here...](http://www.powerxing.com/install-hadoop/)
+## Hadoop Install
+- install links see [here...](http://www.powerxing.com/install-hadoop/)
 
 ## Normal Question List
 - JAVA_HOME not found: add `export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64` to `hadoop-env.sh yarn-env.sh mapred-env.sh`
