@@ -64,9 +64,10 @@ how to write pcm-formated audio data to file see [here...](http://stackoverflow.
 - [x] Now I finished packaging cloud services e.g. Baidu Voice Recognition Service
 - [ ] ToDo: define a description rule as easy as possible to describe the cloud service, then package them into a module. To integrate with Blockly, modify the source code of Blockly so that it can support dynamical generating blocks.
 
-- [ ] modify the source code of blockly, a time consuming task
-- [ ] design rules of the description file, and write a parser to parse it
-- [ ] to be continued
+- [x] modify the source code of blockly, a time consuming task
+- [x] design rules of the description file, and write a parser to parse it
+- [x] learning to add an module to android blockly, and then add the dynamical module to Dongshouke, package the cloud service and write a simple parser to parse the description file...
+- [ ] NLP module need to be learned and develop my own NLP lib...
 
 ### Notice
 - openFileInput doesn't accept path separators, i.e. if you implement an Instance of InputStream like this `InputStream voiceInputStream=openFileInput(Environment.getExternalStorageDirectory().getPath()+AUDIO_NAME);` then your program will crash :-)
