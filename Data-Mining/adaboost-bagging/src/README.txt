@@ -1,0 +1,3 @@
+bagging.m展示class2d.ascii小规模数据集的效果
+adaboost.m展示class2d.ascii小规模数据集的效果
+spam.m展示spamtrain.ascii和spamtest.ascii数据集的训练和测试结果的准确率
