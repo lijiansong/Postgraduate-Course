@@ -1,1 +1,4 @@
-
+- [ ] ToDo: graphlite finish 4 different tasks before 16/04/26
+- [ ] ToDo: big data course project management
+- [ ] ToDo: distribution course homework to be finished
+- [ ] ToDo: compiler principle homework to be checked for undergraduate students
