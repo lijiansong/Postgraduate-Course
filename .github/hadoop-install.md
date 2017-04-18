@@ -7,6 +7,7 @@
 - `./sbin/start-dfs.sh` then `jps` has no DataNode process, see [here...](http://blog.csdn.net/lulongzhou_llz/article/details/40590427) By changing datanode's VERSION file of `clusterID` be consist with namenode's VERSION file.
 - close Eclipse first, then stop hbase and stop hdfs, otherwise something unexpected may happen...
 - before sleep computer, must remember stop hdfs & hbase...
+- the Eclipse IDE(NEON1) is very fucking, even if the variable is not declared `final`, you can also access it from within inner class, you can run your program without any warnings or errors. What a fucking bug!(found from my homework)
 
 ### Hadoop Eclipse install
 - intsall eclipse plugin links, see [here](http://blog.csdn.net/young_kim1/article/details/50208837) or [here](http://www.powerxing.com/hadoop-build-project-using-eclipse/)
