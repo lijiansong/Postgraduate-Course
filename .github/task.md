@@ -1,4 +1,6 @@
 - [ ] ToDo: graphlite finish 4 different tasks before 16/04/26
-- [ ] ToDo: big data course project management
+- [x] ToDo: big data course project management
 - [ ] ToDo: distribution course homework to be finished
 - [x] ToDo: compiler principle homework to be checked for undergraduate students
+- [ ] ToDo: learn how to use apache Storm for big data course project
+- [ ] ToDo: learn Probability Graph Model & HMM
