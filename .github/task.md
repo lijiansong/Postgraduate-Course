@@ -4,3 +4,4 @@
 - [x] ToDo: compiler principle homework to be checked for undergraduate students
 - [ ] ToDo: learn how to use apache Storm for big data course project
 - [ ] ToDo: learn Probability Graph Model & HMM
+- [ ] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
