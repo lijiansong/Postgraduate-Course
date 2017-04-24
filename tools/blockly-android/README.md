@@ -27,7 +27,6 @@ codegen need to be modified:
 CodeGeneratorService.java : 210/270
 - loadAssetAsUtf8
 - getBlockDefinitions
-
 - generator.js是存放在 List<String> 可以加载多个，只要对每一个block有一个对应的处理逻辑就会生成对应的代码
 
 修改的方法有问题，不能直接添加，凡是涉及到getBlockDefinitionsJsonPaths()和getToolboxContentsXmlPath()的地方都需要添加对额外目录的处理，e.g.  AbstractBlocklyActivity.java:269-273
@@ -72,7 +71,41 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
                 .setToolboxUi(mToolboxBlockList, mCategoryFragment);
         mController = builder.build();
 ```
+BlocklyActivityHelper.java:177-207
+```
+/**
+     * Requests code generation using the blocks in the {@link Workspace}/{@link WorkspaceFragment}.
+     *
+     * @param blockDefinitionsJsonPaths The asset path to the JSON block definitions.
+     * @param generatorsJsPaths The asset paths to the JavaScript generators, and optionally the
+     *                          JavaScript block extension/mutator sources.
+     * @param codeGenerationCallback The {@link CodeGenerationRequest.CodeGeneratorCallback} to use
+     *                               upon completion.
+     */
+    public void requestCodeGeneration(
+            List<String> blockDefinitionsJsonPaths,
+            List<String> generatorsJsPaths,
+            CodeGenerationRequest.CodeGeneratorCallback codeGenerationCallback) {
 
+        final StringOutputStream serialized = new StringOutputStream();
+        try {
+            mController.getWorkspace().serializeToXml(serialized);
+        } catch (BlocklySerializerException e) {
+            // Not using a string resource because no non-developer should see this.
+            String msg = "Failed to serialize workspace during code generation.";
+            Log.wtf(TAG, msg, e);
+            Toast.makeText(mActivity, msg, Toast.LENGTH_LONG).show();
+            throw new IllegalStateException(msg, e);
+        }
+
+        mCodeGeneratorManager.requestCodeGeneration(
+                new CodeGenerationRequest(
+                        serialized.toString(),
+                        codeGenerationCallback,
+                        blockDefinitionsJsonPaths,
+                        generatorsJsPaths));
+}
+```
 
 测试的时候可以直接在simpleactivity上修改，避免复杂的操作步骤
 
