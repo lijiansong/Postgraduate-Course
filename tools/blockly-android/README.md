@@ -94,4 +94,5 @@ how to write pcm-formated audio data to file see [here...](http://stackoverflow.
 ### Notice
 - openFileInput doesn't accept path separators, i.e. if you implement an Instance of InputStream like this `InputStream voiceInputStream=openFileInput(Environment.getExternalStorageDirectory().getPath()+AUDIO_NAME);` then your program will crash :-)
 - project FileTest read & write is `assets`, and project RESTful read & write is `assets` directory again, while project RESTful_AudioRecord is the local directory...
+- in google blockly source code, most of member variables are declared `final` for security, so it may be rediculious to modify the source code to support dynamical loading blocks. 
 
