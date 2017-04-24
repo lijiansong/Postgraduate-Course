@@ -38,6 +38,25 @@ public BlocklyActivityHelper onCreateActivityHelper() {
                 getToolboxContentsXmlPath());
     }
 ```
+AbstractBlocklyActivity.java:527-541
+```
+ /**
+     * Runs the code generator. Called when user selects "Run" action.
+     * <p/>
+     * Gets the latest block definitions and generator code by calling
+     * {@link #getBlockDefinitionsJsonPaths()} and {@link #getGeneratorsJsPaths()} just before
+     * invoking generation.
+     *
+     * @see #getCodeGenerationCallback()
+     */
+    protected void onRunCode() {
+        mBlockly.requestCodeGeneration(
+            getBlockDefinitionsJsonPaths(),
+            getGeneratorsJsPaths(),
+            getCodeGenerationCallback());
+}
+```
+
 BlocklyActivityHelper.java:85 构造方法需要继续修改
 
 ```Java
@@ -52,6 +71,7 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
                 .setToolboxUi(mToolboxBlockList, mCategoryFragment);
         mController = builder.build();
 ```
+
 
 测试的时候可以直接在simpleactivity上修改，避免复杂的操作步骤
 
