@@ -1,6 +1,7 @@
 modify blockly-android to change its dir to store the json and jar files.
 
 methods need to be changed contain...
+
 for the AbstractBlocklyActivity:
 - onLoadWorkspace..
   - loadWorkspaceFromAppDir
@@ -80,6 +81,9 @@ BlocklyController.Builder builder = new BlocklyController.Builder(activity)
 http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection
 <br>see [here...](http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection)
 how to write pcm-formated audio data to file see [here...](http://stackoverflow.com/questions/13583827/audiorecord-writing-pcm-file)
+
+Notice:
+project FileTest read & write is `assets`, and project RESTful read & write is `assets` directory again, while project Recorder is the local directory...
 
 - [x] Now I finished packaging cloud services e.g. Baidu Voice Recognition Service
 - [ ] ToDo: define a description rule as easy as possible to describe the cloud service, then package them into a module. To integrate with Blockly, modify the source code of Blockly so that it can support dynamical generating blocks.
