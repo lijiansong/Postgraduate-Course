@@ -1,4 +1,8 @@
-modify blockly-android to change its dir to store the json and jar files.
+## Modify the source code of Google Blockly
+modify blockly-android to change its dir to store the json and jar files so that it supports dynamical loading the confguration files.
+### Strategy
+modify AbstractBlocklyActivity by reading all the configuration files into external storage, so add initial method to read them.
+and modify the access method of `.json, .xml and .js` files by accessing the external storage to get them.
 
 methods need to be changed contain...
 
@@ -107,6 +111,34 @@ BlocklyActivityHelper.java:177-207
                         generatorsJsPaths));
 }
 ```
+
+CodeGeneratorService.java:270-291
+```
+private String loadAssetAsUtf8(String filename) throws IOException {
+        InputStream input = null;
+        try {
+            input = getAssets().open(filename);
+
+            int size = input.available();
+            byte[] buffer = new byte[size];
+            input.read(buffer);
+
+            return new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Couldn't find asset file \"" + mDefinitions + "\"");
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    Log.w(TAG, "Unable to close asset file \"" + filename + "\"", e);
+                }
+            }
+        }
+}
+```
+for the js code generator we need to read them from the external storage...
+
 
 测试的时候可以直接在simpleactivity上修改，避免复杂的操作步骤
 
