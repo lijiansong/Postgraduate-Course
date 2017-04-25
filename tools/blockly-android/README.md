@@ -133,3 +133,7 @@ you can copy all the .js,.json and .xml congiguration files from the /assets fol
 - in google blockly source code, most of member variables are declared `final` for security, so it may be rediculious to modify the source code to support dynamical loading blocks. 
 - when modify the source code, you should as far as possible to change the method's name, since a slight move in one part may affect the situation as a whole, e.g. getToolboxContentsXmlPath, getBlockDefinitionsJsonPaths, getGeneratorsJsPaths... even if you add new abstract method, follow the "KISS" rule.
 - onRunCode(), the params contain `getBlockDefinitionsJsonPaths(), getGeneratorsJsPaths()`, that is to say you cannot add extra method to store the json blocks and js generators.
+- change the strategy by modifying the raw methods that call `getBlockDefinitionsJsonPaths() getGeneratorsJsPaths() getToolboxContentsXmlPath()`, so the developer need to explicitly write a initial method to read all these cofiguration files into the external storage... 
+
+
+
