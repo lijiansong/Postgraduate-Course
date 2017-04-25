@@ -1,7 +1,10 @@
-- [ ] ToDo: graphlite finish 4 different tasks before 16/04/26
+- [x] ToDo: graphlite finish 4 different tasks before 16/04/26
 - [x] ToDo: big data course project management
 - [ ] ToDo: distribution course homework to be finished
 - [x] ToDo: compiler principle homework to be checked for undergraduate students
 - [ ] ToDo: learn how to use apache Storm for big data course project
-- [ ] ToDo: learn Probability Graph Model & HMM
-- [ ] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
+- [x] ToDo: learn Probability Graph Model & HMM
+- [x] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
+- [ ] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
+- [ ] ToDo: modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28
+- [ ] ToDo: type info of paper and inventions to the system for , deadline 04/30
