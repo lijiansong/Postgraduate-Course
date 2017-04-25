@@ -56,6 +56,7 @@ AbstractBlocklyActivity.java:527-541
             getCodeGenerationCallback());
 }
 ```
+here onRunCode(), the params contain `getBlockDefinitionsJsonPaths(), getGeneratorsJsPaths()`, that is to say you cannot add extra method to store the json blocks and js generators.
 
 BlocklyActivityHelper.java:85 构造方法需要继续修改
 
@@ -130,5 +131,5 @@ you can copy all the .js,.json and .xml congiguration files from the /assets fol
 - openFileInput doesn't accept path separators, i.e. if you implement an Instance of InputStream like this `InputStream voiceInputStream=openFileInput(Environment.getExternalStorageDirectory().getPath()+AUDIO_NAME);` then your program will crash :-)
 - project FileTest read & write is `assets`, and project RESTful read & write is `assets` directory again, while project RESTful_AudioRecord is the local directory...
 - in google blockly source code, most of member variables are declared `final` for security, so it may be rediculious to modify the source code to support dynamical loading blocks. 
-- when modify the source code, you should as far as possible to change the method's name, since a slight move in one part may affect the situation as a whole, e.g. getToolboxContentsXmlPath, getBlockDefinitionsJsonPaths, getGeneratorsJsPaths... even if you add new abstract method, follow the "KISS" rule
-
+- when modify the source code, you should as far as possible to change the method's name, since a slight move in one part may affect the situation as a whole, e.g. getToolboxContentsXmlPath, getBlockDefinitionsJsonPaths, getGeneratorsJsPaths... even if you add new abstract method, follow the "KISS" rule.
+- onRunCode(), the params contain `getBlockDefinitionsJsonPaths(), getGeneratorsJsPaths()`, that is to say you cannot add extra method to store the json blocks and js generators.
