@@ -115,6 +115,8 @@ http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurl
 <br>see [here...](http://stackoverflow.com/questions/34607534/how-to-connect-android-with-httpsurlconnection)
 how to write pcm-formated audio data to file see [here...](http://stackoverflow.com/questions/13583827/audiorecord-writing-pcm-file)
 
+you can copy all the .js,.json and .xml congiguration files from the /assets folder into the external storage, then use the files stored in external storage...
+
 
 - [x] Now I finished packaging cloud services e.g. Baidu Voice Recognition Service
 - [ ] ToDo: define a description rule as easy as possible to describe the cloud service, then package them into a module. To integrate with Blockly, modify the source code of Blockly so that it can support dynamical generating blocks.
@@ -128,4 +130,5 @@ how to write pcm-formated audio data to file see [here...](http://stackoverflow.
 - openFileInput doesn't accept path separators, i.e. if you implement an Instance of InputStream like this `InputStream voiceInputStream=openFileInput(Environment.getExternalStorageDirectory().getPath()+AUDIO_NAME);` then your program will crash :-)
 - project FileTest read & write is `assets`, and project RESTful read & write is `assets` directory again, while project RESTful_AudioRecord is the local directory...
 - in google blockly source code, most of member variables are declared `final` for security, so it may be rediculious to modify the source code to support dynamical loading blocks. 
+- when modify the source code, you should as far as possible to change the method's name, since a slight move in one part may affect the situation as a whole, e.g. getToolboxContentsXmlPath, getBlockDefinitionsJsonPaths, getGeneratorsJsPaths... even if you add new abstract method, follow the "KISS" rule
 
