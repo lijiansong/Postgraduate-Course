@@ -5,6 +5,6 @@
 - [ ] ToDo: learn how to use apache Storm for big data course project
 - [x] ToDo: learn Probability Graph Model & HMM
 - [x] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
-- [ ] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
+- [x] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
 - [ ] ToDo: modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28
-- [ ] ToDo: type info of paper and inventions to the system for , deadline 04/30
+- [x] ToDo: type info of paper and inventions to the system for , deadline 04/30
