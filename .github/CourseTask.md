@@ -8,3 +8,4 @@
 - [x] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
 - [x] ToDo: modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28
 - [x] ToDo: type info of paper and inventions to the system for , deadline 04/30
+- [x] ToDo: check compiler principle homework of undergraduate students
