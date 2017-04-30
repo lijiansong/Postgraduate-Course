@@ -10,4 +10,4 @@
 - [x] ToDo: type info of paper and inventions to the system for , deadline 04/30
 - [x] ToDo: check compiler principle homework of undergraduate students
 - [x] ToDo: follow this [guide](http://news.cs.nyu.edu/~jinyang/fa12/labs/), you will be able to build a tiny distributed file system
-- [x] Back-Up: useful links, [gdb](http://www.delorie.com/gnu/docs/gdb/gdb_toc.html) or [another full link](http://www.gnu.org/software/gdb/documentation/), [pthreads](https://hpc.llnl.gov/training/tutorials), 
+- [x] Back-Up: useful links, [gdb](http://www.delorie.com/gnu/docs/gdb/gdb_toc.html) or [another full link](http://www.gnu.org/software/gdb/documentation/), `[pthreads](https://hpc.llnl.gov/training/tutorials)`
