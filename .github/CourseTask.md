@@ -2,7 +2,7 @@
 - [x] ToDo: big data course project management
 - [ ] ToDo: distribution course homework to be finished, google how to implement a `lock service`
 - [x] ToDo: compiler principle homework to be checked for undergraduate students
-- [ ] ToDo: learn how to use apache Storm for big data course project
+- [ ] ToDo: learn how to use apache Storm for big data course project, refer to HBase implement
 - [x] ToDo: learn Probability Graph Model & HMM
 - [x] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
 - [x] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
