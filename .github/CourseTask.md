@@ -9,3 +9,4 @@
 - [x] ToDo: modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28
 - [x] ToDo: type info of paper and inventions to the system for , deadline 04/30
 - [x] ToDo: check compiler principle homework of undergraduate students
+- [x] ToDo: follow this [guide](http://news.cs.nyu.edu/~jinyang/fa12/labs/), you will be able to build a tiny distributed file system
