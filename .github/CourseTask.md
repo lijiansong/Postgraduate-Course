@@ -11,3 +11,4 @@
 - [x] ToDo: check compiler principle homework of undergraduate students
 - [x] Back-Up: useful links, [gdb](http://www.delorie.com/gnu/docs/gdb/gdb_toc.html) or [another full link](http://www.gnu.org/software/gdb/documentation/), [`pthreads`](https://hpc.llnl.gov/training/tutorials) & [`here`](https://computing.llnl.gov/tutorials/pthreads/)
 - [ ] ToDO: big data & machine learning course hw, draw flow charts & deep learning report
+- [ ] ToDo: intrusion tolerance，write a report about RAID
