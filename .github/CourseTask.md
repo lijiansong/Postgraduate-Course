@@ -1,6 +1,6 @@
 - [x] ToDo: graphlite finish 4 different tasks before 16/04/26
 - [x] ToDo: big data course project management
-- [ ] ToDo: distribution course homework to be finished, google how to implement a `lock service`, e.g. thrift lamport service
+- [x] ToDo: distribution course homework to be finished, google how to implement a `lock service`, e.g. thrift lamport service
 - [x] ToDo: compiler principle homework to be checked for undergraduate students
 - [ ] ToDo: learn how to use apache Storm for big data course project, refer to HBase implement
 - [x] ToDo: learn Probability Graph Model & HMM
@@ -11,4 +11,4 @@
 - [x] ToDo: check compiler principle homework of undergraduate students
 - [x] Back-Up: useful links, [gdb](http://www.delorie.com/gnu/docs/gdb/gdb_toc.html) or [another full link](http://www.gnu.org/software/gdb/documentation/), [`pthreads`](https://hpc.llnl.gov/training/tutorials) & [`here`](https://computing.llnl.gov/tutorials/pthreads/)
 - [ ] ToDO: big data & machine learning course hw, draw flow charts & deep learning report
-- [ ] ToDo: intrusion tolerance，write a report about RAID
+- [x] ToDo: intrusion tolerance，write a report about RAID
