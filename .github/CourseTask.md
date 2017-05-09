@@ -1,14 +1,15 @@
-- [x] ToDo: graphlite finish 4 different tasks before 16/04/26
-- [x] ToDo: big data course project management
-- [x] ToDo: distribution course homework to be finished, google how to implement a `lock service`, e.g. thrift lamport service
-- [x] ToDo: compiler principle homework to be checked for undergraduate students
+- [x] ToDo: ~~graphlite finish 4 different tasks before 16/04/26~~
+- [x] ToDo: ~~big data course project management~~
+- [x] ToDo: ~~distribution course homework to be finished, google how to implement a `lock service`, e.g. thrift lamport service~~
+- [x] ToDo: ~~compiler principle homework to be checked for undergraduate students~~
 - [ ] ToDo: learn how to use apache Storm for big data course project, refer to HBase implement
-- [x] ToDo: learn Probability Graph Model & HMM
+- [x] ToDo: ~~learn Probability Graph Model & HMM~~
 - [x] ToDo: leran more about [boost smart pointer](http://www.boost.org/doc/libs/1_64_0/libs/smart_ptr/smart_ptr.htm)
-- [x] ToDo: finish a paper about marcov random field and write a reading report, deadline 04/26,23:00
-- [x] ToDo: modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28
-- [x] ToDo: type info of paper and inventions to the system for , deadline 04/30
-- [x] ToDo: check compiler principle homework of undergraduate students
+- [x] ToDo: ~~finish a paper about marcov random field and write a reading report, deadline 04/26,23:00~~
+- [x] ToDo: ~~modify the answer of chapter 4 for compiler principle homework of undergraduate students, deadline 04/28~~
+- [x] ToDo: ~~type info of paper and inventions to the system for , deadline 04/30~~
+- [x] ToDo: ~~check compiler principle homework of undergraduate students~~
 - [x] Back-Up: useful links, [gdb](http://www.delorie.com/gnu/docs/gdb/gdb_toc.html) or [another full link](http://www.gnu.org/software/gdb/documentation/), [`pthreads`](https://hpc.llnl.gov/training/tutorials) & [`here`](https://computing.llnl.gov/tutorials/pthreads/)
-- [x] ToDO: big data & machine learning course hw, draw flow charts & deep learning report
-- [x] ToDo: intrusion tolerance，write a report about RAID
+- [x] ToDO: ~~big data & machine learning course hw, draw flow charts & deep learning report~~
+- [x] ToDo: ~~intrusion tolerance，write a report about RAID~~
+- [ ] ToDo: write a report about Copernicus's heliocentric theory
