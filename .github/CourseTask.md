@@ -14,7 +14,7 @@
 - [x] ToDo: ~~intrusion tolerance，write a report about RAID~~
 - [x] ToDo: ~~write a report about Copernicus's heliocentric theory~~
 - [x] ToDo: ~~dispatch the document writing task for teammates~~
-- [ ] ToDo: compiler principle homework to be checked for undergraduate students
+- [x] ToDo: ~~compiler principle homework to be checked for undergraduate students~~
 - [ ] ToDo: apache storm dev...
 - [ ] ToDo: distributed system homework
 
