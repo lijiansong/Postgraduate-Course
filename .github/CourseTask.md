@@ -19,4 +19,5 @@
 - [x] ToDo: ~~distributed system homework~~
 - [ ] ToDo: comprehension about CUR & SVD
 - [ ] ToDo: write a Storm SQL parser by taking use of ANTLR
+- [x] Back-Up: GAN for NLP, links see [here](https://zhuanlan.zhihu.com/p/25168509)
 
