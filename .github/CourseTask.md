@@ -16,5 +16,7 @@
 - [x] ToDo: ~~dispatch the document writing task for teammates~~
 - [x] ToDo: ~~compiler principle homework to be checked for undergraduate students~~
 - [ ] ToDo: apache storm dev...
-- [ ] ToDo: distributed system homework
+- [x] ToDo: ~~distributed system homework~~
+- [ ] ToDo: comprehension about CUR & SVD
+- [ ] ToDo: write a Storm SQL parser by taking use of ANTLR
 
