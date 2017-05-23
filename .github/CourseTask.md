@@ -20,4 +20,4 @@
 - [ ] ToDo: comprehension about CUR & SVD
 - [ ] ToDo: write a Storm SQL parser by taking use of ANTLR
 - [x] Back-Up: GAN for NLP, links see [here](https://zhuanlan.zhihu.com/p/25168509)
-
+- [ ] Book-Reading: [`Deep Learning`](http://www.deeplearningbook.org/) and [`Neural Networks and Deep Learning`](http://neuralnetworksanddeeplearning.com/)
