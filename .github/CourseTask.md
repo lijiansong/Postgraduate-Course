@@ -15,11 +15,11 @@
 - [x] ToDo: ~~write a report about Copernicus's heliocentric theory~~
 - [x] ToDo: ~~dispatch the document writing task for teammates~~
 - [x] ToDo: ~~compiler principle homework to be checked for undergraduate students~~
-- [ ] ToDo: apache storm dev...
+- [x] ToDo: ~~apache storm dev...~~
 - [x] ToDo: ~~distributed system homework~~
 - [x] ToDo: ~~comprehension about CUR & SVD~~
 - [ ] ToDo: write a Storm SQL parser by taking use of ANTLR
 - [x] Back-Up: GAN for NLP, links see [here](https://zhuanlan.zhihu.com/p/25168509)
 - [ ] Book-Reading: [`Deep Learning`](http://www.deeplearningbook.org/) and [`Neural Networks and Deep Learning`](http://neuralnetworksanddeeplearning.com/)
 - [ ] ToDo: make a research about `distributed computation on OpenCV & computer vision`, e.g. Storm OpenCV, hadoop OpenCV and etc...
-- [ ] ToDo: prepare for the examination of big data system and large scale data analysis, deadline 31/05, 6 days left
+- [x] ToDo: ~~prepare for the examination of big data system and large scale data analysis, deadline 31/05, 6 days left~~
