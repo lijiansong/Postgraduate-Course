@@ -18,8 +18,10 @@
 - [x] ToDo: ~~apache storm dev...~~
 - [x] ToDo: ~~distributed system homework~~
 - [x] ToDo: ~~comprehension about CUR & SVD~~
-- [ ] ToDo: write a Storm SQL parser by taking use of ANTLR
+- [x] ToDo: ~~write a Storm SQL parser by taking use of ANTLR~~
 - [x] Back-Up: GAN for NLP, links see [here](https://zhuanlan.zhihu.com/p/25168509)
 - [ ] Book-Reading: [`Deep Learning`](http://www.deeplearningbook.org/) and [`Neural Networks and Deep Learning`](http://neuralnetworksanddeeplearning.com/)
-- [ ] ToDo: make a research about `distributed computation on OpenCV & computer vision`, e.g. Storm OpenCV, hadoop OpenCV and etc...
+- [x] ToDo: make a research about `distributed computation on OpenCV & computer vision`, e.g. Storm OpenCV, hadoop OpenCV and etc...
 - [x] ToDo: ~~prepare for the examination of big data system and large scale data analysis, deadline 31/05, 6 days left~~
+- [ ] ToDo: 为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。
+- [ ] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
