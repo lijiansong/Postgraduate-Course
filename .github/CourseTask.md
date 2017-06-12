@@ -26,3 +26,4 @@
 - [ ] ToDo: 为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。
 - [ ] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
 - [ ] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
+- [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
