@@ -27,3 +27,4 @@
 - [ ] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
 - [ ] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
 - [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
+- [ ] Back-Up: [Python Wheels](http://pythonwheels.com/)
