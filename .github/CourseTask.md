@@ -28,6 +28,6 @@
 - [ ] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
 - [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
 - [ ] Back-Up: [Python Wheels](http://pythonwheels.com/)
-- [ ] ToDo: make the answer of chapter 8 & homework to be checked for undergraduate students
+- [x] ToDo: ~~make the answer of chapter 8 & homework to be checked for undergraduate students~~
 - [ ] ToDo: implement top-k problem by CUDA
 - [ ] ToDo: read the source code of MOLA
