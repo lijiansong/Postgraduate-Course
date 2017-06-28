@@ -31,5 +31,6 @@
 - [x] ToDo: ~~make the answer of chapter 8 & homework to be checked for undergraduate students~~
 - [ ] ToDo: implement top-k problem by CUDA
 - [ ] ToDo: read the source code of MOLA
-- [ ] ToDo: install TensorFlow and finish some examples
+- [x] ToDo: ~~install TensorFlow and finish some examples~~
 - [ ] ToDo: course cs224d: deeplearning for nlp
+- [ ] ToDo: write some tensorflow examples by the [tutorial](https://www.tensorflow.org/versions/r0.12/tutorials/index.html) or this [link](https://github.com/jtoy/awesome-tensorflow)
