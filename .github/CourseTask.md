@@ -35,3 +35,4 @@
 - [ ] ToDo: course cs224d: deeplearning for nlp
 - [ ] ToDo: write some tensorflow examples by the [tutorial](https://www.tensorflow.org/versions/r0.12/tutorials/index.html) or this [link](https://github.com/jtoy/awesome-tensorflow)
 - [ ] Back-Up: how to understand [tensor](http://www.cnblogs.com/wuseguang/p/4168963.html)
+- [ ] ToDo: book reading <Python源码剖析>
