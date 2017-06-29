@@ -36,5 +36,5 @@
 - [ ] ToDo: write some tensorflow examples by the [tutorial](https://www.tensorflow.org/versions/r0.12/tutorials/index.html) or this [link](https://github.com/jtoy/awesome-tensorflow)
 - [ ] Back-Up: how to understand [tensor](http://www.cnblogs.com/wuseguang/p/4168963.html)
 - [ ] ToDo: book reading <Python源码剖析>
-- [ ] ToDo: 过一遍ElasticActor的代码，弄清楚执行过程 && 开卷的考试就不用复习了，不挂就行，闭卷的考试稍微看一下吧
+- [ ] ToDo: 过一遍ElasticActor的代码，弄清楚执行过程 && 开卷的考试就不用复习了，不挂就行，闭卷的考试稍微看一下吧，7月7号之前完成
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
