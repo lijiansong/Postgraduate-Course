@@ -38,3 +38,6 @@
 - [ ] ToDo: book reading <Python源码剖析>
 - [ ] ToDo: 过一遍ElasticActor的代码，弄清楚执行过程 && 开卷的考试就不用复习了，不挂就行，闭卷的考试稍微看一下吧，7月7号之前完成
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
+- [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
+
+
