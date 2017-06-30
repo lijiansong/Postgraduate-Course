@@ -29,7 +29,6 @@
 - [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
 - [ ] Back-Up: [Python Wheels](http://pythonwheels.com/)
 - [x] ToDo: ~~make the answer of chapter 8 & homework to be checked for undergraduate students~~
-- [ ] ToDo: implement top-k problem by CUDA
 - [ ] ToDo: read the source code of MOLA 
 - [x] ToDo: ~~install TensorFlow and finish some examples~~
 - [x] ToDo: course cs224d: deeplearning for nlp
@@ -39,5 +38,6 @@
 - [ ] ToDo: 过一遍ElasticActor的代码，弄清楚执行过程 && 开卷的考试就不用复习了，不挂就行，闭卷的考试稍微看一下吧，7月7号之前完成
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
 - [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
+- [ ] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
 
 
