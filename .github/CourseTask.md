@@ -39,5 +39,5 @@
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
 - [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
 - [ ] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
-- [ ] Back-Up: whu young [guys](http://acm.whu.edu.cn/wiki/)
+- [ ] Back-Up: whu young [ACM guys](http://acm.whu.edu.cn/wiki/)
 
