@@ -23,9 +23,9 @@
 - [ ] Book-Reading: [`Deep Learning`](http://www.deeplearningbook.org/) and [`Neural Networks and Deep Learning`](http://neuralnetworksanddeeplearning.com/)
 - [x] ToDo: make a research about `distributed computation on OpenCV & computer vision`, e.g. Storm OpenCV, hadoop OpenCV and etc...
 - [x] ToDo: ~~prepare for the examination of big data system and large scale data analysis, deadline 31/05, 6 days left~~
-- [ ] ToDo: 为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。
-- [ ] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
-- [ ] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
+- [x] ToDo: 为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。
+- [x] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
+- [x] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
 - [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
 - [ ] Back-Up: [Python Wheels](http://pythonwheels.com/)
 - [x] ToDo: ~~make the answer of chapter 8 & homework to be checked for undergraduate students~~
@@ -33,11 +33,12 @@
 - [x] ToDo: ~~install TensorFlow and finish some examples~~
 - [x] ToDo: course cs224d: deeplearning for nlp
 - [ ] ToDo: write some tensorflow examples by the [tutorial](https://www.tensorflow.org/versions/r0.12/tutorials/index.html) or this [link](https://github.com/jtoy/awesome-tensorflow)
-- [ ] Back-Up: how to understand [tensor](http://www.cnblogs.com/wuseguang/p/4168963.html)
+- [x] Back-Up: how to understand [tensor](http://www.cnblogs.com/wuseguang/p/4168963.html)
 - [ ] ToDo: book reading <Python源码剖析>
 - [ ] ToDo: 过一遍ElasticActor的代码，弄清楚执行过程 && 开卷的考试就不用复习了，不挂就行，闭卷的考试稍微看一下吧，7月7号之前完成
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
 - [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
-- [ ] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
+- [x] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
 - [ ] Back-Up: whu young [ACM guys](http://acm.whu.edu.cn/wiki/)
+
 
