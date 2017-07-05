@@ -40,5 +40,5 @@
 - [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
 - [x] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
 - [ ] Back-Up: whu young [ACM guys](http://acm.whu.edu.cn/wiki/)
-
+- [ ] ToDo: prepare for examination of distrubited system & parallel computing
 
