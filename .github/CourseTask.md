@@ -23,11 +23,11 @@
 - [ ] Book-Reading: [`Deep Learning`](http://www.deeplearningbook.org/) and [`Neural Networks and Deep Learning`](http://neuralnetworksanddeeplearning.com/)
 - [x] ToDo: make a research about `distributed computation on OpenCV & computer vision`, e.g. Storm OpenCV, hadoop OpenCV and etc...
 - [x] ToDo: ~~prepare for the examination of big data system and large scale data analysis, deadline 31/05, 6 days left~~
-- [x] ToDo: 为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。
+- [x] ToDo: ~~为时一年的雁栖湖集中教学快要结束了，是时候考虑一下自己的博士生涯了。~~
 - [x] ToDo: learn theory of deep learning & distributed system, start up my Ph.D career. 
 - [x] ToDo: learn CUDA based on CPP and parallel computing and can manage to write python scripts to build the running time, besides, dive into deep learning.
-- [ ] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
-- [ ] Back-Up: [Python Wheels](http://pythonwheels.com/)
+- [x] Back-Up: links for [learning python](https://github.com/Yixiaohan/codeparkshare), [spiders](https://github.com/facert/awesome-spider) and [python frameworks](https://github.com/vinta/awesome-python)
+- [x] Back-Up: [Python Wheels](http://pythonwheels.com/)
 - [x] ToDo: ~~make the answer of chapter 8 & homework to be checked for undergraduate students~~
 - [ ] ToDo: read the source code of MOLA 
 - [x] ToDo: ~~install TensorFlow and finish some examples~~
@@ -39,6 +39,9 @@
 - [ ] ToDo: research [YOLO](https://pjreddie.com/darknet/yolo/)
 - [ ] ToDo: searching task: `nvcc底层编译器cudacc编译器的架构和链接、执行原理`
 - [x] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
-- [ ] Back-Up: whu young [ACM guys](http://acm.whu.edu.cn/wiki/)
-- [ ] ToDo: prepare for examination of distrubited system & parallel computing
+- [ ] Back-Up: WHU young [ACM guys](http://acm.whu.edu.cn/wiki/)
+- [x] ToDo: ~~prepare for examination of distrubited system & parallel computing~~
+- [ ] ToDo: finish report before 07/07 & blog the idea
+- [ ] ToDo: finish two reports of machine learning before 07/08
+- [ ] ToDo: finish tensorflow NLP module before 07/09
 
