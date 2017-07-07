@@ -41,7 +41,8 @@
 - [x] ToDo: implement top-k problem by CPU and CUDA respectively, and compare their running time
 - [ ] Back-Up: WHU young [ACM guys](http://acm.whu.edu.cn/wiki/)
 - [x] ToDo: ~~prepare for examination of distrubited system & parallel computing~~
-- [ ] ToDo: finish report before 07/07 & blog the idea
+- [x] ToDo: ~~finish report before 07/07 & blog the idea~~
 - [ ] ToDo: finish two reports of machine learning before 07/08
 - [ ] ToDo: finish tensorflow NLP module before 07/09
+- [ ] ToDo: compare the performance of heap, partition & merge by the example of top-k
 
