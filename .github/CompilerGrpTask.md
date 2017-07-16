@@ -35,4 +35,4 @@
     - 时间间隔有点久，先查看是否有硬件故障，如果有，故障出在哪里，为什么会出现，如何解决；
     - 考虑识别算法是否需要重现实现，如果重新实现，有哪些高效的方案，采用何种识别策略；
     
-- [ ] BackUp: for the servo you should give it enough time for it to rotate to the given angles,
+- [ ] BackUp: for the servo you should give it enough time for it to rotate to the given angles, opencv camera calibration see [here](http://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration_square_chess/camera_calibration_square_chess.html), to detect [chessboard corners](https://dsp.stackexchange.com/questions/2805/how-does-opencv-find-chessboard-corners), [hand eye calibration](https://robotics.stackexchange.com/questions/7163/hand-eye-calibration)
