@@ -34,4 +34,5 @@
   - 机械臂：
     - 时间间隔有点久，先查看是否有硬件故障，如果有，故障出在哪里，为什么会出现，如何解决；
     - 考虑识别算法是否需要重现实现，如果重新实现，有哪些高效的方案，采用何种识别策略；
-
+    
+- [ ] BackUp: for the servo you should give it enough time for it to rotate to the given angles,
