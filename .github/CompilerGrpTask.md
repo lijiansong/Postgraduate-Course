@@ -31,8 +31,10 @@
   - actor 模型：
     - 实现actor的动态迁移
     - 实现actor
-  - 机械臂：
-    - 时间间隔有点久，先查看是否有硬件故障，如果有，故障出在哪里，为什么会出现，如何解决；
-    - 考虑识别算法是否需要重现实现，如果重新实现，有哪些高效的方案，采用何种识别策略；
-    
-- [ ] BackUp: for the servo you should give it enough time for it to rotate to the given angles, opencv camera calibration see [here](http://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration_square_chess/camera_calibration_square_chess.html), to detect [chessboard corners](https://dsp.stackexchange.com/questions/2805/how-does-opencv-find-chessboard-corners), [hand eye calibration](https://robotics.stackexchange.com/questions/7163/hand-eye-calibration)
+  - ~~机械臂：~~
+    - ~~时间间隔有点久，先查看是否有硬件故障，如果有，故障出在哪里，为什么会出现，如何解决；~~
+    - ~~考虑识别算法是否需要重现实现，如果重新实现，有哪些高效的方案，采用何种识别策略；~~
+
+
+- [x] BackUp: for the servo you should give it enough time for it to rotate to the given angles, opencv camera calibration see [here](http://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration_square_chess/camera_calibration_square_chess.html), to detect [chessboard corners](https://dsp.stackexchange.com/questions/2805/how-does-opencv-find-chessboard-corners), [hand eye calibration](https://robotics.stackexchange.com/questions/7163/hand-eye-calibration)
+- [x] BackUp: for the next semester, mainly focuses on Cambricon project, which is primarily about compiler tool-chain of Cambricon IPU & deep learning platform that is similar to Tensorflow, Caffe and MxNet based on clang & llvm, all these efforts output at least two papers. Months later, take up Huawei, Alibaba or Face++ project, mainly to solve deep learning and nlp problems. Later ph.d stage concentrates on nlp programming, distributed iot programming framework.
