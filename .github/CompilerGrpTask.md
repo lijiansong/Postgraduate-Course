@@ -38,3 +38,6 @@
 
 - [x] BackUp: for the servo you should give it enough time for it to rotate to the given angles, opencv camera calibration see [here](http://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration_square_chess/camera_calibration_square_chess.html), to detect [chessboard corners](https://dsp.stackexchange.com/questions/2805/how-does-opencv-find-chessboard-corners), [hand eye calibration](https://robotics.stackexchange.com/questions/7163/hand-eye-calibration)
 - [x] BackUp: for the next semester, mainly focuses on Cambricon project, which is primarily about compiler tool-chain of Cambricon IPU & deep learning platform that is similar to Tensorflow, Caffe and MxNet based on clang & llvm, all these efforts output at least two papers. Months later, take up Huawei, Alibaba or Face++ project, mainly to solve deep learning and nlp problems. Later ph.d stage concentrates on nlp programming, distributed iot programming framework.
+- [ ] TODO: elastic actor的实验抓紧做（周一到周五的晚上和周末两天做这个），[PPoPP](http://conf.researchr.org/home/PPoPP-2018)的deadline在8月25号，based on the experimental result to decide...目前距离截止投稿还有一个月，争取在接下来的一周即31号之前有突破性的进展吧，近期先熟悉一下寒武纪的项目，弄清楚背后的流程，高温假回来后再好好搞。
+
+
