@@ -1,0 +1,1306 @@
+%!PS
+%%Version: 3.15
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+%ident	"@(#)lp:filter/postscript/postscript/dpost.ps	1.1"
+%
+% Version 3.16 prologue for troff files.
+%
+
+/#copies 1 store
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/xoffset 0 def
+/yoffset 0 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/VR /Varitimes#Roman def
+/VI /Varitimes#Italic def
+/VB /Varitimes#Bold def
+/VX /Varitimes#BoldItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation neg rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	/Symbol /S Sdefs cf
+	/Times-Roman /S1 S1defs cf
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put} {pop pop} ifelse} forall
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+
+/Sdefs [
+	/bracketlefttp		[220 500]
+	/bracketleftbt		[220 500]
+	/bracketrighttp		[-70 380]
+	/bracketrightbt		[-70 380]
+	/braceleftbt		[220 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	% NeWSprint's \(br is too low, compensate
+	statusdict /product get (NeWS Server) eq {
+		/radicalex		[-50 100 500 0]
+		/parenleftex		[-20 100 0 0]
+
+	} {
+		/radicalex		[-50 0 500 0]
+		/parenleftex		[-20 -170 0 0]
+	} ifelse
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%%EndProlog
+%%BeginSetup
+mark
+/resolution 720 def
+setup
+2 setdecoding
+%%EndSetup
+%%Page: 1 1
+save
+mark
+1 pagesetup
+12 B f
+(M1: A Micro Macro Processor)4 1610 1 2075 1340 t
+10 I f
+(Jon Bentley)1 476 1 2642 1580 t
+10 R f
+(AT&T Bell Laboratories)2 1009 1 2375 1760 t
+(Murray Hill, NJ 07974)3 940 1 2410 1880 t
+10 I f
+(ABSTRACT)2643 2240 w
+10 R f
+(This paper describes)2 862 1 1330 2480 t
+10 CW f
+(m1)2239 2480 w
+10 R f
+( simple macro language)3 1017( The)1 235(, a tiny macro processor.)4 1069 3 2359 2480 t
+( of de\256ning strings and replacing strings in text by)9 2229(supports the essential operations)3 1371 2 1080 2600 t
+( conditional expan-)2 795( also provides facilities for \256le inclusion and for)8 2008( It)1 130(their de\256nitions.)1 667 4 1080 2720 t
+( is mildly useful)3 711( is not designed for any particular application, so it)9 2229( It)1 141(sion of text.)2 519 4 1080 2840 t
+( This)1 263( and programming.)2 817(across several applications, including document preparation)5 2520 3 1080 2960 t
+( about)1 256(paper describes the evolution of the program; the \256nal version is implemented in)12 3344 2 1080 3080 t
+(110 lines of Awk.)3 740 1 1080 3200 t
+10 B f
+(1. Introduction)1 686 1 720 3560 t
+10 R f
+(The UNIX)1 439 1 970 3716 t
+10 S f
+(\322)1409 3716 w
+10 R f
+( Shell contains powerful mechanisms)4 1537( The)1 224(System provides several macro processors.)4 1756 3 1523 3716 t
+( language has a macro preprocessor, document preparation tools like Troff,)10 3148(for text manipulation, the C)4 1172 2 720 3836 t
+( and the)2 340(Pic and Eqn all have macros,)5 1214 2 720 3956 t
+10 CW f
+(m4)2311 3956 w
+10 R f
+(macro language is a general-purpose tool useful in many con-)9 2572 1 2468 3956 t
+( macro language named)3 980( paper describes a basic)4 985(texts. This)1 461 3 720 4076 t
+10 CW f
+(m1)3181 4076 w
+10 R f
+(, which is at least three notches below)7 1584 1 3301 4076 t
+10 CW f
+(m4)4920 4076 w
+10 R f
+(\(it may well be six below, but)6 1239 1 720 4196 t
+10 CW f
+(m-2)1992 4196 w
+10 R f
+(was too hard to type\).)4 900 1 2205 4196 t
+(This paper describes the history of)5 1458 1 970 4352 t
+10 CW f
+(m1)2469 4352 w
+10 R f
+( its implementation grew from a dozen-line)6 1833(, showing how)2 618 2 2589 4352 t
+( why)1 216( But)1 222( limited but useful two-page program.)5 1610(Awk program that provides rudimentary services to a)7 2272 4 720 4472 t
+( are)1 157( Here)1 262( built in the 1950's?)4 844(should a programmer of the 1990's study a kind of program that was \256rst)13 3057 4 720 4592 t
+(a few reasons I \256nd convincing.)5 1315 1 720 4712 t
+( for learning about programming techniques; Ker-)6 2170( processors provide a \256ne playground)5 1640(\267 Macro)1 378 3 852 4868 t
+(nighan and Plauger [1981] devote the \256nal chapter of their text on software tools to the topic.)16 3853 1 970 4988 t
+( of devices useful in building Awk)6 1472( particular implementation we'll study illustrates a number)7 2443(\267 The)1 273 3 852 5144 t
+( Awk language; readers who)4 1217( paper assumes that the reader is familiar with the)9 2162(programs. \(This)1 691 3 970 5264 t
+(aren't should study Aho, Kernighan and Weinberger's [1988] de\256nitive text on Awk.\))11 3529 1 970 5384 t
+( you appreciate the)3 792( the design considerations of this simple macro processor can help)10 2756(\267 Investigating)1 640 3 852 5540 t
+( indicate that programmers spend 1.7% of their time cursing)9 2573( \(Studies)1 406(macro languages you use.)3 1091 3 970 5660 t
+(unexpected side effects of macros.\))4 1441 1 970 5780 t
+( beginning of)2 559( the)1 159( Since)1 292(And if those reasons aren't good enough, here's the most convincing argument:)11 3310 4 720 5936 t
+( an essential rite of passage.)5 1154( It's)1 199(time, programmers have studied macro processors, so you have to, too.)10 2920 3 720 6056 t
+( with a small pro-)4 765( 3 starts)2 339( Section)1 372(Section 2 introduces the macro language that we will process.)9 2594 4 970 6212 t
+( are surveyed in Section 4,)5 1119( Applications)1 581( version.)1 356(gram to process the language, and grows it to its \256nal)10 2264 4 720 6332 t
+(and conclusions are offered in Section 5.)6 1675 1 720 6452 t
+10 B f
+( Problem)1 399(2. The)1 308 2 720 6692 t
+10 R f
+( processors, why did I)4 951(Given that the UNIX System on which I live already has so many macro)13 3119 2 970 6848 t
+( the input is divided into tokens)6 1358( macro languages assume that)4 1260( Most)1 281(even consider building one more?)4 1421 4 720 6968 t
+( come in such neatly)4 917( recently faced a problem that didn't)6 1590( I)1 114(by the rules of an underlying language.)6 1699 4 720 7088 t
+(wrapped packages; I needed to make substitutions in the middle of strings, as in:)13 3323 1 720 7208 t
+cleartomark
+showpage
+restore
+%%EndPage: 1 1
+%%Page: 2 2
+save
+mark
+2 pagesetup
+10 R f
+(- 2 -)2 182 1 2789 480 t
+9 CW f
+(@define Condition under)2 1242 1 1080 890 t
+(...)1188 1000 w
+(You are clearly @Condition@worked.)3 1836 1 1080 1110 t
+10 R f
+( string)1 266(The \256rst line de\256nes the)4 1014 2 720 1290 t
+10 CW f
+(Condition)2038 1290 w
+10 R f
+(, and in the second line that string \(surrounded by the spe-)11 2462 1 2578 1290 t
+(cial at-sign characters\) is replaced by the text)7 1943 1 720 1410 t
+10 CW f
+(under)2708 1410 w
+10 R f
+( line with the)3 582( must start on a new)5 902(. De\256nitions)1 548 3 3008 1410 t
+(string)720 1530 w
+10 CW f
+(@define)983 1530 w
+10 R f
+( separated by white space \(blanks and tabs\), and the replace-)10 2522(; the name is the next \256eld)6 1115 2 1403 1530 t
+( string)1 265( the)1 193( are insensitive to context:)4 1101( Replacements)1 631(ment text is the rest of the line.)7 1329 5 720 1650 t
+10 CW f
+(@Condition@)4276 1650 w
+10 R f
+(is)4973 1650 w
+(always replaced, even if it is inside quotes or not set apart by white space.)14 3062 1 720 1770 t
+( But)1 224( to solve my immediate problem.)5 1427(A macro language of about this simplicity was suf\256cient)8 2419 3 970 1926 t
+( available, more applications of the macro processor started to wander across my terminal)13 3776(once I had it)3 544 2 720 2046 t
+( starts by implementing this simple language, and then adds operations that)11 3257( next section)2 549(screen. The)1 514 3 720 2166 t
+( resulting tool has been useful in several applications; we'll see)10 2694( The)1 230( by other problems.)3 828(were required)1 568 4 720 2286 t
+( the last two words in the previous sen-)8 1637( typed)1 255( I)1 99( a quick hint for greedy readers:)6 1322( \(But)1 244(some in Section 4.)3 763 6 720 2406 t
+(tence as)1 326 1 720 2526 t
+10 CW f
+(Section @APPSEC@)1 933 1 1079 2526 t
+10 R f
+(.\))2012 2526 w
+10 B f
+( Program)1 415(3. The)1 308 2 720 2766 t
+10 I f
+( conferences and the like I have listended to \(and probably)10 2716(When attending computer)2 1104 2 970 2922 t
+( who easily)2 512(delivered\) my full share of boring lectures, but there is one class of bore)13 3308 2 970 3042 t
+( about the way his system)5 1104( is the man who talks in full detail)8 1485( this)1 219(outshines all the others:)3 1012 4 970 3162 t
+(has been implemented.)2 928 1 970 3282 t
+10 R f
+( J. Brown,)2 427(\320 P.)1 247 2 1964 3282 t
+10 I f
+(Macro Processors)1 743 1 2671 3282 t
+10 R f
+(, page 71.)2 404 1 3430 3282 t
+( to try to outshine even the bores of Brown's nightmares by not only describing the)15 3652(I'm going)1 418 2 970 3438 t
+( start with the simple version that supports)7 1851( We'll)1 307(implementation but also giving the complete code.)6 2162 3 720 3558 t
+( is the complete Awk program:)5 1280( Here)1 259(de\256nition and replacement.)2 1106 3 720 3678 t
+9 CW f
+(awk ')1 270 1 1080 3848 t
+(/^@define[ \\t]/ { name = $2)5 1458 1 1080 3958 t
+($1 = $2 = ""; sub\(/^[ \\t]+/, ""\))7 1728 1 2052 4068 t
+(symtab[name] = $0)2 918 1 2052 4178 t
+(next)2052 4288 w
+(})1944 4398 w
+({ for \(i in symtab\))4 1026 1 1944 4508 t
+(gsub\("@" i "@", symtab[i]\))3 1404 1 2376 4618 t
+(print)2052 4728 w
+(})1944 4838 w
+(' $*)1 216 1 1080 4948 t
+10 R f
+( recognizes)1 467( \256rst pattern)2 513( The)1 228(This program contains two pattern-action pairs.)5 1972 4 970 5164 t
+10 CW f
+(@define)4191 5164 w
+10 R f
+(lines. Its)1 388 1 4652 5164 t
+(action stores the name, erases the)5 1435 1 720 5284 t
+10 CW f
+(@define)2201 5284 w
+10 R f
+( then)1 217(and name \256elds and the white space around them,)8 2156 2 2667 5284 t
+( in the symbol table \(implemented as an Awk associative array\);)10 2748(stores the remainder of the input line)6 1572 2 720 5404 t
+(execution then proceeds with the)4 1370 1 720 5524 t
+10 CW f
+(next)2129 5524 w
+10 R f
+( null second pattern ensures that the action will)8 1985( The)1 227(input line.)1 420 3 2408 5524 t
+( The)1 224(be executed on all other input lines.)6 1489 2 720 5644 t
+10 CW f
+(for)2469 5644 w
+10 R f
+( in the symbol table, and the)6 1202(loop iterates over all entries)4 1153 2 2685 5644 t
+10 CW f
+(gsub)720 5764 w
+10 R f
+( names; the)2 543(globally substitutes replacement values for their)5 2142 2 1030 5764 t
+10 CW f
+(print)3784 5764 w
+10 R f
+(statement writes the)2 887 1 4153 5764 t
+(transformed input line.)2 929 1 720 5884 t
+( input line)2 422( The)1 221(In the next version of the program we will add a simple include facility.)13 2972 3 970 6040 t
+9 CW f
+(@include)1080 6210 w
+9 I f
+(filename)1566 6210 w
+10 R f
+( by the contents of)4 798(is replaced)1 443 2 720 6390 t
+10 I f
+(\256lename)2001 6390 w
+10 R f
+( will restructure the program around a recursive routine to)9 2449(. We)1 236 2 2355 6390 t
+( is the resulting code:)4 887( Here)1 259(read \256les, and add functions to make it easier to extend.)10 2304 3 720 6510 t
+cleartomark
+showpage
+restore
+%%EndPage: 2 2
+%%Page: 3 3
+save
+mark
+3 pagesetup
+10 R f
+(- 3 -)2 182 1 2789 480 t
+9 CW f
+(awk ')1 270 1 1080 890 t
+(function dofile\(fname\) {)2 1296 1 1080 1000 t
+(while \(getline <fname > 0\) {)5 1512 1 1512 1110 t
+(if \(/^@define[ \\t]/\))2 1080 1 1944 1220 t
+(dodef\(\))2376 1330 w
+(else if \(/^@include[ \\t]/\))3 1404 1 1944 1440 t
+(dofile\(dosubs\($2\)\))2376 1550 w
+(else)1944 1660 w
+(print dosubs\($0\))1 864 1 2376 1770 t
+(})1512 1880 w
+(close\(fname\))1512 1990 w
+(})1080 2100 w
+( {)1 108( name\))1 378(function dodef\()1 810 3 1080 2320 t
+(name = $2)2 486 1 1512 2430 t
+(sub\(/^[ \\t]*[^ \\t]+[ \\t]+[^ \\t]+[ \\t]+/, ""\))6 2376 1 1512 2540 t
+(symtab[name] = $0)2 918 1 1512 2650 t
+(})1080 2760 w
+( {)1 108( i\))1 216(function dosubs\(s,)1 972 3 1080 2980 t
+(for \(i in symtab\))3 918 1 1512 3090 t
+(gsub\("@" i "@", symtab[i], s\))4 1566 1 1944 3200 t
+(return s)1 432 1 1512 3310 t
+(})1080 3420 w
+(BEGIN { if \(ARGC == 2\) dofile\(ARGV[1]\))6 2052 1 1080 3640 t
+(else dofile\("/dev/stdin"\))1 1350 1 1512 3750 t
+(})1404 3860 w
+(' $*)1 216 1 1080 3970 t
+10 R f
+(If the program is invoked with a single argument, the)9 2233 1 720 4150 t
+10 CW f
+(BEGIN)2990 4150 w
+10 R f
+(block takes that as the name of the input)8 1713 1 3327 4150 t
+( function)1 369( The)1 224( it processes the standard input.)5 1309(\256le; otherwise)1 581 4 720 4270 t
+10 CW f
+(dofile)3239 4270 w
+10 R f
+(processes a \256le,)2 651 1 3635 4270 t
+10 CW f
+(dodef)4322 4270 w
+10 R f
+(processes)4658 4270 w
+(a de\256nition, and)2 677 1 720 4390 t
+10 CW f
+(dosubs)1437 4390 w
+10 R f
+( The)1 229(applies the substitutions in the symbol table to its input string.)10 2633 2 1837 4390 t
+10 CW f
+(dodef)4740 4390 w
+10 R f
+(function uses a complex regular expression in a)7 2011 1 720 4510 t
+10 CW f
+(sub)2772 4510 w
+10 R f
+( \256rst two \256elds \(because)4 1031(command to remove the)3 1016 2 2993 4510 t
+( to replace all \256eld separators with a sin-)8 1707(setting them to blanks \320 as in the \256rst version \320 causes Awk)12 2613 2 720 4630 t
+(gle blank\).)1 435 1 720 4750 t
+( happens)1 374( what)1 240( But)1 224(So far we have assumed that macro de\256nitions expand into unadorned text.)11 3232 4 970 4906 t
+(when the replacement text itself contains further macro calls, as in:)10 2755 1 720 5026 t
+9 CW f
+(@define DIR /usr/jlb/macro.paper)2 1728 1 1080 5196 t
+(@define PROBSECFILE @DIR@/sec2.in)2 1782 1 1080 5306 t
+10 R f
+( string)1 387(After these de\256nitions, the)3 1459 2 720 5486 t
+10 CW f
+(@PROBSECFILE@)2725 5486 w
+10 R f
+(should be expanded into)3 1376 1 3664 5486 t
+10 CW f
+(/usr/jlb/macro.paper/sec2.in)720 5606 w
+10 R f
+( may or may not handle this)6 1290( previous implementation)2 1082(. The)1 268 3 2400 5606 t
+( implementation of)2 815( This)1 263( exercise for Awkophiles\).)3 1139(correctly \(details are left as an)5 1334 4 720 5726 t
+10 CW f
+(dosubs)4323 5726 w
+10 R f
+(handles)4735 5726 w
+(nested macros by repeatedly expanding the string until no more expansions are made:)12 3518 1 720 5846 t
+9 CW f
+( i\) {)2 270( changes,)1 540(function dosubs\(s,)1 972 3 1080 6016 t
+(do {)1 216 1 1512 6126 t
+(changes = 0)2 594 1 1944 6236 t
+(for \(i in symtab\))3 918 1 1944 6346 t
+(changes += gsub\("@" i "@", symtab[i], s\))6 2160 1 2376 6456 t
+(} while \(changes\))2 918 1 1512 6566 t
+(return s)1 432 1 1512 6676 t
+(})1080 6786 w
+10 R f
+( case of no)3 474(This version is correct but slow; we can speed it up with a guard to check for the common)18 3846 2 720 6966 t
+(remaining at-signs:)1 777 1 720 7086 t
+cleartomark
+showpage
+restore
+%%EndPage: 3 3
+%%Page: 4 4
+save
+mark
+4 pagesetup
+10 R f
+(- 4 -)2 182 1 2789 480 t
+9 CW f
+(...)2214 890 w
+(changes = 0)2 594 1 1944 1000 t
+(if \(s ~ /@.*@/\))3 810 1 1944 1110 t
+(for \(i in symtab\))3 918 1 2376 1220 t
+(...)2646 1330 w
+10 R f
+( guard, the time)3 702(Without the guard the program took 5.4 seconds to process one large \256le; with the)14 3618 2 720 1510 t
+( faster version of)3 712( The)1 226(dropped to 2.3 seconds.)3 985 3 720 1630 t
+10 CW f
+(dosubs)2681 1630 w
+10 R f
+(described in Appendix 1 takes just 0.8 seconds)7 1961 1 3079 1630 t
+(on the same \256le.)3 679 1 720 1750 t
+( an example of condi-)4 930( As)1 183(Sometimes you want to make a \256le that you can conditionally change.)11 2957 3 970 1906 t
+( arduous task of writing a Ph.D. thesis, which can strain even the best)13 3060(tional text, we'll consider the)4 1260 2 720 2026 t
+( his thesis so that by setting a given \257ag he)10 1871( friend of mine organized)4 1074( A)1 145(professor-student relationship.)1 1230 4 720 2146 t
+( showed his advisor \(whom we'll)5 1394( version that he)3 655( The)1 227(could remove all references to his thesis advisor.)7 2044 4 720 2266 t
+(call Professor Newton, to protect the innocent\) was compiled from a \256le like this:)13 3361 1 720 2386 t
+9 CW f
+(@define WANTNEWT 1)2 972 1 1080 2556 t
+(...)1242 2666 w
+(@if WANTNEWT)1 648 1 1080 2776 t
+(This area was profoundly influenced by)5 2052 1 1080 2886 t
+(the groundbreaking work of Professor Newton.)5 2376 1 1080 2996 t
+(@fi)1080 3106 w
+10 R f
+( student could recompile the document after setting)7 2162(For his private amusement, the poor)5 1518 2 720 3286 t
+10 CW f
+(WANTNEWT)4441 3286 w
+10 R f
+(to)4962 3286 w
+( of the)2 281( semantics)1 433(zero. The)1 423 3 720 3406 t
+10 CW f
+(@if)1895 3406 w
+10 R f
+(statement are that the text up to the next)8 1702 1 2113 3406 t
+10 CW f
+(@fi)3853 3406 w
+10 R f
+(statement is included if)3 969 1 4071 3406 t
+( dis-)1 188( implement the statement we need this function to)8 2089( To)1 181(the variable is de\256ned and not equal to zero.)8 1862 4 720 3526 t
+(card text:)1 382 1 720 3646 t
+9 CW f
+(function gobble\(fname\) {)2 1296 1 1080 3816 t
+(while \(getline <fname > 0\))4 1404 1 1512 3926 t
+(if \(/^@fi/\))1 594 1 1944 4036 t
+(break)2376 4146 w
+(})1080 4256 w
+10 R f
+(We then add these lines to the chain of)8 1611 1 720 4436 t
+10 CW f
+(if)2364 4436 w
+10 R f
+(statements in)1 533 1 2517 4436 t
+10 CW f
+(dofile)3083 4436 w
+10 R f
+(:)3443 4436 w
+9 CW f
+(} else if \(/^@if[ \\t]/\) {)5 1350 1 1080 4606 t
+(if \(!\($2 in symtab\) || symtab[$2] == 0\))7 2106 1 1512 4716 t
+(gobble\(fname\))1944 4826 w
+(} ...)1 270 1 1080 4936 t
+10 R f
+(The complete)1 557 1 970 5152 t
+10 CW f
+(m1)1563 5152 w
+10 R f
+( may contain)2 540( Text)1 253( a couple of additions to this simple conditional.)8 2021(program has)1 507 4 1719 5152 t
+(nested)720 5272 w
+10 CW f
+(if)1030 5272 w
+10 R f
+(statements;)1205 5272 w
+10 CW f
+(gobble)1710 5272 w
+10 R f
+(is modi\256ed to keep a counter of the current)8 1951 1 2125 5272 t
+10 CW f
+(if/fi)4130 5272 w
+10 R f
+(nesting. The)1 556 1 4484 5272 t
+10 CW f
+(@unless)720 5392 w
+10 R f
+(statement is the complement of)4 1281 1 1173 5392 t
+10 CW f
+(@if)2487 5392 w
+10 R f
+( the same)2 395(; it includes the subsequent text \(up to)7 1575 2 2667 5392 t
+10 CW f
+(@fi)4671 5392 w
+10 R f
+(del-)4885 5392 w
+(imeter\) if the variable is unde\256ned, or de\256ned to be zero.)10 2353 1 720 5512 t
+(The \256nal version of)3 842 1 970 5668 t
+10 CW f
+(m1)1856 5668 w
+10 R f
+(also supports multi-line)2 983 1 2020 5668 t
+10 CW f
+(@define)3047 5668 w
+10 R f
+( a)1 88(s. If)1 207 2 3467 5668 t
+10 CW f
+(@define)3807 5668 w
+10 R f
+(line ends with the)3 768 1 4272 5668 t
+(backslash character)1 790 1 720 5788 t
+10 CW f
+(\\)1548 5788 w
+10 R f
+( text is continued on the next line \(discarding white space before the \256rst text)14 3247(, the)1 185 2 1608 5788 t
+( long de\256nes we make the minor change to)8 1794( implement)1 462(character\). To)1 600 3 720 5908 t
+10 CW f
+(dodef)3611 5908 w
+10 R f
+(to continue reading text as)4 1094 1 3946 5908 t
+( must also make a major change to the input/output structure of)11 2660( We)1 208( lines end with a backslash.)5 1153(long as)1 299 4 720 6028 t
+( that need to be read by the)7 1218(the entire program, because macro expansion can generate lines)8 2697 2 720 6148 t
+10 CW f
+(dofile)4680 6148 w
+10 R f
+( new)1 201(function. The)1 581 2 720 6268 t
+10 CW f
+(readline)1537 6268 w
+10 R f
+( text)1 184(function reads a line from the)5 1228 2 2052 6268 t
+10 CW f
+(buffer)3498 6268 w
+10 R f
+(if it is not empty and other-)6 1148 1 3892 6268 t
+( string)1 273( The)1 233(wise reads from the current \256le.)5 1369 3 720 6388 t
+10 CW f
+(s)2640 6388 w
+10 R f
+( onto the input stream by con-)6 1325(can be ``pushed back'')3 970 2 2745 6388 t
+(catenating it on the front \(left\) of)6 1362 1 720 6508 t
+10 CW f
+(buffer)2115 6508 w
+10 R f
+(by the idiom)2 522 1 2508 6508 t
+10 CW f
+(buffer = s buffer)3 1020 1 3063 6508 t
+10 R f
+(.)4083 6508 w
+( are the most)3 612( Here)1 284( with several other bells and whistles.)6 1699(The complete program is adorned)4 1475 4 970 6664 t
+(interesting and important:)2 1049 1 720 6784 t
+10 I f
+(Comments)970 6940 w
+10 R f
+( that begin with)3 739( Lines)1 318( immoral to design a language without comments.)7 2265( is)1 129(. It)1 181 5 1408 6940 t
+10 CW f
+(@comment)970 7060 w
+10 R f
+(are therefore ignored.)2 876 1 1483 7060 t
+cleartomark
+showpage
+restore
+%%EndPage: 4 4
+%%Page: 5 5
+save
+mark
+5 pagesetup
+10 R f
+(- 5 -)2 182 1 2789 480 t
+10 I f
+(Error Checking)1 651 1 970 840 t
+10 R f
+( \256nal Awk program has a number of)7 1597(. The)1 259 2 1637 840 t
+10 CW f
+(if)3539 840 w
+10 R f
+(statements that check for weird)4 1335 1 3705 840 t
+(conditions, which are reported by the)5 1526 1 970 960 t
+10 CW f
+(error)2529 960 w
+10 R f
+(function.)2862 960 w
+10 I f
+(Defaults)970 1116 w
+10 R f
+(. The)1 250 1 1325 1116 t
+10 CW f
+(@default)1612 1116 w
+10 R f
+(statement is a)2 568 1 2129 1116 t
+10 CW f
+(@define)2734 1116 w
+10 R f
+( effect only if the variable was not)7 1457(that takes)1 392 2 3191 1116 t
+( effect with an)3 600( could achieve the same)4 993( We)1 206(previously de\256ned; we'll see its use shortly.)6 1817 4 970 1236 t
+10 CW f
+(@unless)4620 1236 w
+10 R f
+(around a)1 354 1 970 1356 t
+10 CW f
+(@define)1357 1356 w
+10 R f
+(, but the)2 341 1 1777 1356 t
+10 CW f
+(@default)2151 1356 w
+10 R f
+(is used frequently enough to merit its own command.)8 2193 1 2664 1356 t
+10 I f
+(Performance)970 1512 w
+10 R f
+(. When)1 342 1 1507 1512 t
+10 CW f
+(dofile)1895 1512 w
+10 R f
+( line of text unadorned with at-signs, it performs several)9 2439(reads a)1 300 2 2301 1512 t
+(tests and function calls; the \256nal version adds a new)9 2150 1 970 1632 t
+10 CW f
+(if)3153 1632 w
+10 R f
+(statement to print the line immediately.)5 1612 1 3306 1632 t
+(The complete)1 554 1 720 1788 t
+10 CW f
+(m1)1307 1788 w
+10 R f
+(language is summarized in this table:)5 1525 1 1460 1788 t
+9 CW f
+(@comment Any text)2 918 1 1080 1958 t
+(@define name value)2 972 1 1080 2068 t
+( if name undefined)3 972( Set)1 432(@default name value)2 1026 3 1080 2178 t
+(@include filename)1 918 1 1080 2288 t
+( subsequent text if varname != 0)6 1728( Include)1 1080(@if varname)1 594 3 1080 2398 t
+( @if or unless)3 756(@fi Terminate)1 1782 2 1080 2508 t
+( subsequent text if varname == 0)6 1728( Include)1 864(@unless varname)1 810 3 1080 2618 t
+(Anywhere in line @name@)3 1242 1 1080 2728 t
+10 R f
+(There are many ways in which the)6 1446 1 970 2944 t
+10 CW f
+(m1)2453 2944 w
+10 R f
+( are some of the biggest)5 1016( Here)1 264(program could be extended.)3 1150 3 2610 2944 t
+(temptations to ``feeping creaturism'':)3 1524 1 720 3064 t
+( more graciously expressed by a)5 1523( long de\256nition with a trail of backslashes might be)9 2475(\267 A)1 190 3 852 3220 t
+10 CW f
+(@longdefine)970 3340 w
+10 R f
+(statement terminated by a)3 1053 1 1663 3340 t
+10 CW f
+(@longend)2749 3340 w
+10 R f
+(.)3229 3340 w
+(\267 An)1 240 1 852 3496 t
+10 CW f
+(@undefine)1125 3496 w
+10 R f
+(statement would remove a de\256nition from the symbol table.)8 2454 1 1698 3496 t
+( have gotten around the problem by)6 1528( been tempted to add parameters to macros, but so far I)11 2382(\267 I've)1 278 3 852 3652 t
+(using an idiom described in the next section.)7 1838 1 970 3772 t
+( would be easy to add stack-based arithmetic and strings to the language by adding)14 3488(\267 It)1 179 2 852 3928 t
+10 CW f
+(@push)4557 3928 w
+10 R f
+(and)4896 3928 w
+10 CW f
+(@pop)970 4048 w
+10 R f
+(commands that read and write variables.)5 1653 1 1243 4048 t
+( try to write interesting macros, you need to have mechanisms for quoting strings)13 3423( soon as you)3 536(\267 As)1 229 3 852 4204 t
+(\(to postpone evaluation\) and for forcing immediate evaluation.)7 2563 1 970 4324 t
+(Appendix 2 contains the complete implementation of)6 2264 1 970 4480 t
+10 CW f
+(m1)3282 4480 w
+10 R f
+( which is)2 409(in about 100 lines of Awk,)5 1181 2 3450 4480 t
+( other macro processors; see, for instance, Chapter 8 of Kernighan and Plauger)12 3298(signi\256cantly shorter than)2 1022 2 720 4600 t
+( program uses several techniques that can be applied in many Awk programs.)12 3187([1981]. The)1 512 2 720 4720 t
+( tables are easy to implement with Awk's associative arrays.)9 2484(\267 Symbol)1 430 2 852 4876 t
+( expressions, string)2 801( regular)1 356( Awk's string-handling facilities:)3 1372( program makes extensive use of)5 1386(\267 The)1 273 5 852 5032 t
+(concatenation,)970 5152 w
+10 CW f
+(gsub)1582 5152 w
+10 R f
+(,)1822 5152 w
+10 CW f
+(index)1880 5152 w
+10 R f
+(, and)1 202 1 2180 5152 t
+10 CW f
+(substr)2415 5152 w
+10 R f
+(.)2775 5152 w
+( \256le handling makes the)4 987(\267 Awk's)1 384 2 852 5308 t
+10 CW f
+(dofile)2256 5308 w
+10 R f
+(procedure straightforward.)1 1071 1 2649 5308 t
+(\267 The)1 273 1 852 5464 t
+10 CW f
+(readline)1158 5464 w
+10 R f
+(function and pushback mechanism associated with)5 2062 1 1671 5464 t
+10 CW f
+(buffer)3766 5464 w
+10 R f
+(are of general utility.)3 861 1 4159 5464 t
+10 B f
+(4. Applications)1 681 1 720 5704 t
+10 I f
+( get all kinds of)4 669( simple to implement, and you can)6 1440( They're)1 380(Macroprocessors are appealing.)2 1331 4 970 5860 t
+( those effects are going to)5 1115( there's no way of telling what)6 1325( Unfortunately,)1 662(wondrous effects.)1 718 4 970 5980 t
+(be.)970 6100 w
+10 R f
+( W. Kernighan.)2 631(\320 B.)1 258 2 1155 6100 t
+( that illustrates some simple uses of)6 1512(We'll start with a toy example)5 1282 2 970 6256 t
+10 CW f
+(m1)3804 6256 w
+10 R f
+( a form letter that)4 753(. Here's)1 363 2 3924 6256 t
+(I've often been tempted to use:)5 1279 1 720 6376 t
+cleartomark
+showpage
+restore
+%%EndPage: 5 5
+%%Page: 6 6
+save
+mark
+6 pagesetup
+10 R f
+(- 6 -)2 182 1 2789 480 t
+9 CW f
+(@default MYNAME Jon Bentley)3 1458 1 1080 890 t
+(@default TASK respond to your special offer)6 2322 1 1080 1000 t
+(@default EXCUSE the dog ate my homework)6 2106 1 1080 1110 t
+(Dear @NAME@:)1 648 1 1080 1220 t
+(Although I would dearly love to @TASK@,)6 2106 1 1296 1330 t
+(I am afraid that I am unable to do so because @EXCUSE@.)11 2970 1 1080 1440 t
+(I am sure that you have been in this situation)9 2484 1 1080 1550 t
+(many times yourself.)2 1080 1 1080 1660 t
+(Sincerely,)1944 1770 w
+(@MYNAME@)1944 1880 w
+10 R f
+(If that \256le is named)4 809 1 720 2060 t
+10 CW f
+(sayno.mac)1562 2060 w
+10 R f
+(, it might be invoked with this text:)7 1463 1 2102 2060 t
+9 CW f
+(@define NAME Mr. Smith)3 1188 1 1080 2230 t
+(@define TASK subscribe to your magazine)5 2106 1 1080 2340 t
+(@define EXCUSE I suddenly forgot how to read)7 2376 1 1080 2450 t
+(@include sayno.mac)1 972 1 1080 2560 t
+10 R f
+(Recall that a)2 515 1 720 2740 t
+10 CW f
+(@default)1268 2740 w
+10 R f
+(takes effect only if its variable was not previously)8 2055 1 1781 2740 t
+10 CW f
+(@define)3869 2740 w
+10 R f
+(d.)4289 2740 w
+(I've found)1 431 1 970 2896 t
+10 CW f
+(m1)1439 2896 w
+10 R f
+( of my text \256les \(including this one\) start)8 1745( Many)1 304(to be a handy Troff preprocessor.)5 1394 3 1597 2896 t
+(with)720 3016 w
+10 CW f
+(m1)931 3016 w
+10 R f
+(de\256nitions like:)1 634 1 1084 3016 t
+9 CW f
+(@define ArrayFig @StructureSec@.2)2 1782 1 1080 3186 t
+(@define HashTabFig @StructureSec@.3)2 1890 1 1080 3296 t
+(@define TreeFig @StructureSec@.4)2 1728 1 1080 3406 t
+(@define ProblemSize 100)2 1242 1 1080 3516 t
+10 R f
+( longer)1 295( The)1 228( numeric sequences of de\256nitions.)4 1422(Even a simple form of arithmetic would be useful in)9 2215 4 720 3696 t
+10 CW f
+(m1)4920 3696 w
+10 R f
+( string names; these variables are also avail-)7 1844(variables get around Troff's dreadful two-character limit on)7 2476 2 720 3816 t
+( forms of the)3 567( Various)1 392(able to Troff preprocessors like Pic and Eqn.)7 1911 3 720 3936 t
+10 CW f
+(@define)3634 3936 w
+10 R f
+(,)4054 3936 w
+10 CW f
+(@if)4123 3936 w
+10 R f
+(, and)1 213 1 4303 3936 t
+10 CW f
+(@include)4560 3936 w
+10 R f
+( \(Pic and Troff\) but not others \(Tbl\);)7 1526(facilities are present in some of the Troff-family languages)8 2438 2 720 4056 t
+10 CW f
+(m1)4719 4056 w
+10 R f
+(pro-)4874 4056 w
+(vides a consistent mechanism.)3 1234 1 720 4176 t
+(I include \256gures in documents with lines like this:)8 2064 1 970 4332 t
+9 CW f
+(@define FIGNUM @FIGMFMOVIE@)2 1458 1 1080 4502 t
+(@define FIGTITLE The Multiple Fragment heuristic.)5 2646 1 1080 4612 t
+(@FIGSTART@)1080 4722 w
+(.PS <@THISDIR@/mfmovie.pic)1 1404 1 1080 4832 t
+(@FIGEND@)1080 4942 w
+10 R f
+(The two)1 350 1 720 5122 t
+10 CW f
+(@define)1115 5122 w
+10 R f
+( The)1 234( title to the \256gure.)4 798(s are a hack to supply the two parameters of number and)11 2473 3 1535 5122 t
+( at)1 106(\256gure might be set off by horizontal lines or enclosed in a box, the number and title might be printed)19 4214 2 720 5242 t
+( All)1 214( graphs, pictures, or animations of algorithms.)6 2008(the top or the bottom, and the \256gures might be)9 2098 3 720 5362 t
+(\256gures, though, are presented in the consistent format de\256ned by)9 2660 1 720 5482 t
+10 CW f
+(FIGSTART)3413 5482 w
+10 R f
+(and)3926 5482 w
+10 CW f
+(FIGEND)4103 5482 w
+10 R f
+(.)4463 5482 w
+(I have also used)3 679 1 970 5638 t
+10 CW f
+(m1)1687 5638 w
+10 R f
+( The)1 227(as a preprocessor for Awk programs.)5 1543 2 1846 5638 t
+10 CW f
+(@include)3655 5638 w
+10 R f
+(statement allows one)2 866 1 4174 5638 t
+( functions \(though some \320 but not all \320 Awk implementations provide)11 2990(to build simple libraries of Awk)5 1330 2 720 5758 t
+( inclusion was used in an earlier version of this)9 2049( File)1 233( by allowing multiple program \256les\).)5 1567(this facility)1 471 4 720 5878 t
+( into the complete)3 764(paper to include individual functions in the text and then wrap them all together)13 3396 2 720 5998 t
+10 CW f
+(m1)4920 5998 w
+10 R f
+( conditional statements allow one to customize a program with macros rather than run-)13 3724(program. The)1 596 2 720 6118 t
+(time)720 6238 w
+10 CW f
+(if)931 6238 w
+10 R f
+(statements, which can reduce both run time and compile time.)9 2549 1 1084 6238 t
+( too)1 180(The most interesting application for which I've used this macro language is unfortunately)12 3890 2 970 6394 t
+( for which I wrote the original version of)8 1710( job)1 164( The)1 224(complicated to describe in detail.)4 1367 4 720 6514 t
+10 CW f
+(m1)4220 6514 w
+10 R f
+(was to control a)3 665 1 4375 6514 t
+( in a language with a lexical structure that forced)9 2110( experiments were described)3 1189( The)1 230(set of experiments.)2 791 4 720 6634 t
+( reason that substitutions are bracketed)5 1605(me to make substitutions inside text strings; that was the original)10 2715 2 720 6754 t
+( experi-)1 316( experiments are currently controlled by text \256les that contain descriptions in the)12 3314( The)1 221(by at-signs.)1 469 4 720 6874 t
+( graphical displays of data written in Grap;)7 1781(ment language, data extraction programs written in Awk, and)8 2539 2 720 6994 t
+(all the programs are tailored by)5 1290 1 720 7114 t
+10 CW f
+(m1)2043 7114 w
+10 R f
+(commands.)2196 7114 w
+cleartomark
+showpage
+restore
+%%EndPage: 6 6
+%%Page: 7 7
+save
+mark
+7 pagesetup
+10 R f
+(- 7 -)2 182 1 2789 480 t
+( \256les that set a few keys parameters and then)9 1908(Most experiments are driven by short)5 1560 2 970 840 t
+10 CW f
+(@include)4477 840 w
+10 R f
+(a)4996 840 w
+(large \256le with many)3 826 1 720 960 t
+10 CW f
+(@default)1579 960 w
+10 R f
+( \256les describe the \256elds of shared databases:)7 1822(s. Separate)1 473 2 2059 960 t
+9 CW f
+( \($1\))1 594(@define N)1 486 2 1080 1130 t
+( \($2\))1 378(@define NODES)1 702 2 1080 1240 t
+( \($3\))1 486(@define CPU)1 594 2 1080 1350 t
+(...)1242 1460 w
+10 R f
+(These \256les are)2 614 1 720 1640 t
+10 CW f
+(@include)1378 1640 w
+10 R f
+( from the)2 406(d in both the experiment \256les and in Troff \256les that display data)12 2776 2 1858 1640 t
+( I built)2 287( had tried to conduct a similar set of experiments before)10 2339(databases. I)1 509 3 720 1760 t
+10 CW f
+(m1)3890 1760 w
+10 R f
+(, and got mired in muck.)5 1030 1 4010 1760 t
+(The few hours I spent building the tool were paid back handsomely in the \256rst days I used it.)18 3848 1 720 1880 t
+10 B f
+(5. Conclusions)1 659 1 720 2120 t
+10 R f
+(I've found)1 440 1 970 2276 t
+10 CW f
+(m1)1457 2276 w
+10 R f
+( it is close to what you want but)8 1456( If)1 147(to be a useful tool in several applications.)7 1813 3 1624 2276 t
+( you to consider tailoring it to your applica-)8 1823(doesn't meet your exact needs, the code is small enough for)10 2497 2 720 2396 t
+(tion.)720 2516 w
+(Building)970 2672 w
+10 CW f
+(m1)1359 2672 w
+10 R f
+( started with a tiny program, and grew it)8 1718( I)1 105( programming.)1 608(has been a fun exercise in)5 1092 4 1517 2672 t
+( uses several useful Awk)4 1028( It)1 128( Bentley [1988].)2 670(as applications demanded, using the techniques described by)7 2494 4 720 2792 t
+( in all,)2 287( All)1 203( interesting performance problems.)3 1448(techniques, and even had some)4 1303 4 720 2912 t
+10 CW f
+(m1)4003 2912 w
+10 R f
+(provided me with an)3 875 1 4165 2912 t
+(almost painless way to learn more about macros, one of the grand old problems of computing.)15 3879 1 720 3032 t
+10 B f
+(Acknowledgments)720 3272 w
+10 R f
+(I am grateful for the helpful comments of Brian Kernighan and Doug McIlroy.)12 3237 1 970 3428 t
+10 B f
+(References)720 3668 w
+10 R f
+(Aho, A. V., B. W. Kernighan, and P. J. Weinberger [1988].)10 2723 1 720 3860 t
+10 I f
+(The Awk Programming Language)3 1463 1 3536 3860 t
+10 R f
+(,)5015 3860 w
+(Addison-Wesley.)720 3980 w
+( Three prescriptions for productivity'',)4 1588( smarter:)1 362( ``Working)1 489(Bentley, J. L. [1988].)3 882 4 720 4136 t
+10 I f
+(Computer Language 5)2 922 1 4077 4136 t
+10 R f
+(,)5015 4136 w
+(June 1988, pp. 36-41.)3 890 1 720 4256 t
+(Brown, P. J. [1974].)3 832 1 720 4412 t
+10 I f
+(Macro Processors and Techniques for Portable Software)6 2336 1 1618 4412 t
+10 R f
+(, John Wiley & Sons.)4 888 1 3970 4412 t
+(Kernighan, B. W. and P. J. Plauger [1981].)7 1773 1 720 4568 t
+10 I f
+(Software Tools in Pascal)3 1028 1 2559 4568 t
+10 R f
+(, Addison-Wesley.)1 754 1 3603 4568 t
+( M4 macro processor'', in Bell Laboratories,)6 1893( ``The)1 297(Kernighan, B. W. and D. M. Ritchie [1983].)7 1893 3 720 4724 t
+10 I f
+(Unix)4846 4724 w
+(Programmer's Manual)1 932 1 720 4844 t
+10 R f
+(, Holt, Rinehart and Winston, vol. 2 \(seventh edition\).)8 2221 1 1668 4844 t
+( extensions of compiler languages'',)4 1502( instruction)1 465( ``Macro)1 396(McIlroy, M. D. [1960].)3 965 4 720 5000 t
+10 I f
+(Communications of the)2 954 1 4086 5000 t
+(ACM 3)1 299 1 720 5120 t
+10 R f
+( paper ... the most important)5 1187( [1974, p. 40] describes this as a ``classic)8 1745( \(Brown)1 376(, 4, pp. 214-220.)3 697 4 1035 5120 t
+(one yet published on the subject of macro processors''.\))8 2301 1 720 5240 t
+10 B f
+(Appendix 1: A Substitution Function)4 1613 1 720 5480 t
+10 R f
+( of the)2 303(Section 3 describes several versions)4 1528 2 970 5636 t
+10 CW f
+(dosubs)2850 5636 w
+10 R f
+(function that performs macro substitution.)4 1781 1 3259 5636 t
+( of the function, which)4 939(The \256nal version of the program in the next Appendix uses an even faster version)14 3381 2 720 5756 t
+(we will now brie\257y study.)4 1079 1 720 5876 t
+( string from left to right, searching for the \256rst substitution to be made.)13 2998(The idea is to process the)5 1072 2 970 6032 t
+( implement this idea)3 853( We)1 209( string starting at the fresh text.)6 1324(We then make the substitution, and rescan the)7 1934 4 720 6152 t
+( text processed so far is in)6 1139( the)1 197(by keeping two strings:)3 987 3 720 6272 t
+10 CW f
+(L)3085 6272 w
+10 R f
+( in)1 121(\(for Left\), and unprocessed text is)5 1437 2 3187 6272 t
+10 CW f
+(R)4788 6272 w
+10 R f
+(\(for)4891 6272 w
+( is the pseudocode for)4 908(Right\). Here)1 540 2 720 6392 t
+10 CW f
+(dosubs)2201 6392 w
+10 R f
+(; the \256nal version is in the next appendix.)8 1716 1 2561 6392 t
+cleartomark
+showpage
+restore
+%%EndPage: 7 7
+%%Page: 8 8
+save
+mark
+8 pagesetup
+10 R f
+(- 8 -)2 182 1 2789 480 t
+9 CW f
+(L = Empty)2 486 1 1080 890 t
+(R = Input String)3 864 1 1080 1000 t
+(while R contains an "@" sign do)6 1674 1 1080 1110 t
+(let R = A @ B; set L = L A and R = B)14 1944 1 1512 1220 t
+(if R contains no "@" then)5 1350 1 1512 1330 t
+(L = L "@")3 486 1 1944 1440 t
+(break)1944 1550 w
+(let R = A @ B; set M = A and R = B)13 1836 1 1512 1660 t
+(if M is in SymTab then)5 1188 1 1512 1770 t
+(R = SymTab[M] R)3 810 1 1944 1880 t
+(else)1512 1990 w
+(L = L "@" M)4 594 1 1944 2100 t
+(R = "@" R)3 486 1 1944 2210 t
+(return L R)2 540 1 1080 2320 t
+10 B f
+(Appendix 2: The Complete Program)4 1592 1 720 2620 t
+cleartomark
+showpage
+restore
+%%EndPage: 8 8
+%%Page: 9 9
+save
+mark
+9 pagesetup
+10 R f
+(- 9 -)2 182 1 2789 480 t
+8 CW f
+(awk ')1 240 1 1080 870 t
+(# Modifications to published m1:)4 1536 1 1080 960 t
+( bugs in dodef \(see comment\))5 1344(# Fixed)1 384 2 1080 1050 t
+( ``^@Mname'' as ``@Mname@'')3 1296(# Interpret)1 576 2 1080 1140 t
+( ``^@@'' as comment)3 912(# Add)1 288 2 1080 1230 t
+( ``@ignore DELIM'' -- ignore input until line that begins with DELIM)11 3264(# Add)1 288 2 1080 1320 t
+( over multiple input files \(from /usr/bwk/bin/m1\))6 2352(# Loop)1 336 2 1080 1410 t
+( andrew-found bug in @fi -- @fine used to terminate, too)10 2688(# Fixed)1 384 2 1080 1500 t
+(# Potential modifications)2 1200 1 1080 1590 t
+( v10 ``/dev/stdin'' -- see comment in line)7 2016(# Avoid)1 384 2 1080 1680 t
+( ``@shell DELIM shell line here'' -- pipe output until DELIM through pipe)12 3504(# Add)1 288 2 1080 1770 t
+( @longdef/@longend)1 864(# Add)1 288 2 1080 1860 t
+( @append MacName MoreText, like troff .am)6 1968(# Add)1 288 2 1080 1950 t
+(function error\(s\) {)2 912 1 1080 2130 t
+(print "m1 error: " s | "cat 1>&2"; exit 1)9 1968 1 1512 2220 t
+(})1080 2310 w
+( savebuffer, newstring\) {)3 1200( savefile,)1 528(function dofile\(fname,)1 1056 3 1080 2490 t
+(if \(fname in activefiles\))3 1200 1 1512 2580 t
+(error\("recursively reading file: " fname\))4 1968 1 1944 2670 t
+(activefiles[fname] = 1)2 1056 1 1512 2760 t
+(savefile = file; file = fname)5 1392 1 1512 2850 t
+(savebuffer = buffer; buffer = "")5 1536 1 1512 2940 t
+(while \(readline\(\) != EOF\) {)4 1296 1 1512 3030 t
+(if \(index\($0, "@"\) == 0\) {)5 1248 1 1944 3120 t
+(print $0)1 384 1 2376 3210 t
+(} else if \(/^@define[ \\t]/\) {)5 1392 1 1944 3300 t
+(dodef\(\))2376 3390 w
+(} else if \(/^@default[ \\t]/\) {)5 1440 1 1944 3480 t
+(if \(!\($2 in symtab\)\))3 960 1 2376 3570 t
+(dodef\(\))2808 3660 w
+(} else if \(/^@include[ \\t]/\) {)5 1440 1 1944 3750 t
+(if \(NF != 2\) error\("bad include line"\))6 1824 1 2376 3840 t
+(dofile\(dosubs\($2\)\))2376 3930 w
+(} else if \(/^@if[ \\t]/\) {)5 1200 1 1944 4020 t
+(if \(NF != 2\) error\("bad if line"\))6 1584 1 2376 4110 t
+(if \(!\($2 in symtab\) || symtab[$2] == 0\))7 1872 1 2376 4200 t
+(gobble\(\))2808 4290 w
+(} else if \(/^@unless[ \\t]/\) {)5 1392 1 1944 4380 t
+(if \(NF != 2\) error\("bad unless line"\))6 1776 1 2376 4470 t
+(if \(\($2 in symtab\) && symtab[$2] != 0\))7 1824 1 2376 4560 t
+(gobble\(\))2808 4650 w
+(} else if \(/^@fi\([ \\t]?|$\)/\) { # Could do error checking here)11 2928 1 1944 4740 t
+(} else if \(/^@stderr[ \\t]?/\) {)5 1440 1 1944 4830 t
+(print substr\($0, 9\) | "cat 1>&2")5 1536 1 2376 4920 t
+(} else if \(/^@\(comment|@\)[ \\t]?/\) {)5 1680 1 1944 5010 t
+(} else if \(/^@ignore[ \\t]/\) { # Dump input until $2)10 2448 1 1944 5100 t
+(delim = $2)2 480 1 2376 5190 t
+(l = length\(delim\))2 816 1 2376 5280 t
+(while \(readline\(\) != EOF\))3 1200 1 2376 5370 t
+(if \(substr\($0, 1, l\) == delim\))5 1440 1 2808 5460 t
+(break)3240 5550 w
+(} else {)2 384 1 1944 5640 t
+(newstring = dosubs\($0\))2 1056 1 2376 5730 t
+(if \($0 == newstring || index\(newstring, "@"\) == 0\))8 2400 1 2376 5820 t
+(print newstring)1 720 1 2808 5910 t
+(else)2376 6000 w
+(buffer = newstring "\\n" buffer)4 1440 1 2808 6090 t
+(})1944 6180 w
+(})1512 6270 w
+(close\(fname\))1512 6360 w
+(delete activefiles[fname])1 1200 1 1512 6450 t
+(file = savefile)2 720 1 1512 6540 t
+(buffer = savebuffer)2 912 1 1512 6630 t
+(})1080 6720 w
+( status\) {)2 480( i,)1 192(function readline\()1 864 3 1080 6900 t
+(status = "")2 528 1 1512 6990 t
+(if \(buffer != ""\) {)4 912 1 1512 7080 t
+(i = index\(buffer, "\\n"\))3 1104 1 1944 7170 t
+($0 = substr\(buffer, 1, i-1\))4 1296 1 1944 7260 t
+cleartomark
+showpage
+restore
+%%EndPage: 9 9
+%%Page: 10 10
+save
+mark
+10 pagesetup
+10 R f
+(- 10 -)2 232 1 2764 480 t
+8 CW f
+(buffer = substr\(buffer, i+1\))3 1344 1 1944 810 t
+(} else {)2 384 1 1512 900 t
+(# Hume: special case for non v10: if \(file == "/dev/stdin"\))10 2832 1 1944 990 t
+(if \(getline <file <= 0\))4 1104 1 1944 1080 t
+(status = EOF)2 576 1 2376 1170 t
+(})1512 1260 w
+(# Hack: allow @Mname at start of line w/o closing @)10 2448 1 1512 1350 t
+(if \($0 ~ /^@[A-Z][a-zA-Z0-9]*[ \\t]*$/\))4 1824 1 1512 1440 t
+(sub\(/[ \\t]*$/, "@"\))2 912 1 1944 1530 t
+(return status)1 624 1 1512 1620 t
+(})1080 1710 w
+( {)1 96( ifdepth\))1 480(function gobble\()1 768 3 1080 1890 t
+(ifdepth = 1)2 528 1 1512 1980 t
+(while \(readline\(\) != EOF\) {)4 1296 1 1512 2070 t
+(if \(/^@\(if|unless\)[ \\t]/\))2 1200 1 1944 2160 t
+(ifdepth++)2376 2250 w
+(if \(/^@fi[ \\t]?/ && --ifdepth <= 0\))6 1680 1 1944 2340 t
+(break)2376 2430 w
+(})1512 2520 w
+(})1080 2610 w
+( r, i, m\) {)4 528( l,)1 192(function dosubs\(s,)1 864 3 1080 2790 t
+(if \(index\(s, "@"\) == 0\))4 1104 1 1512 2880 t
+(return s)1 384 1 1944 2970 t
+( Left of current pos; ready for output)7 1824( #)1 192(l = "")2 288 3 1512 3060 t
+( Right of current; unexamined at this time)7 2016( #)1 240(r = s)2 240 3 1512 3150 t
+(while \(\(i = index\(r, "@"\)\) != 0\) {)7 1632 1 1512 3240 t
+(l = l substr\(r, 1, i-1\))5 1104 1 1944 3330 t
+( Currently scanning @)3 1008( #)1 480(r = substr\(r, i+1\))3 864 3 1944 3420 t
+(i = index\(r, "@"\))3 816 1 1944 3510 t
+(if \(i == 0\) {)4 624 1 1944 3600 t
+(l = l "@")3 432 1 2376 3690 t
+(break)2376 3780 w
+(})1944 3870 w
+(m = substr\(r, 1, i-1\))4 1008 1 1944 3960 t
+(r = substr\(r, i+1\))3 864 1 1944 4050 t
+(if \(m in symtab\) {)4 864 1 1944 4140 t
+(r = symtab[m] r)3 720 1 2376 4230 t
+(} else {)2 384 1 1944 4320 t
+(l = l "@" m)4 528 1 2376 4410 t
+(r = "@" r)3 432 1 2376 4500 t
+(})1944 4590 w
+(})1512 4680 w
+(return l r)2 480 1 1512 4770 t
+(})1080 4860 w
+( x\) {)2 240( str,)1 288(function dodef\(fname,)1 1008 3 1080 5040 t
+(name = $2)2 432 1 1512 5130 t
+( OLD BUG: last * was +)6 1056( #)1 144(sub\(/^[ \\t]*[^ \\t]+[ \\t]+[^ \\t]+[ \\t]*/, ""\))6 2112 3 1512 5220 t
+(str = $0)2 384 1 1512 5310 t
+(while \(str ~ /\\\\$/\) {)4 1008 1 1512 5400 t
+(if \(readline\(\) == EOF\))3 1056 1 1944 5490 t
+(error\("EOF inside definition"\))2 1440 1 2376 5580 t
+(# OLD BUG: sub\(/\\\\$/, "\\n" $0, str\))6 1680 1 1944 5670 t
+(x = $0)2 288 1 1944 5760 t
+(sub\(/^[ \\t]+/, "", x\))3 1008 1 1944 5850 t
+(str = substr\(str, 1, length\(str\)-1\) "\\n" x)6 2016 1 1944 5940 t
+(})1512 6030 w
+(symtab[name] = str)2 864 1 1512 6120 t
+(})1080 6210 w
+( = "EOF")2 384( EOF)1 240(BEGIN {)1 336 3 1080 6390 t
+(if \(ARGC == 1\))3 672 1 1512 6480 t
+(dofile\("/dev/stdin"\))1944 6570 w
+(else if \(ARGC >= 2\) {)5 1008 1 1512 6660 t
+(for \(i = 1; i < ARGC; i++\))7 1248 1 1944 6750 t
+(dofile\(ARGV[i]\))2376 6840 w
+(} else)1 288 1 1512 6930 t
+(error\("usage: m1 [fname...]"\))2 1392 1 1944 7020 t
+(})1368 7110 w
+(' $*)1 192 1 1080 7200 t
+cleartomark
+showpage
+restore
+%%EndPage: 10 10
+%%Page: 11 11
+save
+mark
+11 pagesetup
+10 R f
+(- 11 -)2 232 1 2764 480 t
+cleartomark
+showpage
+restore
+%%EndPage: 11 11
+%%Trailer
+done
+%%DocumentFonts: Times-Bold Times-Italic Times-Roman Courier Symbol
+%%Pages: 11
