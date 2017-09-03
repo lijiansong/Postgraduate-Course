@@ -54,6 +54,13 @@ map <silent> t :TlistToggle<cr>
 set tags+=/home/json-lee/workdir/compile/ElasticActor/tags
 
 ```
+automatically:
+```
+" 按F11生成个人tags
+noremap <F11> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q -f ~/.vim/tags/tags_self<CR>
+" 设置tags路径,自动加载个人tags
+set tags+=~/.vim/tags/tags_self
+```
 
 ## Ref
 - [advanced vim skills taglist plugin](http://easwy.com/blog/archives/advanced-vim-skills-taglist-plugin/)
