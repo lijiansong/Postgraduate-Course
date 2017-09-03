@@ -18,7 +18,7 @@
     - 弄清楚mola的相关接口含义
     - 再考虑如何实现dispather和scheduler
 - [x] ToDo: ~~ElasticActor msg dispatcher, scheduler & asynchronous communication~~
-- [ ] ToDo: two things, collect useful info to compute Ni-opt to determine the num of actor stations & granularity adjustment of scheduler
+- [x] ToDo: two things, collect useful info to compute Ni-opt to determine the num of actor stations & granularity adjustment of scheduler
   - KVStore要实现这样一种功能见moloader.cpp源文件，该源文件是整个应用的entrance
   - 主要实现两个功能，一个是实时收集各类信息，定期地计算station的数目，另外一个就是scheduler，scheduler的调度单元是actor station，目前的版本也是基于此
   - scheduler以actor station为调度单位，actor迁移的策略。先弄清楚station和actor的关系？TODO查阅station的定义源码，从4个station扩展到8个station期间需要做哪些事情？
@@ -27,7 +27,7 @@
   - 着手实现的时候先新建一个branch再开始写
   - context上下文是指actor的状态，此次实现不需要考虑actor的状态
   - 看懂dispatcher的实现思路，暂时`不考虑Scatter-Gather模型`，对应dispatch group
-- [ ] ToDo: 两件事情，实现师兄的论文代码和调试蛋疼的机械臂(在问题没解决之前还没有资格说自己不想做)。
+- [x] ToDo: 两件事情，实现师兄的论文代码和调试蛋疼的机械臂(在问题没解决之前还没有资格说自己不想做)。
   - actor 模型：
     - 实现actor的动态迁移
     - 实现actor
@@ -38,6 +38,6 @@
 
 - [x] BackUp: for the servo you should give it enough time for it to rotate to the given angles, opencv camera calibration see [here](http://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration_square_chess/camera_calibration_square_chess.html), to detect [chessboard corners](https://dsp.stackexchange.com/questions/2805/how-does-opencv-find-chessboard-corners), [hand eye calibration](https://robotics.stackexchange.com/questions/7163/hand-eye-calibration)
 - [x] BackUp: for the next semester, mainly focuses on Cambricon project, which is primarily about compiler tool-chain of Cambricon IPU & deep learning platform that is similar to Tensorflow, Caffe and MxNet based on clang & llvm, all these efforts output at least two papers. Months later, take up Huawei, Alibaba or Face++ project, mainly to solve deep learning and nlp problems. Later ph.d stage concentrates on nlp programming, distributed iot programming framework.
-- [ ] TODO: elastic actor的实验抓紧做（周一到周五的晚上和周末两天做这个），[PPoPP](http://conf.researchr.org/home/PPoPP-2018)的deadline在8月25号，based on the experimental result to decide...目前距离截止投稿还有一个月，争取在接下来的一周即31号之前有突破性的进展吧，近期先熟悉一下寒武纪的项目，弄清楚背后的流程，高温假回来后再好好搞。
+- [x] TODO: elastic actor的实验抓紧做（周一到周五的晚上和周末两天做这个），[PPoPP](http://conf.researchr.org/home/PPoPP-2018)的deadline在8月25号，based on the experimental result to decide...目前距离截止投稿还有一个月，争取在接下来的一周即31号之前有突破性的进展吧，近期先熟悉一下寒武纪的项目，弄清楚背后的流程，高温假回来后再好好搞。
 
 
